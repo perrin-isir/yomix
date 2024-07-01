@@ -6,7 +6,7 @@ Yomix is an interactive tool to explore low dimensional embeddings of omics data
 
 It is currently in beta version.
 
-## Install
+## INSTALL
 
     pip install yomix
 
@@ -25,7 +25,7 @@ where *yourfile.h5ad* is an anndata object saved in h5ad format (see
  with at least one .obsm field of dimension 2 or more.
 
 
-<details><summary> <span style="font-size:larger"><b>Other option: install from source</b></span> </summary><p>
+<details><summary> <b>Other option: INSTALL FROM SOURCE</b> </summary><p>
 
     git clone https://github.com/perrin-isir/yomix.git
 
