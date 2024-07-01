@@ -6,9 +6,28 @@ Yomix is an interactive tool to explore low dimensional embeddings of omics data
 
 It is currently in beta version.
 
+## Install
+
+    pip install yomix
+
+
+Then try the tool with:
+
+    yomix --example
+
+
+To use it on your own files:
+
+    yomix yourfile.h5ad
+
+where *yourfile.h5ad* is an anndata object saved in h5ad format (see
+ [anndata - Annotated data](https://anndata.readthedocs.io/en/latest/index.html#)), 
+ with at least one .obsm field of dimension 2 or more.
+
 ## Install from source
 
     git clone https://github.com/perrin-isir/yomix.git
+
 
 We recommand to create a python environment with [micromamba](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html),
 but any python package manager can be used instead.
@@ -21,9 +40,10 @@ but any python package manager can be used instead.
 
     pip install -e .
 
+
 Then try the tool with:
 
-    yomix example/pbmc.h5ad
+    yomix yomix/example/pbmc.h5ad
 
 The input file must be an anndata object saved in h5ad format (see
  [anndata - Annotated data](https://anndata.readthedocs.io/en/latest/index.html#)), 

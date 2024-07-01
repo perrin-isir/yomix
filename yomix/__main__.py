@@ -33,7 +33,13 @@ def main():
     if len(sys.argv) < 2:
         sys.exit("Missing argument (input file).")
 
-    filearg = Path(sys.argv[1])
+    argument = sys.argv[1]
+
+    if argument == "--example":
+        filearg = Path(__file__).parent / "example" / "pbmc.h5ad"
+    else:
+        filearg = Path(argument)
+    
     if filearg.exists():
         xd = anndata.read_h5ad(filearg.absolute())        
 

@@ -1,3 +1,4 @@
 include yomix/assets/*.ttf
 include yomix/assets/*.png
+include yomix/example/*.h5ad
 include yomix/VERSION
