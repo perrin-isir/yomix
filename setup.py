@@ -6,8 +6,6 @@ from pathlib import Path
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
-__import__("IPython").embed()
-
 setup(
     name="yomix",
     version=(Path(__file__).with_name("yomix") / "VERSION").read_text().strip(),
