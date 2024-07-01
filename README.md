@@ -25,7 +25,7 @@ where *yourfile.h5ad* is an anndata object saved in h5ad format (see
  with at least one .obsm field of dimension 2 or more.
 
 
-<details><summary> <b>Other option: install from source</b> </summary><p>
+<details><summary> <span style="font-size:larger"><b>Other option: install from source</b></span> </summary><p>
 
     git clone https://github.com/perrin-isir/yomix.git
 
