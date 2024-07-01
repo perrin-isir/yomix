@@ -6,9 +6,11 @@ from pathlib import Path
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
+__import__("IPython").embed()
+
 setup(
     name="yomix",
-    version=Path(__file__).with_name("VERSION").read_text().strip(),
+    version=(Path(__file__).with_name("yomix") / "VERSION").read_text().strip(),
     description="yomix: an interactive tool to explore low dimensional "
     "embeddings of omics data",
     long_description=long_description,
