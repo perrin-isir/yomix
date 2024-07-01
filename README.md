@@ -48,7 +48,7 @@ Then try the tool with:
 
 The input file must be an anndata object saved in h5ad format (see
  [anndata - Annotated data](https://anndata.readthedocs.io/en/latest/index.html#)), 
- with at least one .obsm field of dimension 2 or more.
+ with at least one `.obsm` field of dimension 2 or more.
 
 </p></details>
 
