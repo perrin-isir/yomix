@@ -20,9 +20,9 @@ To use it on your own files:
 
     yomix yourfile.h5ad
 
-where *yourfile.h5ad* is an anndata object saved in h5ad format (see
+where `yourfile.h5ad` is an anndata object saved in h5ad format (see
  [anndata - Annotated data](https://anndata.readthedocs.io/en/latest/index.html#)), 
- with at least one .obsm field of dimension 2 or more.
+ with at least one `.obsm` field of dimension 2 or more.
 
 
 <details><summary> <b>Other option: INSTALL FROM SOURCE</b> </summary><p>
