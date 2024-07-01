@@ -24,7 +24,8 @@ where *yourfile.h5ad* is an anndata object saved in h5ad format (see
  [anndata - Annotated data](https://anndata.readthedocs.io/en/latest/index.html#)), 
  with at least one .obsm field of dimension 2 or more.
 
-## Install from source
+<details><summary>Install from source</summary>
+<p>
 
     git clone https://github.com/perrin-isir/yomix.git
 
@@ -48,6 +49,9 @@ Then try the tool with:
 The input file must be an anndata object saved in h5ad format (see
  [anndata - Annotated data](https://anndata.readthedocs.io/en/latest/index.html#)), 
  with at least one .obsm field of dimension 2 or more.
+
+</p>
+</details>
 
 ## List of contributors
 
