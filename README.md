@@ -25,7 +25,7 @@ Then try the tool with:
 
     yomix example/pbmc.h5ad
 
-Input files must be anndata object saved in h5ad format (see
+The input file must be an anndata object saved in h5ad format (see
  [anndata - Annotated data](https://anndata.readthedocs.io/en/latest/index.html#)), 
  with at least one .obsm field of dimension 2 or more.
 
