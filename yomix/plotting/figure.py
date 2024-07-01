@@ -59,7 +59,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     if title == "":
         title = (
             "Yomix "
-            + Path(__file__).parent.parent.with_name("VERSION").read_text().strip()
+            + Path(__file__).parent.with_name("VERSION").read_text().strip()
         )
     xyz_vectors = np.vstack((data["x"], data["y"], data["z"]))
     true_center = np.array([[data["x"].mean(), data["y"].mean(), data["z"].mean()]]).T
