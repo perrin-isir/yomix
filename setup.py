@@ -1,6 +1,6 @@
 # Install with 'pip install -e .'
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 from pathlib import Path
 
 this_directory = Path(__file__).parent
@@ -14,7 +14,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/perrin-isir/yomix",
-    packages=find_packages(),
+    packages=find_namespace_packages(),
     include_package_data=True,
     license="LICENSE",
 )

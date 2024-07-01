@@ -10,7 +10,7 @@ file = "VERSION"
 
 [project]
 name = "yomix"
-dynamic = ["version"]
+dynamic = ["version", "description"]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
