@@ -1,0 +1,28 @@
+[build-system]
+requires = [
+    "setuptools",
+    "pathlib",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.versioningit.write]
+file = "VERSION"
+
+[project]
+name = "yomix"
+dynamic = ["version"]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.2.2",
+    "numpy>=1.26.0",
+    "matplotlib>=3.8.0",
+    "bokeh>=3.4.1",
+    "anndata>=0.10.7",
+    "scipy>=1.13.1",
+    "requests>=2.32.3",
+]
+license = {file = "LICENSE"}
+
+[project.scripts]
+yomix = "yomix.__main__:main"
