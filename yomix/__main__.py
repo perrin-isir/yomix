@@ -243,7 +243,7 @@ def main():
         server = Server({'/': bokeh_app}, io_loop=io_loop)
         server.start()
 
-        print('Opening yomix application on http://localhost:5006/\n')
+        print('Opening Yomix on http://localhost:5006/\n')
 
         io_loop.add_callback(server.show, "/")
         io_loop.start()
