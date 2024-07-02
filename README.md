@@ -73,3 +73,5 @@ James P. Sethna
 Jérôme Contant
 
 Thomas Fuks
+
+Julien Vibert
