@@ -78,7 +78,7 @@ def main():
 
                     (
                         obs_string, obs_numerical, points_bokeh_plot, 
-                        bt_slider_point_size, bt_slider_yaw, bt_slider_pitch, 
+                        bt_slider_point_size, bt_hidden_slider_yaw, bt_toggle_anim, bt_slider_yaw, bt_slider_pitch,
                         bt_slider_roll, resize_width_input, resize_height_input,
                         source_rotmatrix_etc, div_sample_names, sample_search_input,
                         sl_component1, sl_component2, sl_component3
@@ -206,7 +206,8 @@ def main():
                                         )
                                     )
                                 )
-                            )
+                            ),
+                        bt_hidden_slider_yaw, bt_toggle_anim
                         )
                     )
                 
@@ -217,6 +218,7 @@ def main():
                         )
                     )
 
+                p.name = "root"
                 return p
 
             def reset_figure(new):
@@ -235,6 +237,16 @@ def main():
             )
 
             doc.add_root(p_0)
+
+            def f():
+                slider = doc.get_model_by_name("root").select_one(dict(name="bt_hidden_slider_yaw"))
+                anim = doc.get_model_by_name("root").select_one(dict(name="bt_toggle_anim"))
+                #print(slider)
+                if slider is not None and anim.active:
+                    val = slider.value
+                    #print(val)
+                    slider.value = 10
+            doc.add_periodic_callback(f, 100)
 
         io_loop = IOLoop.current()
 

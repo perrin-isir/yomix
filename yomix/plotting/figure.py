@@ -342,6 +342,35 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         start=0.0, end=10.0, value=3.0, step=0.05, title="Point size", width=100
     )
 
+    bt_hidden_slider_yaw = bokeh.models.Slider(
+        start=-360.0,
+        end=360.0,
+        value=0.0,
+        step=4.0,
+        title="Rotate (yaw)",
+        width=100,
+        show_value=False,
+        name="bt_hidden_slider_yaw"
+    )
+
+    bt_toggle_anim = bokeh.models.Toggle(
+        label="Animation: ON", width=100, active=True,
+        name="bt_toggle_anim"
+    )
+
+    bt_toggle_anim.js_on_change(
+        "active",
+        bokeh.models.CustomJS(
+            code="""
+            if (this.active) {
+                this.label = 'Animation: ON';
+            } else {
+                this.label = 'Animation: OFF';
+            }
+        """,
+        )
+    )
+
     bt_slider_yaw = bokeh.models.Slider(
         start=-360.0,
         end=360.0,
@@ -795,6 +824,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     if higher_dim:
         callback_js2 = bokeh.models.CustomJS(
             args=dict(
+                bta=bt_toggle_anim,
                 slc1=sl_component1,
                 slc2=sl_component2,
                 slc3=sl_component3,
@@ -803,7 +833,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code=reset_slider_pitch
+            code="""bta.active = false;""" + reset_slider_pitch
             + reset_slider_roll
             + code_part1_1
             + """
@@ -816,12 +846,13 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     else:
         callback_js2 = bokeh.models.CustomJS(
             args=dict(
+                bta=bt_toggle_anim,
                 bsp=bt_slider_pitch,
                 bsr=bt_slider_roll,
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code=reset_slider_pitch
+            code="""bta.active = false;""" + reset_slider_pitch
             + reset_slider_roll
             + code_part1_1
             + """
@@ -849,12 +880,89 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         """,
     )
 
+    code_full = """
+        const new_offset = data_rotmatrix_etc['offset_angle'];
+        const new_offset_x = new_offset[0];
+        const new_f = cb_obj.value - new_offset_x;
+        const new_rotaxis = [0, 1, 0];
+        const new_scaleCoef = (
+            yr[1]-yr[0] + 0.00000001)/(xr[1]-xr[0] + 0.00000001) * width/height;
+        const new_rotmataxis = scaleTransform(
+            rotationMatrix(new_rotaxis, new_f * Math.PI/180.0), 1., new_scaleCoef, 1.);
+        const new_rot_m = matrixMultiply(new_rotmataxis, rmatrix);
+        const new_delta_vec = addVectors(
+            rc, multiplyMatrixVector(new_rotmataxis, substractVectors(rdelta, rc)));
+
+        col0[0] = new_rot_m[0][0];
+        col0[1] = new_rot_m[0][1];
+        col0[2] = new_rot_m[0][2];
+        col1[0] = new_rot_m[1][0];
+        col1[1] = new_rot_m[1][1];
+        col1[2] = new_rot_m[1][2];
+        col2[0] = new_rot_m[2][0];
+        col2[1] = new_rot_m[2][1];
+        col2[2] = new_rot_m[2][2];
+
+        rdelta[0] = new_delta_vec[0];
+        rdelta[1] = new_delta_vec[1];
+        rdelta[2] = new_delta_vec[2];
+        new_offset[0] = 0;
+        source_rotmatrix_etc.change.emit();
+        cb_obj.value = 0;
+        cb_obj.change.emit();
+    """
+
+    if higher_dim:
+        callback_full = bokeh.models.CustomJS(
+            args=dict(
+                slc1=sl_component1,
+                slc2=sl_component2,
+                slc3=sl_component3,
+                bsp=bt_slider_pitch,
+                bsr=bt_slider_roll,
+                source=source,
+                source_rotmatrix_etc=source_rotmatrix_etc,
+            ),
+            code=reset_slider_pitch
+            + reset_slider_roll
+            + code_part1_1
+            + """
+                const offset_x = data_rotmatrix_etc['offset_angle'][0];
+                const f = cb_obj.value - offset_x;
+                const rotaxis = [0, 1, 0];
+            """
+            + code_part1_2
+            + code_full,
+        )
+    else:
+        callback_full = bokeh.models.CustomJS(
+            args=dict(
+                bsp=bt_slider_pitch,
+                bsr=bt_slider_roll,
+                source=source,
+                source_rotmatrix_etc=source_rotmatrix_etc,
+            ),
+            code=reset_slider_pitch
+            + reset_slider_roll
+            + code_part1_1
+            + """
+                const offset_x = data_rotmatrix_etc['offset_angle'][0];
+                const f = cb_obj.value - offset_x;
+                const rotaxis = [0, 1, 0];
+            """
+            + code_part1_2
+            + code_full,
+        )
+
     bt_slider_yaw.js_on_change("value", callback_js2)
     bt_slider_yaw.js_on_change("value_throttled", callback_js3)
+
+    bt_hidden_slider_yaw.js_on_change("value", callback_full)
 
     if higher_dim:
         callback_js4 = bokeh.models.CustomJS(
             args=dict(
+                bta=bt_toggle_anim,
                 slc1=sl_component1,
                 slc2=sl_component2,
                 slc3=sl_component3,
@@ -863,7 +971,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code=reset_slider_roll
+            code="""bta.active = false;""" + reset_slider_roll
             + reset_slider_yaw
             + code_part1_1
             + """
@@ -876,12 +984,13 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     else:
         callback_js4 = bokeh.models.CustomJS(
             args=dict(
+                bta=bt_toggle_anim,
                 bsr=bt_slider_roll,
                 bsy=bt_slider_yaw,
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code=reset_slider_roll
+            code="""bta.active = false;""" + reset_slider_roll
             + reset_slider_yaw
             + code_part1_1
             + """
@@ -915,6 +1024,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     if higher_dim:
         callback_js6 = bokeh.models.CustomJS(
             args=dict(
+                bta=bt_toggle_anim,
                 slc1=sl_component1,
                 slc2=sl_component2,
                 slc3=sl_component3,
@@ -923,7 +1033,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code=reset_slider_pitch
+            code="""bta.active = false;""" + reset_slider_pitch
             + reset_slider_yaw
             + code_part1_1
             + """
@@ -936,12 +1046,13 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     else:
         callback_js6 = bokeh.models.CustomJS(
             args=dict(
+                bta=bt_toggle_anim,
                 bsp=bt_slider_pitch,
                 bsy=bt_slider_yaw,
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code=reset_slider_pitch
+            code="""bta.active = false;""" + reset_slider_pitch
             + reset_slider_yaw
             + code_part1_1
             + """
@@ -1240,6 +1351,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             obs_numerical,
             points_bokeh_plot,
             bt_slider_point_size,
+            bt_hidden_slider_yaw,
+            bt_toggle_anim,
             bt_slider_yaw,
             bt_slider_pitch,
             bt_slider_roll,
@@ -1258,6 +1371,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             obs_numerical,
             points_bokeh_plot,
             bt_slider_point_size,
+            bt_hidden_slider_yaw,
+            bt_toggle_anim,
             bt_slider_yaw,
             bt_slider_pitch,
             bt_slider_roll,
