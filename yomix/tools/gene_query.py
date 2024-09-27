@@ -2,7 +2,8 @@ import bokeh.models
 
 
 def gene_query_button(offset_text_feature_color):
-    bt_open_link = bokeh.models.Button(label="HGNC query", width=100, height=48)
+    bt_open_link = bokeh.models.Button(
+        label="← Search these features in HGNC", width=235, height=60)
 
     bt_open_link.js_on_click(
         bokeh.models.CustomJS(

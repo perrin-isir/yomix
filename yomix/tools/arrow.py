@@ -54,7 +54,8 @@ def arrow_function(
     hidden_toggle = bokeh.models.Toggle(name="hidden_toggle")
 
     arrow_tool = bokeh.models.CustomAction(
-        description="Draw arrows",
+        description="Draw arrow (click once for the start, twice for the end)"
+                    "",
         icon=(Path(__file__).parent.parent / "assets" / "arrow.png").absolute(),
         callback=bokeh.models.CustomJS(
             args=dict(arr=arrow, hidden_t=hidden_toggle),

@@ -339,7 +339,16 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     )
 
     bt_slider_point_size = bokeh.models.Slider(
-        start=0.0, end=10.0, value=3.0, step=0.05, title="Point size", width=100
+        start=0.0,
+        end=10.0,
+        value=3.0,
+        step=0.05,
+        title="Point size",
+        orientation="vertical",
+        stylesheets=[stylesheet],
+        width=100,
+        show_value=False,
+        direction="rtl"
     )
 
     bt_hidden_slider_yaw = bokeh.models.Slider(
@@ -350,7 +359,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         title="Rotate (yaw)",
         width=100,
         show_value=False,
-        name="bt_hidden_slider_yaw"
+        name="bt_hidden_slider_yaw",
+        visible=False
     )
 
     bt_toggle_anim = bokeh.models.Toggle(

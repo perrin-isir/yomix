@@ -144,6 +144,8 @@ def main():
                     if embedding_size == 2:
                         bt_slider_yaw.visible = False
                         bt_slider_pitch.visible = False
+                        bt_toggle_anim.visible = False
+                        bt_toggle_anim.active = False
                         c3div.visible = False
 
                     p = (
@@ -152,7 +154,6 @@ def main():
                                 bt_select_embedding,
                                 bokeh.layouts.row(resize_height_input, 
                                                   resize_width_input),
-                                select_color_by,
                                 bokeh.layouts.row(bt_A, toggle_A),
                                 bokeh.layouts.row(bt_B, toggle_B),
                                 bokeh.layouts.row(bt_nothing, bt_AplusB),
@@ -163,21 +164,6 @@ def main():
                                 div_signature_list
                             ),
                             (bokeh.layouts.column(
-                                points_bokeh_plot,
-                                bokeh.layouts.row(
-                                    bokeh.layouts.row(
-                                        bokeh.layouts.column(
-                                            bt_slider_point_size,
-                                            bt_slider_roll,
-                                            bt_slider_yaw),
-                                        bt_slider_pitch),
-                                    bokeh.layouts.column(
-                                        bokeh.layouts.row(offset_text_feature_color, 
-                                                        bt_open_link),
-                                        bokeh.layouts.row(sample_search_input, 
-                                                        div_sample_names),
-                                    )
-                                ),
                                 bokeh.layouts.row(
                                     bokeh.layouts.column(
                                         c1div, c2div, c3div
@@ -187,27 +173,50 @@ def main():
                                         sl_component2,
                                         sl_component3
                                     )
-                                )
-                            )  if sl_component1 is not None else 
+                                ),
+                                bokeh.layouts.row(
+                                    bokeh.layouts.row(
+                                        bokeh.layouts.column(
+                                            bt_slider_roll,
+                                            bt_slider_yaw,
+                                            bt_toggle_anim),
+                                        bt_slider_pitch,
+                                        bt_slider_point_size),
+                                    bokeh.layouts.column(
+                                        bokeh.layouts.row(
+                                            select_color_by,
+                                            sample_search_input),
+                                        bokeh.layouts.row(
+                                            offset_text_feature_color,
+                                            bt_open_link),
+                                    )
+                                ),
+                                points_bokeh_plot,
+                                div_sample_names
+                            ) if sl_component1 is not None else
                                 bokeh.layouts.column(
-                                    points_bokeh_plot,
                                     bokeh.layouts.row(
                                         bokeh.layouts.row(
                                             bokeh.layouts.column(
-                                                bt_slider_point_size,
                                                 bt_slider_roll,
-                                                bt_slider_yaw),
-                                            bt_slider_pitch),
+                                                bt_slider_yaw,
+                                                bt_toggle_anim),
+                                            bt_slider_pitch,
+                                            bt_slider_point_size),
                                         bokeh.layouts.column(
-                                            bokeh.layouts.row(offset_text_feature_color, 
-                                                            bt_open_link),
-                                            bokeh.layouts.row(sample_search_input, 
-                                                            div_sample_names),
+                                            bokeh.layouts.row(
+                                                select_color_by,
+                                                sample_search_input),
+                                            bokeh.layouts.row(
+                                                offset_text_feature_color,
+                                                bt_open_link),
                                         )
-                                    )
+                                    ),
+                                    points_bokeh_plot,
+                                    div_sample_names
                                 )
                             ),
-                        bt_hidden_slider_yaw, bt_toggle_anim
+                        bt_hidden_slider_yaw
                         )
                     )
                 
