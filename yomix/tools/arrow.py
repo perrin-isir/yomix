@@ -12,6 +12,7 @@ def arrow_function(
     bt_slider_pitch,
     bt_slider_yaw,
     source_rotmatrix_etc,
+    bt_toggle_anim,
     hidden_checkbox_A,
     div_signature_list,
     multiselect_signature,
@@ -51,15 +52,16 @@ def arrow_function(
 
     points_bokeh_plot.on_event(bokeh.events.Tap, callback_arrow)
 
-    hidden_toggle = bokeh.models.Toggle(name="hidden_toggle")
+    hidden_toggle = bokeh.models.Toggle(name="hidden_toggle", active=False)
 
     arrow_tool = bokeh.models.CustomAction(
-        description="Draw arrow (click once for the start, twice for the end)"
+        description="Arrow Tool: click once for the start, twice for the end"
                     "",
         icon=(Path(__file__).parent.parent / "assets" / "arrow.png").absolute(),
         callback=bokeh.models.CustomJS(
-            args=dict(arr=arrow, hidden_t=hidden_toggle),
+            args=dict(arr=arrow, hidden_t=hidden_toggle, btta=bt_toggle_anim),
             code="""
+        btta.active=false;
         hidden_t.active=!hidden_t.active;
     """,
         ),
@@ -94,6 +96,11 @@ def arrow_function(
         if hidden_toggle.active:
             hidden_toggle.active = False
 
+    def toggle_rotations_deactivate_arrow(new):
+        if new:
+            if hidden_toggle.active:
+                hidden_toggle.active = False
+
     bt_slider_roll.on_change(
         "value", lambda attr, old, new: rotations_deactivate_arrow()
     )
@@ -103,12 +110,18 @@ def arrow_function(
     bt_slider_yaw.on_change(
         "value", lambda attr, old, new: rotations_deactivate_arrow()
     )
+    bt_toggle_anim.on_change(
+        "active", lambda attr, old, new: toggle_rotations_deactivate_arrow(new)
+    )
 
     hidden_numeric_inputs = [
         bokeh.models.NumericInput(mode="float", value=0.0) for _ in range(10)
     ]
+
+    tooltip=bokeh.models.Tooltip(content="Requires drawing an arrow with the Arrow Tool and setting the subset A", position="right")
+    help_button_oriented = bokeh.models.HelpButton(tooltip=tooltip, margin=(3, 0, 3, 0))
     bt_sign_oriented = bokeh.models.Button(
-        label="Compute oriented signature (A)", width=235
+        label="Compute oriented signature (A)", width=190, margin=(5, 0, 5, 5)
     )
 
     bt_sign_oriented.js_on_click(
@@ -116,18 +129,21 @@ def arrow_function(
             args=dict(
                 source_rotmatrix_etc=source_rotmatrix_etc,
                 numinputs=hidden_numeric_inputs,
+                ht=hidden_toggle,
             ),
             code="""
-            numinputs[0].value=source_rotmatrix_etc.data['0'][0];
-            numinputs[1].value=source_rotmatrix_etc.data['0'][1];
-            numinputs[2].value=source_rotmatrix_etc.data['0'][2];
-            numinputs[3].value=source_rotmatrix_etc.data['1'][0];
-            numinputs[4].value=source_rotmatrix_etc.data['1'][1];
-            numinputs[5].value=source_rotmatrix_etc.data['1'][2];
-            numinputs[6].value=source_rotmatrix_etc.data['2'][0];
-            numinputs[7].value=source_rotmatrix_etc.data['2'][1];
-            numinputs[8].value=source_rotmatrix_etc.data['2'][2];
-            numinputs[9].value+=1.;
+            if (ht.active) {
+                numinputs[0].value=source_rotmatrix_etc.data['0'][0];
+                numinputs[1].value=source_rotmatrix_etc.data['0'][1];
+                numinputs[2].value=source_rotmatrix_etc.data['0'][2];
+                numinputs[3].value=source_rotmatrix_etc.data['1'][0];
+                numinputs[4].value=source_rotmatrix_etc.data['1'][1];
+                numinputs[5].value=source_rotmatrix_etc.data['1'][2];
+                numinputs[6].value=source_rotmatrix_etc.data['2'][0];
+                numinputs[7].value=source_rotmatrix_etc.data['2'][1];
+                numinputs[8].value=source_rotmatrix_etc.data['2'][2];
+                numinputs[9].value+=1.;
+            }
         """,
         )
     )
@@ -251,4 +267,4 @@ def arrow_function(
         ),
     )
 
-    return bt_sign_oriented
+    return bt_sign_oriented, help_button_oriented

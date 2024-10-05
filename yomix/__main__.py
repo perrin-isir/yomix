@@ -110,6 +110,8 @@ def main():
                     (
                         bt_sign1,
                         bt_sign2,
+                        help1,
+                        help2,
                         multiselect_signature,
                         div_signature_list,
                         sign_nr
@@ -120,7 +122,7 @@ def main():
                     bt_open_link = yomix.tools.gene_query_button(
                         offset_text_feature_color)
 
-                    bt_sign3 = yomix.tools.arrow_function(
+                    bt_sign3, help3 = yomix.tools.arrow_function(
                         points_bokeh_plot,
                         xd,
                         embedding_key,
@@ -128,6 +130,7 @@ def main():
                         bt_slider_pitch,
                         bt_slider_yaw,
                         source_rotmatrix_etc,
+                        bt_toggle_anim,
                         hidden_checkbox_A,
                         div_signature_list,
                         multiselect_signature,
@@ -137,9 +140,9 @@ def main():
                         sl_component3
                     )
 
-                    c1div = bokeh.models.Div(text="Component X:")
-                    c2div = bokeh.models.Div(text="Component Y:")
-                    c3div = bokeh.models.Div(text="Component Z:")
+                    c1div = bokeh.models.Div(text="X axis:")
+                    c2div = bokeh.models.Div(text="Y axis:")
+                    c3div = bokeh.models.Div(text="Z axis:")
 
                     if embedding_size == 2:
                         bt_slider_yaw.visible = False
@@ -157,9 +160,9 @@ def main():
                                 bokeh.layouts.row(bt_A, toggle_A),
                                 bokeh.layouts.row(bt_B, toggle_B),
                                 bokeh.layouts.row(bt_nothing, bt_AplusB),
-                                bt_sign1,
-                                bt_sign2,
-                                bt_sign3,
+                                bokeh.layouts.row(bt_sign1, help1),
+                                bokeh.layouts.row(bt_sign2, help2),
+                                bokeh.layouts.row(bt_sign3, help3),
                                 multiselect_signature,
                                 div_signature_list
                             ),

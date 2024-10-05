@@ -373,7 +373,9 @@ def signature_buttons(
         "value", lambda attr, old, new: multiselect_function(new)
     )
 
-    bt_sign1 = bokeh.models.Button(label="Compute signature (A vs. rest)", width=235)
+    tooltip1=bokeh.models.Tooltip(content="Requires setting the subset A", position="right")
+    help_button1 = bokeh.models.HelpButton(tooltip=tooltip1, margin=(3, 0, 3, 0))
+    bt_sign1 = bokeh.models.Button(label="Compute signature (A vs. rest)", width=190, margin=(5, 0, 5, 5))
 
     bt_sign1.on_click(
         lambda event: sign_A_vs_rest(
@@ -385,7 +387,9 @@ def signature_buttons(
         )
     )
 
-    bt_sign2 = bokeh.models.Button(label="Compute signature (A vs. B)", width=235)
+    tooltip2=bokeh.models.Tooltip(content="Requires setting the subsets A and B", position="right")
+    help_button2 = bokeh.models.HelpButton(tooltip=tooltip2, margin=(3, 0, 3, 0))
+    bt_sign2 = bokeh.models.Button(label="Compute signature (A vs. B)", width=190, margin=(5, 0, 5, 5))
 
     bt_sign2.on_click(
         lambda event: sign_A_vs_B(
@@ -398,4 +402,4 @@ def signature_buttons(
         )
     )
 
-    return bt_sign1, bt_sign2, multiselect_signature, div_signature_list, signature_nr
+    return bt_sign1, bt_sign2, help_button1, help_button2, multiselect_signature, div_signature_list, signature_nr

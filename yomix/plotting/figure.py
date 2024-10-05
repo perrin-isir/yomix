@@ -157,9 +157,9 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     )
 
     if embedding_size >= 3:
-        tooltips = [("components", "[@{x_saved}, @{y_saved}, @{z_saved}]")]
+        tooltips = [("coordinates", "[X: @{x_saved}, Y: @{y_saved}, Z: @{z_saved}]")]
     else:
-        tooltips = [("components", "[@{x_saved}, @{y_saved}]")]
+        tooltips = [("coordinates", "[X: @{x_saved}, Y: @{y_saved}]")]
     for elt in tooltip_list:
         tooltips.append((elt, "@{" + elt + "}"))
     hover = HoverTool(tooltips=tooltips)
