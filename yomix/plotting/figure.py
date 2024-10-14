@@ -1355,11 +1355,34 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         ),
     )
 
+    def copy_figure(original, title):
+        new_fig = bkp.figure(
+            title=title,
+            x_axis_label=original.xaxis.axis_label,
+            y_axis_label=original.yaxis.axis_label,
+        )
+
+        new_fig.width = original.width
+        new_fig.height = original.height
+        new_fig.background_fill_color = original.background_fill_color
+        new_fig.border_fill_color = original.border_fill_color
+        new_fig.toolbar_location = "left"
+        return new_fig
+
+    points_bokeh_plot_copy = copy_figure(
+        points_bokeh_plot, "Differential gene expression"
+    )
+    points_bokeh_plot_copy.visible = False
+    points_bokeh_plot_n = copy_figure(points_bokeh_plot, "Expression Level Plot")
+    points_bokeh_plot_n.visible = False
+
     if higher_dim:
         return (
             obs_string, 
             obs_numerical,
             points_bokeh_plot,
+            points_bokeh_plot_copy,
+            points_bokeh_plot_n,
             bt_slider_point_size,
             bt_hidden_slider_yaw,
             bt_toggle_anim,
@@ -1380,6 +1403,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             obs_string, 
             obs_numerical,
             points_bokeh_plot,
+            points_bokeh_plot_copy,
+            points_bokeh_plot_n,
             bt_slider_point_size,
             bt_hidden_slider_yaw,
             bt_toggle_anim,

@@ -22,6 +22,7 @@ from tornado.ioloop import IOLoop
 from bokeh.application.handlers import FunctionHandler
 from bokeh.application import Application
 from bokeh.server.server import Server
+from bokeh.models import TabPanel, Tabs
 from pathlib import Path
 import sys
 
@@ -77,7 +78,7 @@ def main():
                     assert embedding_size > 1
 
                     (
-                        obs_string, obs_numerical, points_bokeh_plot, 
+                        obs_string, obs_numerical, points_bokeh_plot, violins_bokeh_plot, heat_map,
                         bt_slider_point_size, bt_hidden_slider_yaw, bt_toggle_anim, bt_slider_yaw, bt_slider_pitch,
                         bt_slider_roll, resize_width_input, resize_height_input,
                         source_rotmatrix_etc, div_sample_names, sample_search_input,
@@ -99,13 +100,17 @@ def main():
                             source_rotmatrix_etc,
                             resize_width_input)
 
-                    offset_text_feature_color = yomix.plotting.color_by_feature_value(
+                    offset_text_feature_color, offset_label = yomix.plotting.color_by_feature_value(
                         points_bokeh_plot,
+                        violins_bokeh_plot,
+                        heat_map,
                         xd,
                         select_color_by,
                         hidden_text_label_column,
                         resize_width_input,
-                        hidden_legend_width)
+                        hidden_legend_width,
+                        hidden_checkbox_A,
+                        hidden_checkbox_B)
 
                     (
                         bt_sign1,
@@ -114,9 +119,11 @@ def main():
                         help2,
                         multiselect_signature,
                         div_signature_list,
-                        sign_nr
+                        sign_nr,
+                        label_signature,
+                        div_label_list,
                     ) = yomix.tools.signature_buttons(
-                            xd, offset_text_feature_color, 
+                            xd, offset_text_feature_color, offset_label,
                             hidden_checkbox_A, hidden_checkbox_B)
 
                     bt_open_link = yomix.tools.gene_query_button(
@@ -151,6 +158,10 @@ def main():
                         bt_toggle_anim.active = False
                         c3div.visible = False
 
+                    tabs = Tabs(tabs=[
+                        TabPanel(child=violins_bokeh_plot, title="Violin plots"),
+                        TabPanel(child=heat_map, title="Heatmap")
+                    ])
                     p = (
                         bokeh.layouts.row(
                             bokeh.layouts.column(
@@ -164,7 +175,9 @@ def main():
                                 bokeh.layouts.row(bt_sign2, help2),
                                 bokeh.layouts.row(bt_sign3, help3),
                                 multiselect_signature,
-                                div_signature_list
+                                div_signature_list,
+                                label_signature,
+                                div_label_list,
                             ),
                             (bokeh.layouts.column(
                                 bokeh.layouts.row(
@@ -194,8 +207,12 @@ def main():
                                             bt_open_link),
                                     )
                                 ),
-                                points_bokeh_plot,
-                                div_sample_names
+                                bokeh.layouts.column(
+                                    points_bokeh_plot,
+                                    tabs
+                                ),
+                                div_sample_names,
+                                offset_label
                             ) if sl_component1 is not None else
                                 bokeh.layouts.column(
                                     bokeh.layouts.row(
@@ -215,8 +232,12 @@ def main():
                                                 bt_open_link),
                                         )
                                     ),
-                                    points_bokeh_plot,
-                                    div_sample_names
+                                    bokeh.layouts.column(
+                                        points_bokeh_plot,
+                                        tabs
+                                    ),
+                                    div_sample_names,
+                                    offset_label
                                 )
                             ),
                         bt_hidden_slider_yaw

@@ -5,7 +5,7 @@ import sys
 
 
 def signature_buttons(
-    adata, offset_text_feature_color, hidden_checkbox_A, hidden_checkbox_B
+    adata, offset_text_feature_color, offset_label, hidden_checkbox_A, hidden_checkbox_B
 ):
 
     def var_mean_values(adata) -> np.ndarray:
@@ -282,9 +282,10 @@ def signature_buttons(
             new_s = s_in
         return new_s
 
-    def sign_A_vs_rest(ad, obs_indices, dv, ms_sign, sign_nr):
+    def sign_A_vs_rest(ad, obs_indices, dv, ms_sign, sign_nr, dv_label, label_sign):
         if len(obs_indices) > 0 and len(obs_indices) < ad.n_obs:
             ms_sign.title = "..."
+            label_sign.title = "..."
             outputs, mcc_dict, up_or_down_dict = compute_signature(
                 ad,
                 ad.var["mean_values_local_yomix"],
@@ -310,7 +311,21 @@ def signature_buttons(
             ]
             ms_sign.title = "Signature #" + str(sign_nr[0])
 
-    def sign_A_vs_B(ad, obs_indices_A, obs_indices_B, dv, ms_sign, sign_nr):
+            # Apply shrink_text to all elements in ad.obs['label']
+            shrunken_labels = ad.obs["label"].map(lambda ha: shrink_text(ha, 25))
+
+            # Ensure uniqueness
+            unique_labels = list(set(shrunken_labels))
+            unique_labels.append("Subset A")
+            unique_labels.append("Rest")
+
+            # Update label_sign options
+            label_sign.options = [(label, label) for label in unique_labels]
+
+            # finalize label_sign
+            label_sign.title = "Labels"
+
+    def sign_A_vs_B(ad, obs_indices_A, obs_indices_B, dv, ms_sign, sign_nr, label_sign):
         if (
             len(obs_indices_A) > 0
             and len(obs_indices_A) < ad.n_obs
@@ -318,6 +333,7 @@ def signature_buttons(
             and len(obs_indices_B) < ad.n_obs
         ):
             ms_sign.title = "..."
+            label_sign.title = "..."
             outputs, mcc_dict, up_or_down_dict = compute_signature(
                 ad,
                 ad.var["mean_values_local_yomix"],
@@ -343,6 +359,20 @@ def signature_buttons(
             ]
             ms_sign.title = "Signature #" + str(sign_nr[0])
 
+            # Apply shrink_text to all elements in ad.obs['label']
+            shrunken_labels = ad.obs["label"].map(lambda ha: shrink_text(ha, 25))
+
+            # Ensure uniqueness
+            unique_labels = list(set(shrunken_labels))
+            unique_labels.append("Subset A")
+            unique_labels.append("Subset B")
+
+            # Update label_sign options
+            label_sign.options = [(label, label) for label in unique_labels]
+
+            # finalize label_sign
+            label_sign.title = "Labels"         
+
     div_signature_list = bokeh.models.Div(
         width=235, height=50, height_policy="fixed", text="Signature #0:"
     )
@@ -350,6 +380,17 @@ def signature_buttons(
     options = []
     multiselect_signature = bokeh.models.MultiSelect(
         title="Signature #0",
+        options=options,
+        width=235,
+        max_width=235,
+        size=20,
+        width_policy="max",
+    )
+
+    div_label_list = bokeh.models.Div(width=235, height=50, height_policy="fixed")
+    options = []
+    label_signature = bokeh.models.MultiSelect(
+        title="Labels",
         options=options,
         width=235,
         max_width=235,
@@ -373,6 +414,14 @@ def signature_buttons(
         "value", lambda attr, old, new: multiselect_function(new)
     )
 
+    def label_function(feature_list):
+        of_text = ""
+        for i in range(len(feature_list)):
+            of_text += feature_list[i] + ","
+        offset_label.value = of_text
+
+    label_signature.on_change("value", lambda attr, old, new: label_function(new))
+
     tooltip1=bokeh.models.Tooltip(content="Requires setting the subset A", position="right")
     help_button1 = bokeh.models.HelpButton(tooltip=tooltip1, margin=(3, 0, 3, 0))
     bt_sign1 = bokeh.models.Button(label="Compute signature (A vs. rest)", width=190, margin=(5, 0, 5, 5))
@@ -384,6 +433,8 @@ def signature_buttons(
             div_signature_list,
             multiselect_signature,
             signature_nr,
+            div_label_list,
+            label_signature,
         )
     )
 
@@ -399,7 +450,18 @@ def signature_buttons(
             div_signature_list,
             multiselect_signature,
             signature_nr,
+            label_signature,
         )
     )
 
-    return bt_sign1, bt_sign2, help_button1, help_button2, multiselect_signature, div_signature_list, signature_nr
+    return (
+        bt_sign1, 
+        bt_sign2, 
+        help_button1, 
+        help_button2, 
+        multiselect_signature, 
+        div_signature_list, 
+        signature_nr,
+        label_signature,
+        div_label_list,
+    )
