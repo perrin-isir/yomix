@@ -83,7 +83,7 @@ def main():
                         bt_slider_roll, resize_width_input, resize_height_input,
                         source_rotmatrix_etc, div_sample_names, sample_search_input,
                         sl_component1, sl_component2, sl_component3
-                    ) = yomix.plotting.main_figure(xd, embedding_key, 800, 550, "")
+                    ) = yomix.plotting.main_figure(xd, embedding_key, 890, 390, "")
 
                     (
                         bt_A, toggle_A, hidden_checkbox_A, bt_B, toggle_B, 
@@ -111,7 +111,8 @@ def main():
                         hidden_legend_width,
                         hidden_checkbox_A,
                         hidden_checkbox_B)
-
+                    offset_label.visible = False
+                    
                     (
                         bt_sign1,
                         bt_sign2,
@@ -121,7 +122,6 @@ def main():
                         div_signature_list,
                         sign_nr,
                         label_signature,
-                        div_label_list,
                     ) = yomix.tools.signature_buttons(
                             xd, offset_text_feature_color, offset_label,
                             hidden_checkbox_A, hidden_checkbox_B)
@@ -175,9 +175,8 @@ def main():
                                 bokeh.layouts.row(bt_sign2, help2),
                                 bokeh.layouts.row(bt_sign3, help3),
                                 multiselect_signature,
-                                div_signature_list,
                                 label_signature,
-                                div_label_list,
+                                div_signature_list,
                             ),
                             (bokeh.layouts.column(
                                 bokeh.layouts.row(
@@ -209,9 +208,8 @@ def main():
                                 ),
                                 bokeh.layouts.column(
                                     points_bokeh_plot,
-                                    tabs
+                                    bokeh.layouts.row(tabs, div_sample_names)
                                 ),
-                                div_sample_names,
                                 offset_label
                             ) if sl_component1 is not None else
                                 bokeh.layouts.column(
@@ -234,9 +232,8 @@ def main():
                                     ),
                                     bokeh.layouts.column(
                                         points_bokeh_plot,
-                                        tabs
+                                        bokeh.layouts.row(tabs, div_sample_names)
                                     ),
-                                    div_sample_names,
                                     offset_label
                                 )
                             ),

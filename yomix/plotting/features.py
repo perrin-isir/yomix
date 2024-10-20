@@ -158,7 +158,7 @@ def color_by_feature_value(
 
     offset_label = bokeh.models.TextInput(
         value="",
-        title="Selected Labels:",
+        title="Selected Groups:",
         name=" _plot",
         width=650,
     )
@@ -242,11 +242,11 @@ def plot_var(
         data_tmp = {"x": [], "y": [], "median_gene_expr": []}
         step = 0
         for label in labels:
-            if label == "Subset A":
+            if label == "[  Subset A  ]":
                 data = xd[hidden_checkbox_A.active, gene].X.toarray().reshape(-1)
-            elif label == "Subset B":
+            elif label == "[  Subset B  ]":
                 data = xd[hidden_checkbox_B.active, gene].X.toarray().reshape(-1)
-            elif label == "Rest":
+            elif label == "[  Rest  ]":
                 idx = np.arange(adata.n_obs)[
                     ~np.isin(np.arange(xd.n_obs), hidden_checkbox_A.active)
                 ]
@@ -318,14 +318,14 @@ def plot_var(
         )
         color_bar = ColorBar(
             color_mapper=custom_color_mapper,
-            title="Median gene expression in group",
+            title="Median feature value in group",
             title_text_align="center",
             major_tick_line_color=None,
             major_label_text_font_size="0pt",
         )
         violins_bokeh_plot.add_layout(color_bar, "right")
 
-    violins_bokeh_plot.title.text = "Gene expression plot per label"
+    violins_bokeh_plot.title.text = "Feature values per group"
     violins_bokeh_plot.xgrid.visible = False
     violins_bokeh_plot.ygrid.visible = False
 
@@ -334,9 +334,9 @@ def plot_var(
     samples_per_labels = {
         label: str(len(adata[adata.obs["label"] == label])) for label in labels
     }
-    samples_per_labels["Subset A"] = str(len(hidden_checkbox_A.active))
-    samples_per_labels["Subset B"] = str(len(hidden_checkbox_B.active))
-    samples_per_labels["Rest"] = str(len(adata) - len(hidden_checkbox_A.active))
+    samples_per_labels["[  Subset A  ]"] = str(len(hidden_checkbox_A.active))
+    samples_per_labels["[  Subset B  ]"] = str(len(hidden_checkbox_B.active))
+    samples_per_labels["[  Rest  ]"] = str(len(adata) - len(hidden_checkbox_A.active))
     violins_bokeh_plot.xaxis.major_label_overrides = {
         set_xticks[i]: labels[i] + "\n (" + samples_per_labels[labels[i]] + " samples)"
         for i in range(len(set_xticks))
@@ -367,13 +367,13 @@ def plot_var(
         total_samples= 0
         
         for x,label in enumerate(selected_labels):
-            if label == "Subset A":
+            if label == "[  Subset A  ]":
                 current_samples = adata.obs.index[hidden_checkbox_A.active].tolist()
                 label_indices_dict[label]=current_samples
-            elif label == "Subset B":
+            elif label == "[  Subset B  ]":
                 current_samples = adata.obs.index[hidden_checkbox_B.active].tolist()
                 label_indices_dict[label]=current_samples
-            elif label == "Rest":
+            elif label == "[  Rest  ]":
                 rest_indices = list(set(range(adata.n_obs)) - set(hidden_checkbox_A.active))
                 current_samples = adata.obs.index[rest_indices].tolist()
                 label_indices_dict[label]=current_samples
@@ -390,7 +390,7 @@ def plot_var(
             total_samples += len(label_indices_dict[label])
          
 
-        # Generate subset_indices from label_in dices_dict
+        # Generate subset_indices from label_indices_dict
         subset_indices_names = [i for label in selected_labels for i in label_indices_dict[label]]
         subset_indices = adata.obs.index.get_indexer(subset_indices_names)
         xsize = len(subset_indices)
@@ -412,6 +412,7 @@ def plot_var(
         (
             list_samples,
             set_xticks,
+            label_to_samples_dict,
             set_xticks_text,
             boundaries,
         ) = _samples_by_labels(
@@ -502,6 +503,50 @@ def plot_var(
     #     heat_map.xaxis.major_label_orientation = 1.0
     #     heat_map.visible = True
 
+    ### NEW ATTEMPT FOR HEATMAPS
+
+    # Create evenly spaced x-ticks for each label
+    num_labels = len(label_to_samples_dict.keys())
+    print("label_to_samples", label_to_samples_dict)
+    set_xticks = list(range(0, num_labels, 1))
+
+    heat_map.renderers.clear()  
+    heat_map.right = []         
+
+
+    heat_map.xaxis.ticker = set_xticks
+
+  
+    label_keys = list(label_to_samples_dict.keys())
+    major_label_overrides_dict = {set_xticks[i]: label_keys[i] for i in range(num_labels)}
+    heat_map.xaxis.major_label_overrides = major_label_overrides_dict
+
+    # Set the orientation of x-axis labels
+    heat_map.xaxis.major_label_orientation = 1.0
+    heat_map.x_range.start = 0
+    print("set_xticks", set_xticks)
+    heat_map.x_range.end = max(set_xticks)  
+    color_mapper = LinearColorMapper(palette="Viridis256", low=0, high=1)
+    x = np.repeat(
+        np.arange(normalized_plot_array.shape[1]), normalized_plot_array.shape[0]
+    )
+    y = np.tile(
+        np.arange(normalized_plot_array.shape[0]), normalized_plot_array.shape[1]
+    )
+    colors = [
+        color_mapper.palette[int(val * (len(color_mapper.palette) - 1))]
+        for val in normalized_plot_array.T.flatten()
+    ]
+
+    heat_map.rect(x=x , y=y, width=1, height=1, color=colors)
+
+    color_bar = ColorBar(color_mapper=color_mapper, label_standoff=12, location=(0, 0))
+    heat_map.add_layout(color_bar, "right")
+    y_positions = {feature: i  for i, feature in enumerate(features)}
+    heat_map.yaxis.ticker = list(y_positions.values())
+    heat_map.yaxis.major_label_overrides = {v: k for k, v in y_positions.items()}
+    heat_map.visible = True
+
 def _samples_by_labels(adata, sort_annot=False, subset_indices=None, equal_size=False):
 
     assert "obs_indices_per_label" in adata.uns and "all_labels" in adata.uns
@@ -556,4 +601,12 @@ def _samples_by_labels(adata, sort_annot=False, subset_indices=None, equal_size=
     set_xticks_text = ["|"] + list(
         np.concatenate([[str(adata.uns["all_labels"][i]), "|"] for i in argsort_labels])
     )
-    return list_samples, set_xticks, set_xticks_text, boundaries
+
+    label_to_samples_dict = {}
+    argsort_labels_set = set(argsort_labels)
+    label_to_samples_dict== {
+        key: value for 
+        key, value in label_to_samples_dict.items() if key in argsort_labels_set
+    }
+
+    return list_samples, set_xticks, label_to_samples_dict, set_xticks_text, boundaries

@@ -282,7 +282,7 @@ def signature_buttons(
             new_s = s_in
         return new_s
 
-    def sign_A_vs_rest(ad, obs_indices, dv, ms_sign, sign_nr, dv_label, label_sign):
+    def sign_A_vs_rest(ad, obs_indices, dv, ms_sign, sign_nr, label_sign):
         if len(obs_indices) > 0 and len(obs_indices) < ad.n_obs:
             ms_sign.title = "..."
             label_sign.title = "..."
@@ -316,14 +316,14 @@ def signature_buttons(
 
             # Ensure uniqueness
             unique_labels = list(set(shrunken_labels))
-            unique_labels.append("Subset A")
-            unique_labels.append("Rest")
+            unique_labels.append("[  Subset A  ]")
+            unique_labels.append("[  Rest  ]")
 
             # Update label_sign options
             label_sign.options = [(label, label) for label in unique_labels]
-
+            label_sign.size = len(label_sign.options)
             # finalize label_sign
-            label_sign.title = "Labels"
+            label_sign.title = "Groups"
 
     def sign_A_vs_B(ad, obs_indices_A, obs_indices_B, dv, ms_sign, sign_nr, label_sign):
         if (
@@ -364,14 +364,15 @@ def signature_buttons(
 
             # Ensure uniqueness
             unique_labels = list(set(shrunken_labels))
-            unique_labels.append("Subset A")
-            unique_labels.append("Subset B")
+            unique_labels.append("[  Subset A  ]")
+            unique_labels.append("[  Subset B  ]")
 
             # Update label_sign options
             label_sign.options = [(label, label) for label in unique_labels]
-
+            label_sign.size = len(label_sign.options)
+            
             # finalize label_sign
-            label_sign.title = "Labels"         
+            label_sign.title = "Groups"         
 
     div_signature_list = bokeh.models.Div(
         width=235, height=50, height_policy="fixed", text="Signature #0:"
@@ -387,14 +388,12 @@ def signature_buttons(
         width_policy="max",
     )
 
-    div_label_list = bokeh.models.Div(width=235, height=50, height_policy="fixed")
     options = []
     label_signature = bokeh.models.MultiSelect(
-        title="Labels",
+        title="Groups",
         options=options,
         width=235,
         max_width=235,
-        size=20,
         width_policy="max",
     )
 
@@ -433,7 +432,6 @@ def signature_buttons(
             div_signature_list,
             multiselect_signature,
             signature_nr,
-            div_label_list,
             label_signature,
         )
     )
@@ -463,5 +461,4 @@ def signature_buttons(
         div_signature_list, 
         signature_nr,
         label_signature,
-        div_label_list,
     )
