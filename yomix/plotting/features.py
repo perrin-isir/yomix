@@ -241,6 +241,7 @@ def plot_var(
         max_norm = np.max(xd[:, gene].X.toarray())
         data_tmp = {"x": [], "y": [], "median_gene_expr": []}
         step = 0
+        labels_nr = len(labels)
         for label in labels:
             if label == "[  Subset A  ]":
                 data = xd[hidden_checkbox_A.active, gene].X.toarray().reshape(-1)
@@ -256,13 +257,17 @@ def plot_var(
             if np.any(data):
                 data_normalized = np.divide(data - min_norm, max_norm - min_norm)
                 x, y = get_kde(data_normalized)
+                # print(len(x), len(y))
+                x, y = np.ones(100), np.linspace(0,1,100)
                 # same width for every subset
-                x = x / np.max(x)
+                x = (2.5 - np.clip(0.01 * labels_nr, 0, 0.1)) * x / np.max(x)
                 data_tmp["x"].append(np.concatenate([x, -x[::-1]]) + step)
                 data_tmp["y"].append(np.concatenate([y, y[::-1]]))
                 data_tmp["median_gene_expr"].append(np.median(data_normalized))
             else:
-                line = np.linspace(step - 1, step + 1, 100)
+                # line = np.linspace(step - 1, step + 1, 100)
+                bound = 2.5 - np.clip(0.01 * labels_nr, 0, 0.1)
+                line = np.linspace(step - bound, step + bound, 100)
                 data_tmp["x"].append(line)
                 data_tmp["y"].append([0 for i in line])
                 data_tmp["median_gene_expr"].append(0)
@@ -338,7 +343,7 @@ def plot_var(
     samples_per_labels["[  Subset B  ]"] = str(len(hidden_checkbox_B.active))
     samples_per_labels["[  Rest  ]"] = str(len(adata) - len(hidden_checkbox_A.active))
     violins_bokeh_plot.xaxis.major_label_overrides = {
-        set_xticks[i]: labels[i] + "\n (" + samples_per_labels[labels[i]] + " samples)"
+        set_xticks[i]: labels[i] + "\n\n" + samples_per_labels[labels[i]] + "\nsamples" 
         for i in range(len(set_xticks))
     }
 
@@ -505,47 +510,48 @@ def plot_var(
 
     ### NEW ATTEMPT FOR HEATMAPS
 
-    # Create evenly spaced x-ticks for each label
-    num_labels = len(label_to_samples_dict.keys())
-    print("label_to_samples", label_to_samples_dict)
-    set_xticks = list(range(0, num_labels, 1))
+        # # Create evenly spaced x-ticks for each label
+        # # num_labels = len(label_to_samples_dict.keys())
+        # num_labels = len(labels)
+        # print("label_to_samples", label_to_samples_dict)
+        # set_xticks = list(range(0, num_labels, 1))
 
-    heat_map.renderers.clear()  
-    heat_map.right = []         
+        # heat_map.renderers.clear()  
+        # heat_map.right = []         
 
 
-    heat_map.xaxis.ticker = set_xticks
+        # heat_map.xaxis.ticker = set_xticks
 
-  
-    label_keys = list(label_to_samples_dict.keys())
-    major_label_overrides_dict = {set_xticks[i]: label_keys[i] for i in range(num_labels)}
-    heat_map.xaxis.major_label_overrides = major_label_overrides_dict
+    
+        # label_keys = list(labels)
+        # major_label_overrides_dict = {set_xticks[i]: label_keys[i] for i in range(num_labels)}
+        # heat_map.xaxis.major_label_overrides = major_label_overrides_dict
 
-    # Set the orientation of x-axis labels
-    heat_map.xaxis.major_label_orientation = 1.0
-    heat_map.x_range.start = 0
-    print("set_xticks", set_xticks)
-    heat_map.x_range.end = max(set_xticks)  
-    color_mapper = LinearColorMapper(palette="Viridis256", low=0, high=1)
-    x = np.repeat(
-        np.arange(normalized_plot_array.shape[1]), normalized_plot_array.shape[0]
-    )
-    y = np.tile(
-        np.arange(normalized_plot_array.shape[0]), normalized_plot_array.shape[1]
-    )
-    colors = [
-        color_mapper.palette[int(val * (len(color_mapper.palette) - 1))]
-        for val in normalized_plot_array.T.flatten()
-    ]
+        # # Set the orientation of x-axis labels
+        # heat_map.xaxis.major_label_orientation = 1.0
+        # heat_map.x_range.start = 0
+        # print("set_xticks", set_xticks)
+        # heat_map.x_range.end = max(set_xticks)  
+        # color_mapper = LinearColorMapper(palette="Viridis256", low=0, high=1)
+        # x = np.repeat(
+        #     np.arange(normalized_plot_array.shape[1]), normalized_plot_array.shape[0]
+        # )
+        # y = np.tile(
+        #     np.arange(normalized_plot_array.shape[0]), normalized_plot_array.shape[1]
+        # )
+        # colors = [
+        #     color_mapper.palette[int(val * (len(color_mapper.palette) - 1))]
+        #     for val in normalized_plot_array.T.flatten()
+        # ]
 
-    heat_map.rect(x=x , y=y, width=1, height=1, color=colors)
+        # heat_map.rect(x=x , y=y, width=1, height=1, color=colors)
 
-    color_bar = ColorBar(color_mapper=color_mapper, label_standoff=12, location=(0, 0))
-    heat_map.add_layout(color_bar, "right")
-    y_positions = {feature: i  for i, feature in enumerate(features)}
-    heat_map.yaxis.ticker = list(y_positions.values())
-    heat_map.yaxis.major_label_overrides = {v: k for k, v in y_positions.items()}
-    heat_map.visible = True
+        # color_bar = ColorBar(color_mapper=color_mapper, label_standoff=12, location=(0, 0))
+        # heat_map.add_layout(color_bar, "right")
+        # y_positions = {feature: i  for i, feature in enumerate(features)}
+        # heat_map.yaxis.ticker = list(y_positions.values())
+        # heat_map.yaxis.major_label_overrides = {v: k for k, v in y_positions.items()}
+        # heat_map.visible = True
 
 def _samples_by_labels(adata, sort_annot=False, subset_indices=None, equal_size=False):
 
@@ -604,7 +610,7 @@ def _samples_by_labels(adata, sort_annot=False, subset_indices=None, equal_size=
 
     label_to_samples_dict = {}
     argsort_labels_set = set(argsort_labels)
-    label_to_samples_dict== {
+    label_to_samples_dict = {
         key: value for 
         key, value in label_to_samples_dict.items() if key in argsort_labels_set
     }
