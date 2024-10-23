@@ -158,6 +158,11 @@ def main():
                         bt_toggle_anim.active = False
                         c3div.visible = False
 
+                    violins_bokeh_plot.toolbar.logo = None
+                    violins_bokeh_plot.toolbar_location = None
+                    heat_map.toolbar.logo = None
+                    heat_map.toolbar_location = None
+
                     tabs = Tabs(tabs=[
                         TabPanel(child=violins_bokeh_plot, title="Violin plots"),
                         TabPanel(child=heat_map, title="Heatmap")
