@@ -51,7 +51,18 @@ def main():
                 return x
 
         xd.X = np.asarray(_to_dense(xd.X))
-
+        min_norm = np.min(xd.X, axis=0)
+        max_norm = np.max(xd.X, axis=0)
+        xd.X = np.divide(xd.X - min_norm, max_norm - min_norm + 1e-8)
+        obs_string_init = list(xd.obs.select_dtypes("category").keys())
+        all_labels_list = []
+        for lbl in obs_string_init:
+            labels = np.array(list(dict.fromkeys(xd.obs[str(lbl)])))
+            all_labels_list += [(str(lbl), str(elt)) for elt in labels]
+            for elt in labels:
+                xd.var['yomix_median_' + str(lbl) + ">>yomix>>" + str(elt)] = -np.ones(xd.n_vars)
+        xd.uns["all_labels"] = all_labels_list
+        
         def modify_doc(doc):
 
             def build_figure(embedding_key):

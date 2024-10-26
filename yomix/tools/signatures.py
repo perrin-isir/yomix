@@ -311,16 +311,15 @@ def signature_buttons(
             ]
             ms_sign.title = "Signature #" + str(sign_nr[0])
 
-            # Apply shrink_text to all elements in ad.obs['label']
-            shrunken_labels = ad.obs["label"].map(lambda ha: shrink_text(ha, 25))
-
-            # Ensure uniqueness
-            unique_labels = list(set(shrunken_labels))
-            unique_labels.append("[  Subset A  ]")
-            unique_labels.append("[  Rest  ]")
+            unique_labels = []
+            unique_labels.append(("[  Subset A  ]", "[  Subset A  ]"))
+            unique_labels.append(("[  Rest  ]", "[  Rest  ]"))
+            unique_labels += [
+                (lbl + ">>yomix>>" + lbl_elt, shrink_text(lbl + " > " + lbl_elt, 35)) for 
+                (lbl, lbl_elt) in ad.uns["all_labels"]]
 
             # Update label_sign options
-            label_sign.options = [(label, label) for label in unique_labels]
+            label_sign.options = unique_labels
             label_sign.size = len(label_sign.options)
             # finalize label_sign
             label_sign.title = "Groups"
@@ -359,16 +358,15 @@ def signature_buttons(
             ]
             ms_sign.title = "Signature #" + str(sign_nr[0])
 
-            # Apply shrink_text to all elements in ad.obs['label']
-            shrunken_labels = ad.obs["label"].map(lambda ha: shrink_text(ha, 25))
-
-            # Ensure uniqueness
-            unique_labels = list(set(shrunken_labels))
-            unique_labels.append("[  Subset A  ]")
-            unique_labels.append("[  Subset B  ]")
+            unique_labels = []
+            unique_labels.append(("[  Subset A  ]", "[  Subset A  ]"))
+            unique_labels.append(("[  Subset B  ]", "[  Subset B  ]"))
+            unique_labels += [
+                (lbl + ">>yomix>>" + lbl_elt, shrink_text(lbl + " > " + lbl_elt, 35)) for 
+                (lbl, lbl_elt) in ad.uns["all_labels"]]
 
             # Update label_sign options
-            label_sign.options = [(label, label) for label in unique_labels]
+            label_sign.options = unique_labels
             label_sign.size = len(label_sign.options)
             
             # finalize label_sign
@@ -416,7 +414,7 @@ def signature_buttons(
     def label_function(feature_list):
         of_text = ""
         for i in range(len(feature_list)):
-            of_text += feature_list[i] + ","
+            of_text += feature_list[i] + "//yomix//"
         offset_label.value = of_text
 
     label_signature.on_change("value", lambda attr, old, new: label_function(new))

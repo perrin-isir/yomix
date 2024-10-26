@@ -44,7 +44,7 @@ def color_by_feature_value(
 
         if label_stringval:
             selected_labels = [
-                lbl.strip() for lbl in label_stringval.split(",") if lbl.strip()
+                lbl.strip() for lbl in label_stringval.split("//yomix//") if lbl.strip()
             ]
         else:
             selected_labels = None
@@ -54,8 +54,6 @@ def color_by_feature_value(
             if elt in feature_dict:
                 plot_var_features += [elt]
 
-        print(positive_matches)
-        print(plot_var_features)
         if len(plot_var_features) > 0:
             plot_var(
                 adata,
@@ -237,44 +235,54 @@ def plot_var(
         return x, y
 
     def plot_violin_from_gene(xd, gene, labels):
-        min_norm = np.min(xd[:, gene].X.toarray())
-        max_norm = np.max(xd[:, gene].X.toarray())
-        data_tmp = {"x": [], "y": [], "median_gene_expr": []}
+        data_tmp = {"x": [], "y": [], "median_expr": []}
         step = 0
         labels_nr = len(labels)
         for label in labels:
             if label == "[  Subset A  ]":
                 data = xd[hidden_checkbox_A.active, gene].X.toarray().reshape(-1)
+                if np.any(data):
+                    median_expr = np.median(data)
             elif label == "[  Subset B  ]":
                 data = xd[hidden_checkbox_B.active, gene].X.toarray().reshape(-1)
+                if np.any(data):
+                    median_expr = np.median(data)
             elif label == "[  Rest  ]":
                 idx = np.arange(adata.n_obs)[
                     ~np.isin(np.arange(xd.n_obs), hidden_checkbox_A.active)
                 ]
                 data = xd[idx, gene].X.toarray().reshape(-1)
+                if np.any(data):
+                    median_expr = np.median(data)
             else:
-                data = xd[xd.obs["label"] == label, gene].X.toarray().reshape(-1)
+                lblsplit = label.split(">>yomix>>")
+                lbl = lblsplit[0]
+                lbl_elt = lblsplit[1]
+                data = xd[xd.obs[lbl] == lbl_elt, gene].X.toarray().reshape(-1)
+                if np.any(data):
+                    if xd.var['yomix_median_' + label][gene] < 0:
+                        xd.var.loc[gene, 'yomix_median_' + label] = np.median(data)
+                    median_expr = xd.var['yomix_median_' + label][gene]
             if np.any(data):
-                data_normalized = np.divide(data - min_norm, max_norm - min_norm)
-                x, y = get_kde(data_normalized)
+                x, y = get_kde(data)
                 # print(len(x), len(y))
-                x, y = np.ones(100), np.linspace(0,1,100)
+                #x, y = np.ones(100), np.linspace(0,1,100)
                 # same width for every subset
                 x = (2.5 - np.clip(0.01 * labels_nr, 0, 0.1)) * x / np.max(x)
                 data_tmp["x"].append(np.concatenate([x, -x[::-1]]) + step)
                 data_tmp["y"].append(np.concatenate([y, y[::-1]]))
-                data_tmp["median_gene_expr"].append(np.median(data_normalized))
+                data_tmp["median_expr"].append(median_expr)
             else:
                 # line = np.linspace(step - 1, step + 1, 100)
                 bound = 2.5 - np.clip(0.01 * labels_nr, 0, 0.1)
                 line = np.linspace(step - bound, step + bound, 100)
                 data_tmp["x"].append(line)
                 data_tmp["y"].append([0 for i in line])
-                data_tmp["median_gene_expr"].append(0)
+                data_tmp["median_expr"].append(0)
             step += 5
         return data_tmp
 
-    data_tmp = {"x": [], "y": [], "median_gene_expr": []}
+    data_tmp = {"x": [], "y": [], "median_expr": []}
 
     step_yaxis = 0
     if selected_labels is None:
@@ -289,6 +297,7 @@ def plot_var(
             data_tmp[key].extend(tmp_dict[key])
         step_yaxis += 1.1
 
+    violins_bokeh_plot.yaxis.major_label_text_font_size = "10pt"
     if len(features) > 1:
         set_yticks = [0.5 + 1.1 * i for i in range(len(features))]
         violins_bokeh_plot.yaxis.ticker = set_yticks
@@ -296,12 +305,11 @@ def plot_var(
             set_yticks[i]: features[i] for i in range(len(features))
         }
         violins_bokeh_plot.yaxis.axis_label = ""
-        violins_bokeh_plot.yaxis.major_label_text_font_size = "10pt"
     else:
         violins_bokeh_plot.yaxis.axis_label = features[0]
-        violins_bokeh_plot.yaxis.major_tick_line_color = None
-        violins_bokeh_plot.yaxis.minor_tick_line_color = None
-        violins_bokeh_plot.yaxis.major_label_text_font_size = "0pt"
+        set_yticks = []
+        violins_bokeh_plot.yaxis.ticker = set_yticks
+        violins_bokeh_plot.yaxis.major_label_overrides = {}
 
     custom_color_mapper = LinearColorMapper(palette=Viridis256, low=0, high=1)
 
@@ -316,7 +324,7 @@ def plot_var(
             "y",
             source=source,
             fill_color=linear_cmap(
-                "median_gene_expr", palette=Viridis256, low=0, high=1
+                "median_expr", palette=Viridis256, low=0, high=1
             ),
             line_color="black",
             name="violins",
@@ -336,114 +344,128 @@ def plot_var(
 
     set_xticks = list(range(0, len(labels) * 5, 5))
     violins_bokeh_plot.xaxis.ticker = set_xticks
-    samples_per_labels = {
-        label: str(len(adata[adata.obs["label"] == label])) for label in labels
-    }
-    samples_per_labels["[  Subset A  ]"] = str(len(hidden_checkbox_A.active))
-    samples_per_labels["[  Subset B  ]"] = str(len(hidden_checkbox_B.active))
-    samples_per_labels["[  Rest  ]"] = str(len(adata) - len(hidden_checkbox_A.active))
+    samples_per_labels = {}
+    text_labels = []
+    for label in labels:
+        if label == "[  Subset A  ]":
+            samples_per_labels["[  Subset A  ]"] = str(len(hidden_checkbox_A.active))
+            text_labels.append(label + "\n ")
+        elif label == "[  Subset B  ]":
+            samples_per_labels["[  Subset B  ]"] = str(len(hidden_checkbox_B.active))
+            text_labels.append(label + "\n ")
+        elif label == "[  Rest  ]":
+            samples_per_labels["[  Rest  ]"] = str(len(adata) - len(hidden_checkbox_A.active))
+            text_labels.append(label + "\n ")
+        else:
+            lblsplit = label.split(">>yomix>>")
+            lbl = lblsplit[0]
+            lbl_elt = lblsplit[1]
+            samples_per_labels[label] = str(len(adata[adata.obs[lbl] == lbl_elt]))
+            text_labels.append(lbl + "\n" + lbl_elt)
+
     violins_bokeh_plot.xaxis.major_label_overrides = {
-        set_xticks[i]: labels[i] + "\n\n" + samples_per_labels[labels[i]] + "\nsamples" 
+        set_xticks[i]: text_labels[i] + "\n\n" + samples_per_labels[labels[i]] + "\nsamples" 
         for i in range(len(set_xticks))
     }
 
     violins_bokeh_plot.visible = True
 
-    # Normalization function for each gene
-    def normalize_data(data):
-        return (data - np.min(data)) / (np.max(data) - np.min(data) + 1e-6)
+    # # Normalization function for each gene
+    # def normalize_data(data):
+    #     return (data - np.min(data)) / (np.max(data) - np.min(data) + 1e-6)
 
-    feature_indices_list_ = []
-    for idx in features:
-        if isinstance(idx, (str, np.str_)):
-            assert "var_indices" in adata.uns
-            idx = adata.uns["var_indices"][idx]
-        feature_indices_list_.append(idx)
+    # feature_indices_list_ = []
+    # for idx in features:
+    #     if isinstance(idx, (str, np.str_)):
+    #         assert "var_indices" in adata.uns
+    #         idx = adata.uns["var_indices"][idx]
+    #     feature_indices_list_.append(idx)
 
 
-    # Prepare subset_indices and label_indices
-    last_sample = 0
-    set_xticks = []
-    label_positions = {}
-    label_indices_dict = {}
+    # # Prepare subset_indices and label_indices
+    # last_sample = 0
+    # set_xticks = []
+    # label_positions = {}
+    # label_indices_dict = {}
 
-    if selected_labels is not None:
+    # if selected_labels is not None:
         
-        total_samples= 0
+    #     total_samples= 0
         
-        for x,label in enumerate(selected_labels):
-            if label == "[  Subset A  ]":
-                current_samples = adata.obs.index[hidden_checkbox_A.active].tolist()
-                label_indices_dict[label]=current_samples
-            elif label == "[  Subset B  ]":
-                current_samples = adata.obs.index[hidden_checkbox_B.active].tolist()
-                label_indices_dict[label]=current_samples
-            elif label == "[  Rest  ]":
-                rest_indices = list(set(range(adata.n_obs)) - set(hidden_checkbox_A.active))
-                current_samples = adata.obs.index[rest_indices].tolist()
-                label_indices_dict[label]=current_samples
-            else:
-                # Handle standard labels
-                current_samples = adata.obs.index[adata.obs["label"] == label].tolist()
-                label_indices_dict[label]=current_samples
-            # Skip labels with no samples
-            if len(current_samples) == 0:
-                continue
+    #     for x,label in enumerate(selected_labels):
+    #         if label == "[  Subset A  ]":
+    #             current_samples = adata.obs.index[hidden_checkbox_A.active].tolist()
+    #             label_indices_dict[label]=current_samples
+    #         elif label == "[  Subset B  ]":
+    #             current_samples = adata.obs.index[hidden_checkbox_B.active].tolist()
+    #             label_indices_dict[label]=current_samples
+    #         elif label == "[  Rest  ]":
+    #             rest_indices = list(set(range(adata.n_obs)) - set(hidden_checkbox_A.active))
+    #             current_samples = adata.obs.index[rest_indices].tolist()
+    #             label_indices_dict[label]=current_samples
+    #         else:
+    #             # Handle standard labels
+                
+    #             current_samples = adata.obs.index[adata.obs["label"] == label].tolist()
+    #             label_indices_dict[label]=current_samples
+    #         # Skip labels with no samples
+    #         if len(current_samples) == 0:
+    #             continue
 
-            # Set label_positions using total_samples for mid-point calculation later
-            label_positions[label] = list(range(total_samples, total_samples + len(label_indices_dict[label])))
-            total_samples += len(label_indices_dict[label])
+    #         # Set label_positions using total_samples for mid-point calculation later
+    #         label_positions[label] = list(range(total_samples, total_samples + len(label_indices_dict[label])))
+    #         total_samples += len(label_indices_dict[label])
          
 
-        # Generate subset_indices from label_indices_dict
-        subset_indices_names = [i for label in selected_labels for i in label_indices_dict[label]]
-        subset_indices = adata.obs.index.get_indexer(subset_indices_names)
-        xsize = len(subset_indices)
+    #     # Generate subset_indices from label_indices_dict
+    #     subset_indices_names = [i for label in selected_labels for i in label_indices_dict[label]]
+    #     subset_indices = adata.obs.index.get_indexer(subset_indices_names)
+    #     xsize = len(subset_indices)
         
-    else:
-        xsize = adata.n_obs
-        subset_indices = None
+    # else:
+    #     xsize = adata.n_obs
+    #     subset_indices = None
 
 
-    if xsize == 0:
-        print("No data selected for the given labels or feature combination.")
-        return  # Exit the function if no data is available
+    # if xsize == 0:
+    #     print("No data selected for the given labels or feature combination.")
+    #     return  # Exit the function if no data is available
 
-    if "all_labels" not in adata.uns:
-        plot_array = np.empty((len(features), xsize))
-        for k, idx in enumerate(feature_indices_list_):
-            plot_array[k, :] = [adata.X[i, idx] for i in range(adata.n_obs)]
-    else:
-        (
-            list_samples,
-            set_xticks,
-            label_to_samples_dict,
-            set_xticks_text,
-            boundaries,
-        ) = _samples_by_labels(
-            adata,
-            sort_annot=True,
-            subset_indices=subset_indices,
-            equal_size=equal_size,
-        )
-        if len(list_samples) == 0:
-            print("No samples available after filtering by labels.")
-            return
+    # if "all_labels" not in adata.uns:
+    #     plot_array = np.empty((len(features), xsize))
+    #     for k, idx in enumerate(feature_indices_list_):
+    #         plot_array[k, :] = [adata.X[i, idx] for i in range(adata.n_obs)]
+    # else:
+    #     (
+    #         list_samples,
+    #         set_xticks,
+    #         label_to_samples_dict,
+    #         set_xticks_text,
+    #         boundaries,
+    #     ) = _samples_by_labels(
+    #         adata,
+    #         sort_annot=True,
+    #         subset_indices=subset_indices,
+    #         equal_size=equal_size,
+    #     )
+    #     if len(list_samples) == 0:
+    #         print("No samples available after filtering by labels.")
+    #         return
 
-        new_adata = adata[list_samples].copy()
-        labels = new_adata.obs["label"].unique()
-        plot_array = np.empty((len(features), len(list_samples)))
-        normalized_plot_array = np.empty_like(plot_array)
-        for k, idx in enumerate(feature_indices_list_):
-            print(f"Processing feature {features[k]} (index {idx})")
-            gene_data = [adata.X[i, idx] for i in list_samples]
-            # normalize the data here
-            gene_data = normalize_data(gene_data)
-            normalized_plot_array[k, :] = gene_data
+    #     new_adata = adata[list_samples].copy()
+    #     labels = new_adata.obs["label"].unique()
+    #     plot_array = np.empty((len(features), len(list_samples)))
+    #     normalized_plot_array = np.empty_like(plot_array)
+    #     for k, idx in enumerate(feature_indices_list_):
+    #         print(f"Processing feature {features[k]} (index {idx})")
+    #         gene_data = [adata.X[i, idx] for i in list_samples]
+    #         # normalize the data here
+    #         gene_data = normalize_data(gene_data)
+    #         normalized_plot_array[k, :] = gene_data
 
-        if normalized_plot_array.size == 0:
-            print("No data available for the selected features and labels.")
-            return  # Exit the function if plot_array is empty
+    #     if normalized_plot_array.size == 0:
+    #         print("No data available for the selected features and labels.")
+    #         return  # Exit the function if plot_array is empty
 
     # # HEATMAP
     # # Clear previous renderers
