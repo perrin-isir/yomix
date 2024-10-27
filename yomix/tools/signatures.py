@@ -323,6 +323,7 @@ def signature_buttons(
             label_sign.size = len(label_sign.options)
             # finalize label_sign
             label_sign.title = "Groups"
+            label_sign.value = ["[  Subset A  ]", "[  Rest  ]"]
 
     def sign_A_vs_B(ad, obs_indices_A, obs_indices_B, dv, ms_sign, sign_nr, label_sign):
         if (
@@ -370,7 +371,8 @@ def signature_buttons(
             label_sign.size = len(label_sign.options)
             
             # finalize label_sign
-            label_sign.title = "Groups"         
+            label_sign.title = "Groups"    
+            label_sign.value = ["[  Subset A  ]", "[  Subset B  ]"]     
 
     div_signature_list = bokeh.models.Div(
         width=235, height=50, height_policy="fixed", text="Signature #0:"

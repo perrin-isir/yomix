@@ -155,7 +155,8 @@ def main():
                         sign_nr,
                         sl_component1,
                         sl_component2,
-                        sl_component3
+                        sl_component3,
+                        label_signature
                     )
 
                     c1div = bokeh.models.Div(text="X axis:")
@@ -178,6 +179,11 @@ def main():
                         TabPanel(child=violins_bokeh_plot, title="Violin plots"),
                         TabPanel(child=heat_map, title="Heatmap")
                     ])
+
+                    div_color = bokeh.models.Div(
+                        height=50, height_policy="fixed", text="LYZ"
+                    )
+                    
                     p = (
                         bokeh.layouts.row(
                             bokeh.layouts.column(
@@ -223,7 +229,7 @@ def main():
                                     )
                                 ),
                                 bokeh.layouts.column(
-                                    points_bokeh_plot,
+                                    bokeh.layouts.row(points_bokeh_plot, div_color, align="end"),
                                     bokeh.layouts.row(tabs, div_sample_names)
                                 ),
                                 offset_label
@@ -247,7 +253,7 @@ def main():
                                         )
                                     ),
                                     bokeh.layouts.column(
-                                        points_bokeh_plot,
+                                        bokeh.layouts.row(points_bokeh_plot, div_color, align="end"),
                                         bokeh.layouts.row(tabs, div_sample_names)
                                     ),
                                     offset_label

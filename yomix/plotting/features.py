@@ -54,7 +54,7 @@ def color_by_feature_value(
             if elt in feature_dict:
                 plot_var_features += [elt]
 
-        if len(plot_var_features) > 0:
+        if len(plot_var_features) > 0 and selected_labels is not None:
             plot_var(
                 adata,
                 points_bokeh_plot,
@@ -199,34 +199,34 @@ def plot_var(
     equal_size=False,
 ):
 
-    def var_indices(adata) -> dict:
-        vi_dict = {}
-        for i, s_id in enumerate(adata.var_names):
-            vi_dict[s_id] = i
-        return vi_dict
+    # def var_indices(adata) -> dict:
+    #     vi_dict = {}
+    #     for i, s_id in enumerate(adata.var_names):
+    #         vi_dict[s_id] = i
+    #     return vi_dict
 
 
-    def obs_indices(adata) -> dict:
-        oi_dict = {}
-        for i, s_id in enumerate(adata.obs_names):
-            oi_dict[s_id] = i
-        return oi_dict
+    # def obs_indices(adata) -> dict:
+    #     oi_dict = {}
+    #     for i, s_id in enumerate(adata.obs_names):
+    #         oi_dict[s_id] = i
+    #     return oi_dict
 
 
-    def all_labels(labels) -> np.ndarray:
-        return np.array(list(dict.fromkeys(labels)))
+    # def all_labels(labels) -> np.ndarray:
+    #     return np.array(list(dict.fromkeys(labels)))
 
 
-    def indices_per_label(labels) -> dict:
-        i_per_label = {}
-        for i, annot in enumerate(labels):
-            i_per_label.setdefault(annot, [])
-            i_per_label[annot].append(i)
-        return i_per_label
+    # def indices_per_label(labels) -> dict:
+    #     i_per_label = {}
+    #     for i, annot in enumerate(labels):
+    #         i_per_label.setdefault(annot, [])
+    #         i_per_label[annot].append(i)
+    #     return i_per_label
 
-    adata.uns["all_labels"] = all_labels(adata.obs["label"])
-    adata.uns["obs_indices_per_label"] = indices_per_label(adata.obs["label"])
-    adata.uns["var_indices"] = var_indices(adata)
+    # adata.uns["all_labels"] = all_labels(adata.obs["label"])
+    # adata.uns["obs_indices_per_label"] = indices_per_label(adata.obs["label"])
+    # adata.uns["var_indices"] = var_indices(adata)
 
     def get_kde(data, grid_points=100):
         kde = gaussian_kde(data)
@@ -234,7 +234,7 @@ def plot_var(
         x = kde(y)
         return x, y
 
-    def plot_violin_from_gene(xd, gene, labels):
+    def plot_violin_from_gene(xd, gene, labels, mode="violin"):
         data_tmp = {"x": [], "y": [], "median_expr": []}
         step = 0
         labels_nr = len(labels)
@@ -264,9 +264,10 @@ def plot_var(
                         xd.var.loc[gene, 'yomix_median_' + label] = np.median(data)
                     median_expr = xd.var['yomix_median_' + label][gene]
             if np.any(data):
-                x, y = get_kde(data)
-                # print(len(x), len(y))
-                #x, y = np.ones(100), np.linspace(0,1,100)
+                if mode == "violin":
+                    x, y = get_kde(data)
+                else:  # heatmap
+                    x, y = np.ones(100), np.linspace(0,1,100)
                 # same width for every subset
                 x = (2.5 - np.clip(0.01 * labels_nr, 0, 0.1)) * x / np.max(x)
                 data_tmp["x"].append(np.concatenate([x, -x[::-1]]) + step)
@@ -282,93 +283,97 @@ def plot_var(
             step += 5
         return data_tmp
 
-    data_tmp = {"x": [], "y": [], "median_expr": []}
+    def refresh_violin(vplot, mode="violin"):
+        data_tmp = {"x": [], "y": [], "median_expr": []}
 
-    step_yaxis = 0
-    if selected_labels is None:
-        labels = None
-    else:
-        labels = selected_labels
-
-    for gene in features:
-        tmp_dict = plot_violin_from_gene(adata, gene, labels)
-        tmp_dict["y"] = [np.asarray(i) + step_yaxis for i in tmp_dict["y"]]
-        for key in data_tmp.keys():
-            data_tmp[key].extend(tmp_dict[key])
-        step_yaxis += 1.1
-
-    violins_bokeh_plot.yaxis.major_label_text_font_size = "10pt"
-    if len(features) > 1:
-        set_yticks = [0.5 + 1.1 * i for i in range(len(features))]
-        violins_bokeh_plot.yaxis.ticker = set_yticks
-        violins_bokeh_plot.yaxis.major_label_overrides = {
-            set_yticks[i]: features[i] for i in range(len(features))
-        }
-        violins_bokeh_plot.yaxis.axis_label = ""
-    else:
-        violins_bokeh_plot.yaxis.axis_label = features[0]
-        set_yticks = []
-        violins_bokeh_plot.yaxis.ticker = set_yticks
-        violins_bokeh_plot.yaxis.major_label_overrides = {}
-
-    custom_color_mapper = LinearColorMapper(palette=Viridis256, low=0, high=1)
-
-    # check if patches already exist
-    if violins_bokeh_plot.select(name="violins"):
-        source = violins_bokeh_plot.select(dict(name="violins"))[0].data_source
-        source.data = data_tmp
-    else:
-        source = ColumnDataSource(data=data_tmp)
-        violins_bokeh_plot.patches(
-            "x",
-            "y",
-            source=source,
-            fill_color=linear_cmap(
-                "median_expr", palette=Viridis256, low=0, high=1
-            ),
-            line_color="black",
-            name="violins",
-        )
-        color_bar = ColorBar(
-            color_mapper=custom_color_mapper,
-            title="Median feature value in group",
-            title_text_align="center",
-            major_tick_line_color=None,
-            major_label_text_font_size="0pt",
-        )
-        violins_bokeh_plot.add_layout(color_bar, "right")
-
-    violins_bokeh_plot.title.text = "Feature values per group"
-    violins_bokeh_plot.xgrid.visible = False
-    violins_bokeh_plot.ygrid.visible = False
-
-    set_xticks = list(range(0, len(labels) * 5, 5))
-    violins_bokeh_plot.xaxis.ticker = set_xticks
-    samples_per_labels = {}
-    text_labels = []
-    for label in labels:
-        if label == "[  Subset A  ]":
-            samples_per_labels["[  Subset A  ]"] = str(len(hidden_checkbox_A.active))
-            text_labels.append(label + "\n ")
-        elif label == "[  Subset B  ]":
-            samples_per_labels["[  Subset B  ]"] = str(len(hidden_checkbox_B.active))
-            text_labels.append(label + "\n ")
-        elif label == "[  Rest  ]":
-            samples_per_labels["[  Rest  ]"] = str(len(adata) - len(hidden_checkbox_A.active))
-            text_labels.append(label + "\n ")
+        step_yaxis = 0
+        if selected_labels is None:
+            labels = None
         else:
-            lblsplit = label.split(">>yomix>>")
-            lbl = lblsplit[0]
-            lbl_elt = lblsplit[1]
-            samples_per_labels[label] = str(len(adata[adata.obs[lbl] == lbl_elt]))
-            text_labels.append(lbl + "\n" + lbl_elt)
+            labels = selected_labels
 
-    violins_bokeh_plot.xaxis.major_label_overrides = {
-        set_xticks[i]: text_labels[i] + "\n\n" + samples_per_labels[labels[i]] + "\nsamples" 
-        for i in range(len(set_xticks))
-    }
+        for gene in features:
+            tmp_dict = plot_violin_from_gene(adata, gene, labels, mode=mode)
+            tmp_dict["y"] = [np.asarray(i) + step_yaxis for i in tmp_dict["y"]]
+            for key in data_tmp.keys():
+                data_tmp[key].extend(tmp_dict[key])
+            step_yaxis += 1.1
 
-    violins_bokeh_plot.visible = True
+        vplot.yaxis.major_label_text_font_size = "10pt"
+        if len(features) > 1:
+            set_yticks = [0.5 + 1.1 * i for i in range(len(features))]
+            vplot.yaxis.ticker = set_yticks
+            vplot.yaxis.major_label_overrides = {
+                set_yticks[i]: features[i] for i in range(len(features))
+            }
+            vplot.yaxis.axis_label = ""
+        else:
+            vplot.yaxis.axis_label = features[0]
+            set_yticks = []
+            vplot.yaxis.ticker = set_yticks
+            vplot.yaxis.major_label_overrides = {}
+
+        custom_color_mapper = LinearColorMapper(palette=Viridis256, low=0, high=1)
+
+        # check if patches already exist
+        if vplot.select(name="violins"):
+            source = vplot.select(dict(name="violins"))[0].data_source
+            source.data = data_tmp
+        else:
+            source = ColumnDataSource(data=data_tmp)
+            vplot.patches(
+                "x",
+                "y",
+                source=source,
+                fill_color=linear_cmap(
+                    "median_expr", palette=Viridis256, low=0, high=1
+                ),
+                line_color="black",
+                name="violins",
+            )
+            color_bar = ColorBar(
+                color_mapper=custom_color_mapper,
+                title="Normalized median feature value in group",
+                title_text_align="center",
+                major_tick_line_color=None,
+                major_label_text_font_size="0pt",
+            )
+            vplot.add_layout(color_bar, "right")
+
+        vplot.title.text = "Feature values per group"
+        vplot.xgrid.visible = False
+        vplot.ygrid.visible = False
+
+        set_xticks = list(range(0, len(labels) * 5, 5))
+        vplot.xaxis.ticker = set_xticks
+        samples_per_labels = {}
+        text_labels = []
+        for label in labels:
+            if label == "[  Subset A  ]":
+                samples_per_labels["[  Subset A  ]"] = str(len(hidden_checkbox_A.active))
+                text_labels.append(label + "\n ")
+            elif label == "[  Subset B  ]":
+                samples_per_labels["[  Subset B  ]"] = str(len(hidden_checkbox_B.active))
+                text_labels.append(label + "\n ")
+            elif label == "[  Rest  ]":
+                samples_per_labels["[  Rest  ]"] = str(len(adata) - len(hidden_checkbox_A.active))
+                text_labels.append(label + "\n ")
+            else:
+                lblsplit = label.split(">>yomix>>")
+                lbl = lblsplit[0]
+                lbl_elt = lblsplit[1]
+                samples_per_labels[label] = str(len(adata[adata.obs[lbl] == lbl_elt]))
+                text_labels.append(lbl + "\n" + lbl_elt)
+
+        vplot.xaxis.major_label_overrides = {
+            set_xticks[i]: text_labels[i] + "\n\n" + samples_per_labels[labels[i]] + "\nsamples" 
+            for i in range(len(set_xticks))
+        }
+
+        vplot.visible = True
+
+    refresh_violin(violins_bokeh_plot, mode="violin")
+    refresh_violin(heat_map, mode="heatmap")
 
     # # Normalization function for each gene
     # def normalize_data(data):

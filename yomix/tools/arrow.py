@@ -19,7 +19,8 @@ def arrow_function(
     sign_nr,
     sl_component1,
     sl_component2,
-    sl_component3
+    sl_component3,
+    label_sign
 ):
 
     arrow_clicks = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
@@ -252,6 +253,20 @@ def arrow_function(
                 for outp in outputs
             ]
             ms_sign.title = "Signature #" + str(sign_nr[0])
+
+            unique_labels = []
+            unique_labels.append(("[  Subset A  ]", "[  Subset A  ]"))
+            unique_labels.append(("[  Rest  ]", "[  Rest  ]"))
+            unique_labels += [
+                (lbl + ">>yomix>>" + lbl_elt, shrink_text(lbl + " > " + lbl_elt, 35)) for 
+                (lbl, lbl_elt) in ad.uns["all_labels"]]
+
+            # Update label_sign options
+            label_sign.options = unique_labels
+            label_sign.size = len(label_sign.options)
+            # finalize label_sign
+            label_sign.title = "Groups"
+            label_sign.value = ["[  Subset A  ]", "[  Rest  ]"]
 
     hidden_numeric_inputs[9].on_change(
         "value",
