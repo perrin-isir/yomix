@@ -91,10 +91,13 @@ def main():
                     (
                         obs_string, obs_numerical, points_bokeh_plot, violins_bokeh_plot, heat_map,
                         bt_slider_point_size, bt_hidden_slider_yaw, bt_toggle_anim, bt_slider_yaw, bt_slider_pitch,
-                        bt_slider_roll, resize_width_input, resize_height_input,
+                        bt_slider_roll, resize_width_input, resize_height_input, resize_width_input_bis, resize_height_input_bis,
                         source_rotmatrix_etc, div_sample_names, sample_search_input,
                         sl_component1, sl_component2, sl_component3
                     ) = yomix.plotting.main_figure(xd, embedding_key, 890, 390, "")
+
+                    resize_width_input_bis.visible = False
+                    resize_height_input_bis.visible = False
 
                     (
                         bt_A, toggle_A, hidden_checkbox_A, bt_B, toggle_B, 
@@ -121,7 +124,9 @@ def main():
                         resize_width_input,
                         hidden_legend_width,
                         hidden_checkbox_A,
-                        hidden_checkbox_B)
+                        hidden_checkbox_B,
+                        resize_width_input_bis, 
+                        resize_height_input_bis)
                     offset_label.visible = False
                     
                     (
@@ -180,16 +185,10 @@ def main():
                         TabPanel(child=heat_map, title="Heatmap")
                     ])
 
-                    div_color = bokeh.models.Div(
-                        height=50, height_policy="fixed", text="LYZ"
-                    )
-                    
                     p = (
                         bokeh.layouts.row(
                             bokeh.layouts.column(
                                 bt_select_embedding,
-                                bokeh.layouts.row(resize_height_input, 
-                                                  resize_width_input),
                                 bokeh.layouts.row(bt_A, toggle_A),
                                 bokeh.layouts.row(bt_B, toggle_B),
                                 bokeh.layouts.row(bt_nothing, bt_AplusB),
@@ -229,8 +228,13 @@ def main():
                                     )
                                 ),
                                 bokeh.layouts.column(
-                                    bokeh.layouts.row(points_bokeh_plot, div_color, align="end"),
-                                    bokeh.layouts.row(tabs, div_sample_names)
+                                    bokeh.layouts.row(
+                                        bokeh.layouts.column(resize_height_input, resize_width_input),
+                                        points_bokeh_plot),
+                                    bokeh.layouts.row(
+                                        bokeh.layouts.column(resize_height_input_bis, 
+                                                             resize_width_input_bis), 
+                                        tabs, div_sample_names)
                                 ),
                                 offset_label
                             ) if sl_component1 is not None else
@@ -253,8 +257,13 @@ def main():
                                         )
                                     ),
                                     bokeh.layouts.column(
-                                        bokeh.layouts.row(points_bokeh_plot, div_color, align="end"),
-                                        bokeh.layouts.row(tabs, div_sample_names)
+                                        bokeh.layouts.row(
+                                            bokeh.layouts.column(resize_height_input, resize_width_input),
+                                            points_bokeh_plot),
+                                        bokeh.layouts.row(
+                                            bokeh.layouts.column(resize_height_input_bis, 
+                                                                 resize_width_input_bis), 
+                                            tabs, div_sample_names)
                                     ),
                                     offset_label
                                 )

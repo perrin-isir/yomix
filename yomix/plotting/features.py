@@ -19,6 +19,8 @@ def color_by_feature_value(
     hidden_legend_width,
     hidden_checkbox_A,
     hidden_checkbox_B,
+    resize_w_input,
+    resize_h_input
 ):
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source
 
@@ -29,7 +31,7 @@ def color_by_feature_value(
     for i, featname in enumerate(adata.var_names):
         feature_dict[featname] = [i, feat_min[i], feat_max[i]]
 
-    def color_modif(stringval, htlc, rwi, hlw, label_stringval):
+    def color_modif(stringval, htlc, rwi, hlw, label_stringval, resize_w, resize_h):
         stringval_modif = ("  +  " + stringval).replace("  +    -  ", "  -  ").replace(
             "  +    +  ", "  +  "
         ).replace("  +  ", "§§§§§§§§§§  +  ").replace(
@@ -60,6 +62,8 @@ def color_by_feature_value(
                 points_bokeh_plot,
                 violins_bokeh_plot,
                 heat_map,
+                resize_w,
+                resize_h,
                 hidden_checkbox_A,
                 hidden_checkbox_B,
                 features=plot_var_features,
@@ -119,10 +123,23 @@ def color_by_feature_value(
                 custom_color_mapper = bokeh.models.LinearColorMapper(
                     palette=viridis_colors, low=0.0, high=1.0
                 )
+                
+                def simple_shrink(s_in, size):
+                    true_size = max(size, 3)
+                    if len(s_in) > true_size:
+                        new_s = ""
+                        l1 = true_size - 3
+                        new_s += s_in[:l1]
+                        new_s += "..."
+                    else:
+                        new_s = s_in
+                    return new_s
+
                 cbar = bokeh.models.ColorBar(
                     color_mapper=custom_color_mapper,
                     label_standoff=12,
                     ticker=bokeh.models.FixedTicker(ticks=[]),
+                    title = simple_shrink(stringval, 50),
                 )
                 points_bokeh_plot.add_layout(cbar, "right")
                 label_font_size = cbar.major_label_text_font_size
@@ -169,6 +186,8 @@ def color_by_feature_value(
             resize_width_input, 
             hidden_legend_width,
             offset_label.value,  # Include the current label value
+            resize_w_input,
+            resize_h_input
         ),
     )
 
@@ -181,6 +200,8 @@ def color_by_feature_value(
             resize_width_input,
             hidden_legend_width,
             new_label,  # Pass the new label value to color_modif
+            resize_w_input,
+            resize_h_input
         ),
     )
 
@@ -192,6 +213,8 @@ def plot_var(
     points_bokeh_plot,
     violins_bokeh_plot,
     heat_map,
+    resize_w,
+    resize_h,
     hidden_checkbox_A,
     hidden_checkbox_B,
     features,
@@ -234,35 +257,35 @@ def plot_var(
         x = kde(y)
         return x, y
 
-    def plot_violin_from_gene(xd, gene, labels, mode="violin"):
+    def plot_violin_from_feat(xd, feat, labels, mode="violin"):
         data_tmp = {"x": [], "y": [], "median_expr": []}
         step = 0
         labels_nr = len(labels)
         for label in labels:
             if label == "[  Subset A  ]":
-                data = xd[hidden_checkbox_A.active, gene].X.toarray().reshape(-1)
+                data = xd[hidden_checkbox_A.active, feat].X.toarray().reshape(-1)
                 if np.any(data):
                     median_expr = np.median(data)
             elif label == "[  Subset B  ]":
-                data = xd[hidden_checkbox_B.active, gene].X.toarray().reshape(-1)
+                data = xd[hidden_checkbox_B.active, feat].X.toarray().reshape(-1)
                 if np.any(data):
                     median_expr = np.median(data)
             elif label == "[  Rest  ]":
                 idx = np.arange(adata.n_obs)[
                     ~np.isin(np.arange(xd.n_obs), hidden_checkbox_A.active)
                 ]
-                data = xd[idx, gene].X.toarray().reshape(-1)
+                data = xd[idx, feat].X.toarray().reshape(-1)
                 if np.any(data):
                     median_expr = np.median(data)
             else:
                 lblsplit = label.split(">>yomix>>")
                 lbl = lblsplit[0]
                 lbl_elt = lblsplit[1]
-                data = xd[xd.obs[lbl] == lbl_elt, gene].X.toarray().reshape(-1)
+                data = xd[xd.obs[lbl] == lbl_elt, feat].X.toarray().reshape(-1)
                 if np.any(data):
-                    if xd.var['yomix_median_' + label][gene] < 0:
-                        xd.var.loc[gene, 'yomix_median_' + label] = np.median(data)
-                    median_expr = xd.var['yomix_median_' + label][gene]
+                    if xd.var['yomix_median_' + label][feat] < 0:
+                        xd.var.loc[feat, 'yomix_median_' + label] = np.median(data)
+                    median_expr = xd.var['yomix_median_' + label][feat]
             if np.any(data):
                 if mode == "violin":
                     x, y = get_kde(data)
@@ -292,8 +315,8 @@ def plot_var(
         else:
             labels = selected_labels
 
-        for gene in features:
-            tmp_dict = plot_violin_from_gene(adata, gene, labels, mode=mode)
+        for feat in features[::-1]:
+            tmp_dict = plot_violin_from_feat(adata, feat, labels, mode=mode)
             tmp_dict["y"] = [np.asarray(i) + step_yaxis for i in tmp_dict["y"]]
             for key in data_tmp.keys():
                 data_tmp[key].extend(tmp_dict[key])
@@ -304,7 +327,8 @@ def plot_var(
             set_yticks = [0.5 + 1.1 * i for i in range(len(features))]
             vplot.yaxis.ticker = set_yticks
             vplot.yaxis.major_label_overrides = {
-                set_yticks[i]: features[i] for i in range(len(features))
+                set_yticks[i]: features[
+                    len(features) - i - 1] for i in range(len(features))
             }
             vplot.yaxis.axis_label = ""
         else:
@@ -375,7 +399,10 @@ def plot_var(
     refresh_violin(violins_bokeh_plot, mode="violin")
     refresh_violin(heat_map, mode="heatmap")
 
-    # # Normalization function for each gene
+    resize_w.visible = True
+    resize_h.visible = True
+
+    # # Normalization function for each feat
     # def normalize_data(data):
     #     return (data - np.min(data)) / (np.max(data) - np.min(data) + 1e-6)
 
@@ -463,10 +490,10 @@ def plot_var(
     #     normalized_plot_array = np.empty_like(plot_array)
     #     for k, idx in enumerate(feature_indices_list_):
     #         print(f"Processing feature {features[k]} (index {idx})")
-    #         gene_data = [adata.X[i, idx] for i in list_samples]
+    #         feat_data = [adata.X[i, idx] for i in list_samples]
     #         # normalize the data here
-    #         gene_data = normalize_data(gene_data)
-    #         normalized_plot_array[k, :] = gene_data
+    #         feat_data = normalize_data(feat_data)
+    #         normalized_plot_array[k, :] = feat_data
 
     #     if normalized_plot_array.size == 0:
     #         print("No data available for the selected features and labels.")

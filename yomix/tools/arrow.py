@@ -119,7 +119,7 @@ def arrow_function(
         bokeh.models.NumericInput(mode="float", value=0.0) for _ in range(10)
     ]
 
-    tooltip=bokeh.models.Tooltip(content="Requires drawing an arrow with the Arrow Tool and setting the subset A", position="right")
+    tooltip=bokeh.models.Tooltip(content="Requires drawing an arrow with the Arrow Tool and setting the subset A  ", position="right")
     help_button_oriented = bokeh.models.HelpButton(tooltip=tooltip, margin=(3, 0, 3, 0))
     bt_sign_oriented = bokeh.models.Button(
         label="Compute oriented signature (A)", width=190, margin=(5, 0, 5, 5)

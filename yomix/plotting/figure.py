@@ -1291,9 +1291,10 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
     resize_width_input = bokeh.models.TextInput(
         value=str(points_bokeh_plot.width),
-        title="Resize width:",
+        title="Width:",
         name="resize_width",
-        width=112,
+        width=54,
+        margin = (5,0,5,0)
     )
     resize_width_input.js_on_change(
         "value",
@@ -1313,9 +1314,10 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
     resize_height_input = bokeh.models.TextInput(
         value=str(points_bokeh_plot.height),
-        title="Resize height:",
+        title="Height:",
         name="resize_height",
-        width=112,
+        width=54,
+        margin = (5,0,5,0)
     )
     resize_height_input.js_on_change(
         "value",
@@ -1369,20 +1371,67 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         new_fig.toolbar_location = "left"
         return new_fig
 
-    points_bokeh_plot_copy = copy_figure(
-        points_bokeh_plot, "Differential gene expression"
+    violin_plot = copy_figure(
+        points_bokeh_plot, "Violin plots"
     )
-    points_bokeh_plot_copy.visible = False
-    points_bokeh_plot_n = copy_figure(points_bokeh_plot, "Expression Level Plot")
-    points_bokeh_plot_n.visible = False
+    violin_plot.visible = False
+    heatmap_plot = copy_figure(points_bokeh_plot, "Heatmap")
+    heatmap_plot.visible = False
+
+
+    resize_width_input_bis = bokeh.models.TextInput(
+        value=str(points_bokeh_plot.width),
+        title="Width:",
+        name="resize_width_bis",
+        width=54,
+        margin = (5,0,5,0)
+    )
+    resize_width_input_bis.js_on_change(
+        "value",
+        bokeh.models.CustomJS(
+            args=dict(vp=violin_plot, hp=heatmap_plot),
+            code="""
+        var parsed_int = parseInt(this.value);
+        if (!isNaN(parsed_int)) {
+            vp.width = parsed_int;
+            hp.width = parsed_int;
+            vp.change.emit();
+            hp.width.emit();
+        }
+    """,
+        ),
+    )
+
+    resize_height_input_bis = bokeh.models.TextInput(
+        value=str(points_bokeh_plot.height),
+        title="Height:",
+        name="resize_height_bis",
+        width=54,
+        margin = (5,0,5,0)
+    )
+    resize_height_input_bis.js_on_change(
+        "value",
+        bokeh.models.CustomJS(
+            args=dict(vp=violin_plot, hp=heatmap_plot),
+            code="""
+        var parsed_int = parseInt(this.value);
+        if (!isNaN(parsed_int)) {
+            vp.height = parsed_int;
+            hp.height = parsed_int;
+            vp.change.emit();
+            hp.change.emit();
+        }
+    """,
+        ),
+    )
 
     if higher_dim:
         return (
             obs_string, 
             obs_numerical,
             points_bokeh_plot,
-            points_bokeh_plot_copy,
-            points_bokeh_plot_n,
+            violin_plot,
+            heatmap_plot,
             bt_slider_point_size,
             bt_hidden_slider_yaw,
             bt_toggle_anim,
@@ -1391,6 +1440,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             bt_slider_roll,
             resize_width_input,
             resize_height_input,
+            resize_width_input_bis,
+            resize_height_input_bis,
             source_rotmatrix_etc,
             div_sample_names,
             sample_search_input,
@@ -1403,8 +1454,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             obs_string, 
             obs_numerical,
             points_bokeh_plot,
-            points_bokeh_plot_copy,
-            points_bokeh_plot_n,
+            violin_plot,
+            heatmap_plot,
             bt_slider_point_size,
             bt_hidden_slider_yaw,
             bt_toggle_anim,
@@ -1413,6 +1464,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             bt_slider_roll,
             resize_width_input,
             resize_height_input,
+            resize_width_input_bis,
+            resize_height_input_bis,
             source_rotmatrix_etc,
             div_sample_names,
             sample_search_input,

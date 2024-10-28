@@ -421,7 +421,7 @@ def signature_buttons(
 
     label_signature.on_change("value", lambda attr, old, new: label_function(new))
 
-    tooltip1=bokeh.models.Tooltip(content="Requires setting the subset A", position="right")
+    tooltip1=bokeh.models.Tooltip(content="Requires setting the subset A  ", position="right")
     help_button1 = bokeh.models.HelpButton(tooltip=tooltip1, margin=(3, 0, 3, 0))
     bt_sign1 = bokeh.models.Button(label="Compute signature (A vs. rest)", width=190, margin=(5, 0, 5, 5))
 
@@ -436,7 +436,7 @@ def signature_buttons(
         )
     )
 
-    tooltip2=bokeh.models.Tooltip(content="Requires setting the subsets A and B", position="right")
+    tooltip2=bokeh.models.Tooltip(content="Requires setting the subsets A and B  ", position="right")
     help_button2 = bokeh.models.HelpButton(tooltip=tooltip2, margin=(3, 0, 3, 0))
     bt_sign2 = bokeh.models.Button(label="Compute signature (A vs. B)", width=190, margin=(5, 0, 5, 5))
 
