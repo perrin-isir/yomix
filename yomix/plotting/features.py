@@ -297,12 +297,19 @@ def plot_var(
                 data_tmp["y"].append(np.concatenate([y, y[::-1]]))
                 data_tmp["median_expr"].append(median_expr)
             else:
-                # line = np.linspace(step - 1, step + 1, 100)
-                bound = 2.5 - np.clip(0.01 * labels_nr, 0, 0.1)
-                line = np.linspace(step - bound, step + bound, 100)
-                data_tmp["x"].append(line)
-                data_tmp["y"].append([0 for i in line])
-                data_tmp["median_expr"].append(0)
+                if mode == "violin":
+                    # line = np.linspace(step - 1, step + 1, 100)
+                    bound = 2.5 - np.clip(0.01 * labels_nr, 0, 0.1)
+                    line = np.linspace(step - bound, step + bound, 100)
+                    data_tmp["x"].append(line)
+                    data_tmp["y"].append([0 for i in line])
+                    data_tmp["median_expr"].append(0)
+                else:
+                    x, y = np.ones(100), np.linspace(0,1,100)
+                    x = (2.5 - np.clip(0.01 * labels_nr, 0, 0.1)) * x / np.max(x)
+                    data_tmp["x"].append(np.concatenate([x, -x[::-1]]) + step)
+                    data_tmp["y"].append(np.concatenate([y, y[::-1]]))
+                    data_tmp["median_expr"].append(0)
             step += 5
         return data_tmp
 
@@ -390,7 +397,10 @@ def plot_var(
                 text_labels.append(lbl + "\n" + lbl_elt)
 
         vplot.xaxis.major_label_overrides = {
-            set_xticks[i]: text_labels[i] + "\n\n" + samples_per_labels[labels[i]] + "\nsamples" 
+            set_xticks[i]: (
+                text_labels[i] + "\n\n" + samples_per_labels[labels[i]] + "\nsamples" if int(samples_per_labels[labels[i]])>1 else
+                text_labels[i] + "\n\n" + samples_per_labels[labels[i]] + "\nsample"
+            ) 
             for i in range(len(set_xticks))
         }
 
