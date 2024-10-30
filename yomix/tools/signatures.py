@@ -35,7 +35,8 @@ def signature_buttons(
 
         denominator = (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)
         if denominator == 0:
-            return np.nan
+            # return np.nan
+            return 0.
 
         mcc = (tp * tn - fp * fn) / np.sqrt(denominator)
         return mcc
@@ -51,27 +52,30 @@ def signature_buttons(
         if sigma1 < 0.0 or sigma2 < 0.0:
             sys.exit("Error: negative standard deviation.")
 
-        if sigma2 == 0:
+        if sigma2 < 1e-8:
             sigma2 = 1e-8
 
-        if sigma1 == 0:
+        if sigma1 < 1e-8:
             sigma1 = 1e-8
 
-        if sigma1 == sigma2:
+        if np.abs(sigma1 - sigma2) < 1e-8:
             x = (mu1 + mu2) / 2
             return x, x
 
         else:
-            a = 1 / (2 * sigma1**2) - 1 / (2 * sigma2**2)
-            b = mu2 / (sigma2**2) - mu1 / (sigma1**2)
+            sig1square = sigma1**2
+            sig2square = sigma2**2
+            a = sig2square / 2 - sig1square / 2
+            b = sig1square * mu2 - sig2square * mu1
             c = (
-                mu1**2 / (2 * sigma1**2)
-                - mu2**2 / (2 * sigma2**2)
-                - np.log(sigma2)
-                + np.log(sigma1)
+                sig2square * mu1**2 / 2
+                - sig1square * mu2**2 / 2
+                - sig1square * sig2square * ( np.log(sigma2) - np.log(sigma1) )
             )
 
             discr = b**2 - 4 * a * c
+            if np.abs(discr) < 1e-8:
+                discr = 0.
             x1 = (-b + np.sqrt(discr)) / (2 * a)
             x2 = (-b - np.sqrt(discr)) / (2 * a)
 
@@ -106,6 +110,10 @@ def signature_buttons(
                 a1 = adata.X[obs_indices_B, i]
                 mu1 = a1.mean()
                 sigma1 = a1.std()
+            if sigma1 < 1e-8:
+                sigma1 = 1e-8
+            if sigma2 < 1e-8:
+                sigma2 = 1e-8
             dist_h = wasserstein_distance(mu1, sigma1, mu2, sigma2)
             mu1_list.append(mu1)  # mean on subset B or rest
             mu2_list.append(mu2)  # mean on subset A
@@ -126,8 +134,12 @@ def signature_buttons(
         target_size = 1000
         divisor = max((len(obs_indices_A) + len(rest_indices)) / target_size, 1.0)
 
-        size_A = max(int(len(obs_indices_A) / divisor), 1)
-        size_B = max(int(len(rest_indices) / divisor), 1)
+        size_A = max(int(len(obs_indices_A) / divisor), 
+                     min(len(obs_indices_A), 10)  # take at least 10 samples if possible
+                     )
+        size_B = max(int(len(rest_indices) / divisor), 
+                     min(len(rest_indices), 10)  # take at least 10 samples if possible
+                     )
         samples_A = np.random.choice(obs_indices_A, size_A, replace=False)
         samples_B = np.random.choice(rest_indices, size_B, replace=False)
         intersection = np.intersect1d(samples_A, samples_B)

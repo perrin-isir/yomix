@@ -222,35 +222,6 @@ def plot_var(
     equal_size=False,
 ):
 
-    # def var_indices(adata) -> dict:
-    #     vi_dict = {}
-    #     for i, s_id in enumerate(adata.var_names):
-    #         vi_dict[s_id] = i
-    #     return vi_dict
-
-
-    # def obs_indices(adata) -> dict:
-    #     oi_dict = {}
-    #     for i, s_id in enumerate(adata.obs_names):
-    #         oi_dict[s_id] = i
-    #     return oi_dict
-
-
-    # def all_labels(labels) -> np.ndarray:
-    #     return np.array(list(dict.fromkeys(labels)))
-
-
-    # def indices_per_label(labels) -> dict:
-    #     i_per_label = {}
-    #     for i, annot in enumerate(labels):
-    #         i_per_label.setdefault(annot, [])
-    #         i_per_label[annot].append(i)
-    #     return i_per_label
-
-    # adata.uns["all_labels"] = all_labels(adata.obs["label"])
-    # adata.uns["obs_indices_per_label"] = indices_per_label(adata.obs["label"])
-    # adata.uns["var_indices"] = var_indices(adata)
-
     def get_kde(data, grid_points=100):
         kde = gaussian_kde(data)
         y = np.linspace(np.min(data), np.max(data), grid_points)
@@ -258,7 +229,7 @@ def plot_var(
         return x, y
 
     def plot_violin_from_feat(xd, feat, labels, mode="violin"):
-        data_tmp = {"x": [], "y": [], "median_expr": []}
+        data_tmp = {"x": [], "y": [], "median_expr": [], "alpha": []}
         step = 0
         labels_nr = len(labels)
         for label in labels:
@@ -286,7 +257,7 @@ def plot_var(
                     if xd.var['yomix_median_' + label][feat] < 0:
                         xd.var.loc[feat, 'yomix_median_' + label] = np.median(data)
                     median_expr = xd.var['yomix_median_' + label][feat]
-            if np.any(data):
+            if np.any(data) and (len(data) > 1 or mode != "violin"):
                 if mode == "violin":
                     x, y = get_kde(data)
                 else:  # heatmap
@@ -296,6 +267,14 @@ def plot_var(
                 data_tmp["x"].append(np.concatenate([x, -x[::-1]]) + step)
                 data_tmp["y"].append(np.concatenate([y, y[::-1]]))
                 data_tmp["median_expr"].append(median_expr)
+                data_tmp["alpha"].append(1.0)
+            elif np.any(data) and len(data) == 1 and mode == "violin":
+                bound = 2.5 - np.clip(0.01 * labels_nr, 0, 0.1)
+                line = np.linspace(step - bound, step + bound, 100)
+                data_tmp["x"].append(line)
+                data_tmp["y"].append([median_expr for i in line])
+                data_tmp["median_expr"].append(median_expr)
+                data_tmp["alpha"].append(1.0)
             else:
                 if mode == "violin":
                     # line = np.linspace(step - 1, step + 1, 100)
@@ -304,17 +283,28 @@ def plot_var(
                     data_tmp["x"].append(line)
                     data_tmp["y"].append([0 for i in line])
                     data_tmp["median_expr"].append(0)
+                    data_tmp["alpha"].append(1.0)
                 else:
                     x, y = np.ones(100), np.linspace(0,1,100)
                     x = (2.5 - np.clip(0.01 * labels_nr, 0, 0.1)) * x / np.max(x)
                     data_tmp["x"].append(np.concatenate([x, -x[::-1]]) + step)
                     data_tmp["y"].append(np.concatenate([y, y[::-1]]))
                     data_tmp["median_expr"].append(0)
+                    data_tmp["alpha"].append(1.0)
             step += 5
+        bound = 2.5 - np.clip(0.01 * labels_nr, 0, 0.1)
+        data_tmp["x"].append(np.linspace(0 - bound, step - 5 + bound, 100))
+        data_tmp["y"].append(np.ones(100))
+        data_tmp["median_expr"].append(0)
+        data_tmp["alpha"].append(0.2)
+        data_tmp["x"].append(np.linspace(0 - bound, step - 5 + bound, 100))
+        data_tmp["y"].append(0. * np.ones(100))
+        data_tmp["median_expr"].append(0)
+        data_tmp["alpha"].append(0.2)
         return data_tmp
 
     def refresh_violin(vplot, mode="violin"):
-        data_tmp = {"x": [], "y": [], "median_expr": []}
+        data_tmp = {"x": [], "y": [], "median_expr": [], "alpha": []}
 
         step_yaxis = 0
         if selected_labels is None:
@@ -359,6 +349,7 @@ def plot_var(
                 fill_color=linear_cmap(
                     "median_expr", palette=Viridis256, low=0, high=1
                 ),
+                line_alpha="alpha",
                 line_color="black",
                 name="violins",
             )
@@ -411,211 +402,6 @@ def plot_var(
 
     resize_w.visible = True
     resize_h.visible = True
-
-    # # Normalization function for each feat
-    # def normalize_data(data):
-    #     return (data - np.min(data)) / (np.max(data) - np.min(data) + 1e-6)
-
-    # feature_indices_list_ = []
-    # for idx in features:
-    #     if isinstance(idx, (str, np.str_)):
-    #         assert "var_indices" in adata.uns
-    #         idx = adata.uns["var_indices"][idx]
-    #     feature_indices_list_.append(idx)
-
-
-    # # Prepare subset_indices and label_indices
-    # last_sample = 0
-    # set_xticks = []
-    # label_positions = {}
-    # label_indices_dict = {}
-
-    # if selected_labels is not None:
-        
-    #     total_samples= 0
-        
-    #     for x,label in enumerate(selected_labels):
-    #         if label == "[  Subset A  ]":
-    #             current_samples = adata.obs.index[hidden_checkbox_A.active].tolist()
-    #             label_indices_dict[label]=current_samples
-    #         elif label == "[  Subset B  ]":
-    #             current_samples = adata.obs.index[hidden_checkbox_B.active].tolist()
-    #             label_indices_dict[label]=current_samples
-    #         elif label == "[  Rest  ]":
-    #             rest_indices = list(set(range(adata.n_obs)) - set(hidden_checkbox_A.active))
-    #             current_samples = adata.obs.index[rest_indices].tolist()
-    #             label_indices_dict[label]=current_samples
-    #         else:
-    #             # Handle standard labels
-                
-    #             current_samples = adata.obs.index[adata.obs["label"] == label].tolist()
-    #             label_indices_dict[label]=current_samples
-    #         # Skip labels with no samples
-    #         if len(current_samples) == 0:
-    #             continue
-
-    #         # Set label_positions using total_samples for mid-point calculation later
-    #         label_positions[label] = list(range(total_samples, total_samples + len(label_indices_dict[label])))
-    #         total_samples += len(label_indices_dict[label])
-         
-
-    #     # Generate subset_indices from label_indices_dict
-    #     subset_indices_names = [i for label in selected_labels for i in label_indices_dict[label]]
-    #     subset_indices = adata.obs.index.get_indexer(subset_indices_names)
-    #     xsize = len(subset_indices)
-        
-    # else:
-    #     xsize = adata.n_obs
-    #     subset_indices = None
-
-
-    # if xsize == 0:
-    #     print("No data selected for the given labels or feature combination.")
-    #     return  # Exit the function if no data is available
-
-    # if "all_labels" not in adata.uns:
-    #     plot_array = np.empty((len(features), xsize))
-    #     for k, idx in enumerate(feature_indices_list_):
-    #         plot_array[k, :] = [adata.X[i, idx] for i in range(adata.n_obs)]
-    # else:
-    #     (
-    #         list_samples,
-    #         set_xticks,
-    #         label_to_samples_dict,
-    #         set_xticks_text,
-    #         boundaries,
-    #     ) = _samples_by_labels(
-    #         adata,
-    #         sort_annot=True,
-    #         subset_indices=subset_indices,
-    #         equal_size=equal_size,
-    #     )
-    #     if len(list_samples) == 0:
-    #         print("No samples available after filtering by labels.")
-    #         return
-
-    #     new_adata = adata[list_samples].copy()
-    #     labels = new_adata.obs["label"].unique()
-    #     plot_array = np.empty((len(features), len(list_samples)))
-    #     normalized_plot_array = np.empty_like(plot_array)
-    #     for k, idx in enumerate(feature_indices_list_):
-    #         print(f"Processing feature {features[k]} (index {idx})")
-    #         feat_data = [adata.X[i, idx] for i in list_samples]
-    #         # normalize the data here
-    #         feat_data = normalize_data(feat_data)
-    #         normalized_plot_array[k, :] = feat_data
-
-    #     if normalized_plot_array.size == 0:
-    #         print("No data available for the selected features and labels.")
-    #         return  # Exit the function if plot_array is empty
-
-    # # HEATMAP
-    # # Clear previous renderers
-    # heat_map.renderers = []
-
-    # y_positions = {feature: i + 0.5 for i, feature in enumerate(features)}
-    # y = [y_positions[feature] for feature in features for _ in range(len(labels))]
-
-    # color_mapper = LinearColorMapper(palette="Viridis256", low=0, high=1)
-
-    # # Prepare data for Rect glyphs
-    # x = np.repeat(
-    #     np.arange(normalized_plot_array.shape[1]), normalized_plot_array.shape[0]
-    # )
-    # y = np.tile(
-    #     np.arange(normalized_plot_array.shape[0]), normalized_plot_array.shape[1]
-    # )
-    # colors = [
-    #     color_mapper.palette[int(val * (len(color_mapper.palette) - 1))]
-    #     for val in normalized_plot_array.T.flatten()
-    # ]
-
-    # # Add the Rect glyphs to the plot using the x and y coordinates
-    # heat_map.rect(x=x + 0.5, y=y + 0.5, width=1, height=1, color=colors)
-    # heat_map.right = []  # Clear existing color bars
-    # color_bar = ColorBar(color_mapper=color_mapper, label_standoff=12, location=(0, 0))
-    # heat_map.add_layout(color_bar, "right")
-
-    # heat_map.yaxis.ticker = list(y_positions.values())
-    # heat_map.yaxis.major_label_overrides = {v: k for k, v in y_positions.items()}
-
-    # set_xticks = []
-    # label_positions = {}
-    # last_sample = 0
-
-    # if len(label_indices_dict)>0:
-
-    #     # Update the heatmap with the new ticks and labels
-    #     for ab in label_indices_dict.keys():
-    #         if len(label_indices_dict) == 1:  # If there's only one label
-    #             midpoint = (
-    #                 len(label_indices_dict[ab]) / 2
-    #             )  # Calculate the midpoint of the range of samples
-    #             heat_map.xaxis.ticker = [midpoint]
-    #             heat_map.xaxis.major_label_overrides = {
-    #                 midpoint: ab
-    #             }  # Assign the label to this position
-    #             heat_map.visible = True
-    #             return
-    #         else:
-    #             current_samples = list_samples[
-    #                 last_sample : last_sample + len(label_indices_dict[ab])
-    #             ]
-    #             mid_point = last_sample + len(current_samples) / 2
-    #             set_xticks.append(mid_point)
-    #             label_positions[mid_point] = ab
-
-    #             last_sample += len(current_samples)
-
-    #     heat_map.xaxis.ticker = set_xticks
-    #     heat_map.xaxis.major_label_overrides = label_positions
-    #     heat_map.xaxis.major_label_orientation = 1.0
-    #     heat_map.visible = True
-
-    ### NEW ATTEMPT FOR HEATMAPS
-
-        # # Create evenly spaced x-ticks for each label
-        # # num_labels = len(label_to_samples_dict.keys())
-        # num_labels = len(labels)
-        # print("label_to_samples", label_to_samples_dict)
-        # set_xticks = list(range(0, num_labels, 1))
-
-        # heat_map.renderers.clear()  
-        # heat_map.right = []         
-
-
-        # heat_map.xaxis.ticker = set_xticks
-
-    
-        # label_keys = list(labels)
-        # major_label_overrides_dict = {set_xticks[i]: label_keys[i] for i in range(num_labels)}
-        # heat_map.xaxis.major_label_overrides = major_label_overrides_dict
-
-        # # Set the orientation of x-axis labels
-        # heat_map.xaxis.major_label_orientation = 1.0
-        # heat_map.x_range.start = 0
-        # print("set_xticks", set_xticks)
-        # heat_map.x_range.end = max(set_xticks)  
-        # color_mapper = LinearColorMapper(palette="Viridis256", low=0, high=1)
-        # x = np.repeat(
-        #     np.arange(normalized_plot_array.shape[1]), normalized_plot_array.shape[0]
-        # )
-        # y = np.tile(
-        #     np.arange(normalized_plot_array.shape[0]), normalized_plot_array.shape[1]
-        # )
-        # colors = [
-        #     color_mapper.palette[int(val * (len(color_mapper.palette) - 1))]
-        #     for val in normalized_plot_array.T.flatten()
-        # ]
-
-        # heat_map.rect(x=x , y=y, width=1, height=1, color=colors)
-
-        # color_bar = ColorBar(color_mapper=color_mapper, label_standoff=12, location=(0, 0))
-        # heat_map.add_layout(color_bar, "right")
-        # y_positions = {feature: i  for i, feature in enumerate(features)}
-        # heat_map.yaxis.ticker = list(y_positions.values())
-        # heat_map.yaxis.major_label_overrides = {v: k for k, v in y_positions.items()}
-        # heat_map.visible = True
 
 def _samples_by_labels(adata, sort_annot=False, subset_indices=None, equal_size=False):
 
