@@ -25,21 +25,29 @@ from bokeh.server.server import Server
 from bokeh.models import TabPanel, Tabs
 from pathlib import Path
 import sys
+import argparse
 
 __all__ = (
     'main',
 )
 
 def main():
-    if len(sys.argv) < 2:
-        sys.exit("Missing argument (input file).")
 
-    argument = sys.argv[1]
+    parser = argparse.ArgumentParser(description="Yomix command-line tool")
 
-    if argument == "--example":
+    parser.add_argument('file', type=str, nargs='?', default=None, help='the .ha5d file to open')
+    parser.add_argument('--subsampling', type=int, help='randomly subsample the dataset to a maximum number of observations (=SUBSAMPLING)')
+    parser.add_argument('--example', action='store_true', help='use the example dataset')
+
+    args = parser.parse_args()
+
+    argument = args.example
+
+    if argument:
         filearg = Path(__file__).parent / "example" / "pbmc.h5ad"
     else:
-        filearg = Path(argument)
+        assert args.file is not None, "yomix: error: the following arguments are required: file"
+        filearg = Path(args.file)
     
     if filearg.exists():
         xd = anndata.read_h5ad(filearg.absolute())        
@@ -51,6 +59,13 @@ def main():
                 return x
 
         xd.X = np.asarray(_to_dense(xd.X))
+
+        if args.subsampling is not None:
+            if xd.n_obs > args.subsampling:
+                selected_obs = np.random.choice(xd.n_obs, args.subsampling, replace=False)
+                selected_obs.sort()
+                xd = xd[selected_obs].copy()
+
         min_norm = np.min(xd.X, axis=0)
         max_norm = np.max(xd.X, axis=0)
         xd.X = np.divide(xd.X - min_norm, max_norm - min_norm + 1e-8)
@@ -62,11 +77,22 @@ def main():
             for elt in labels:
                 xd.var['yomix_median_' + str(lbl) + ">>yomix>>" + str(elt)] = -np.ones(xd.n_vars)
         xd.uns["all_labels"] = all_labels_list
-        
+
+        def var_mean_values(adata) -> np.ndarray:
+            return np.squeeze(np.asarray(np.mean(adata.X, axis=0)))
+
+        def var_standard_deviations(adata) -> np.ndarray:
+            return np.squeeze(np.asarray(np.std(adata.X, axis=0)))
+
+        xd.var["mean_values_local_yomix"] = var_mean_values(xd)
+        xd.var["standard_deviations_local_yomix"] = var_standard_deviations(xd)
+        xd.var_names_make_unique()
+        xd.obs_names_make_unique()
+
         def modify_doc(doc):
 
             def build_figure(embedding_key):
-
+                
                 if embedding_key is None:
                     embedding_key = ""
 
@@ -304,8 +330,6 @@ def main():
                 anim = doc.get_model_by_name("root").select_one(dict(name="bt_toggle_anim"))
                 #print(slider)
                 if slider is not None and anim.active:
-                    val = slider.value
-                    #print(val)
                     slider.value = 10
             doc.add_periodic_callback(f, 100)
 

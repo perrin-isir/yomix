@@ -8,17 +8,6 @@ def signature_buttons(
     adata, offset_text_feature_color, offset_label, hidden_checkbox_A, hidden_checkbox_B
 ):
 
-    def var_mean_values(adata) -> np.ndarray:
-        return np.squeeze(np.asarray(np.mean(adata.X, axis=0)))
-
-    def var_standard_deviations(adata) -> np.ndarray:
-        return np.squeeze(np.asarray(np.std(adata.X, axis=0)))
-
-    adata.var["mean_values_local_yomix"] = var_mean_values(adata)
-    adata.var["standard_deviations_local_yomix"] = var_standard_deviations(adata)
-    adata.var_names_make_unique()
-    adata.obs_names_make_unique()
-
     def matthews_coef(confusion_m):
         tp = confusion_m[0, 0]
         fp = confusion_m[0, 1]

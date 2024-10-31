@@ -45,7 +45,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     for i in range(len(data["x"])):
         data["index"][i] = i
         data["name"][i] = adata.obs_names[i]
-    tooltip_list.append("index")
+    # tooltip_list.append("index")
     tooltip_list.append("name")
     for key in adata.obs.keys():
         if key not in ("name", "index"):
@@ -364,7 +364,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     )
 
     bt_toggle_anim = bokeh.models.Toggle(
-        label="Animation: ON", width=100, active=True,
+        label="Animation: OFF", width=100, active=False,
         name="bt_toggle_anim"
     )
 

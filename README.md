@@ -4,8 +4,6 @@
 
 Yomix is an interactive tool to explore low dimensional embeddings of omics data.
 
-It is currently in beta version.
-
 ## INSTALL
 
     pip install yomix
@@ -23,6 +21,14 @@ To use it on your own files:
 where `yourfile.h5ad` is an anndata object saved in h5ad format (see
  [anndata - Annotated data](https://anndata.readthedocs.io/en/latest/index.html#)), 
  with at least one `.obsm` field of dimension 2 or more.
+
+When there are many samples in the dataset, the --subsampling option can be passed to improve reactiveness:
+
+    yomix --subsampling N yourfile.h5ad
+
+It randomly subsamples the dataset to a maximum number of N samples. For example:
+
+    yomix --subsampling 5000 yourfile.h5ad
 
 
 <details><summary> <b>Other option: INSTALL FROM SOURCE</b> </summary><p>

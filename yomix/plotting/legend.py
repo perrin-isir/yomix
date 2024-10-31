@@ -114,7 +114,10 @@ def setup_legend(
                 ]
                 legend_list = []
                 legend_width = 0
+
+                iteration = 0
                 for itvl in list_intervals:
+                    iteration += 1
                     items_list = [
                         (
                             list_vals[i],
@@ -151,15 +154,16 @@ def setup_legend(
                         legend.items[i].renderers[0].js_on_change("change:muted", cb_js)
                     bokeh_plot.add_layout(legend, "right")
                     legend.label_text_font = "Helvetica"
-                    label_font_size = legend.label_text_font_size
-                    # It's a string like '13px' so need to int-ify it:
-                    label_font_size = int(label_font_size[:-2])
-                    font = ImageFont.truetype(
-                        (Path(__file__).parent.parent / "assets" / "helvetica.ttf")
-                        .absolute()
-                        .as_posix(),
-                        label_font_size,
-                    )
+                    if iteration == 1:
+                        label_font_size = legend.label_text_font_size
+                        # It's a string like '13px' so need to int-ify it:
+                        label_font_size = int(label_font_size[:-2])
+                        font = ImageFont.truetype(
+                            (Path(__file__).parent.parent / "assets" / "helvetica.ttf")
+                            .absolute()
+                            .as_posix(),
+                            label_font_size,
+                        )
                     all_label_width = [
                         font.getlength(x.label["value"]) for x in legend.items
                     ]
