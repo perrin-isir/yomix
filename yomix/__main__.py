@@ -1,4 +1,4 @@
-''' Enable execution of the "yomix" command line program with the ``-m``
+""" Enable execution of the "yomix" command line program with the ``-m``
 switch. For example:
 
 .. code-block:: sh
@@ -11,7 +11,7 @@ is equivalent to
 
     yomix myfile.h5ad
 
-'''
+"""
 
 import yomix
 import numpy as np
@@ -24,20 +24,27 @@ from bokeh.application import Application
 from bokeh.server.server import Server
 from bokeh.models import TabPanel, Tabs
 from pathlib import Path
-import sys
 import argparse
 
-__all__ = (
-    'main',
-)
+__all__ = ("main",)
+
 
 def main():
 
     parser = argparse.ArgumentParser(description="Yomix command-line tool")
 
-    parser.add_argument('file', type=str, nargs='?', default=None, help='the .ha5d file to open')
-    parser.add_argument('--subsampling', type=int, help='randomly subsample the dataset to a maximum number of observations (=SUBSAMPLING)')
-    parser.add_argument('--example', action='store_true', help='use the example dataset')
+    parser.add_argument(
+        "file", type=str, nargs="?", default=None, help="the .ha5d file to open"
+    )
+    parser.add_argument(
+        "--subsampling",
+        type=int,
+        help="randomly subsample the dataset to a maximum number of observations "
+        "(=SUBSAMPLING)",
+    )
+    parser.add_argument(
+        "--example", action="store_true", help="use the example dataset"
+    )
 
     args = parser.parse_args()
 
@@ -46,11 +53,13 @@ def main():
     if argument:
         filearg = Path(__file__).parent / "example" / "pbmc.h5ad"
     else:
-        assert args.file is not None, "yomix: error: the following arguments are required: file"
+        assert (
+            args.file is not None
+        ), "yomix: error: the following arguments are required: file"
         filearg = Path(args.file)
-    
+
     if filearg.exists():
-        xd = anndata.read_h5ad(filearg.absolute())        
+        xd = anndata.read_h5ad(filearg.absolute())
 
         def _to_dense(x):
             if issparse(x):
@@ -62,7 +71,9 @@ def main():
 
         if args.subsampling is not None:
             if xd.n_obs > args.subsampling:
-                selected_obs = np.random.choice(xd.n_obs, args.subsampling, replace=False)
+                selected_obs = np.random.choice(
+                    xd.n_obs, args.subsampling, replace=False
+                )
                 selected_obs.sort()
                 xd = xd[selected_obs].copy()
 
@@ -75,7 +86,9 @@ def main():
             labels = np.array(list(dict.fromkeys(xd.obs[str(lbl)])))
             all_labels_list += [(str(lbl), str(elt)) for elt in labels]
             for elt in labels:
-                xd.var['yomix_median_' + str(lbl) + ">>yomix>>" + str(elt)] = -np.ones(xd.n_vars)
+                xd.var["yomix_median_" + str(lbl) + ">>yomix>>" + str(elt)] = -np.ones(
+                    xd.n_vars
+                )
         xd.uns["all_labels"] = all_labels_list
 
         def var_mean_values(adata) -> np.ndarray:
@@ -92,7 +105,7 @@ def main():
         def modify_doc(doc):
 
             def build_figure(embedding_key):
-                
+
                 if embedding_key is None:
                     embedding_key = ""
 
@@ -102,11 +115,11 @@ def main():
                         list_ok_embed_keys.append(k)
 
                 bt_select_embedding = bokeh.models.Select(
-                    title="Select embedding (.obsm field)", 
+                    title="Select embedding (.obsm field)",
                     value=embedding_key,
-                    width=235, 
-                    options=[(k, k) for k in list_ok_embed_keys], 
-                    name="bt_select_embedding"
+                    width=235,
+                    options=[(k, k) for k in list_ok_embed_keys],
+                    name="bt_select_embedding",
                 )
 
                 if embedding_key != "":
@@ -115,46 +128,73 @@ def main():
                     assert embedding_size > 1
 
                     (
-                        obs_string, obs_numerical, points_bokeh_plot, violins_bokeh_plot, heat_map,
-                        bt_slider_point_size, bt_hidden_slider_yaw, bt_toggle_anim, bt_slider_yaw, bt_slider_pitch,
-                        bt_slider_roll, resize_width_input, resize_height_input, resize_width_input_bis, resize_height_input_bis,
-                        source_rotmatrix_etc, div_sample_names, sample_search_input,
-                        sl_component1, sl_component2, sl_component3
+                        obs_string,
+                        obs_numerical,
+                        points_bokeh_plot,
+                        violins_bokeh_plot,
+                        heat_map,
+                        bt_slider_point_size,
+                        bt_hidden_slider_yaw,
+                        bt_toggle_anim,
+                        bt_slider_yaw,
+                        bt_slider_pitch,
+                        bt_slider_roll,
+                        resize_width_input,
+                        resize_height_input,
+                        resize_width_input_bis,
+                        resize_height_input_bis,
+                        source_rotmatrix_etc,
+                        div_sample_names,
+                        sample_search_input,
+                        sl_component1,
+                        sl_component2,
+                        sl_component3,
                     ) = yomix.plotting.main_figure(xd, embedding_key, 890, 390, "")
 
                     resize_width_input_bis.visible = False
                     resize_height_input_bis.visible = False
 
                     (
-                        bt_A, toggle_A, hidden_checkbox_A, bt_B, toggle_B, 
-                        hidden_checkbox_B, bt_AplusB, bt_nothing
-                    ) = yomix.tools.subset_buttons(points_bokeh_plot, 
-                                                  source_rotmatrix_etc)
-
-                    (
-                        select_color_by,
-                        hidden_text_label_column,
-                        hidden_legend_width) = yomix.plotting.setup_legend(
-                            points_bokeh_plot,
-                            obs_string, obs_numerical,
-                            source_rotmatrix_etc,
-                            resize_width_input)
-
-                    offset_text_feature_color, offset_label = yomix.plotting.color_by_feature_value(
-                        points_bokeh_plot,
-                        violins_bokeh_plot,
-                        heat_map,
-                        xd,
-                        select_color_by,
-                        hidden_text_label_column,
-                        resize_width_input,
-                        hidden_legend_width,
+                        bt_A,
+                        toggle_A,
                         hidden_checkbox_A,
+                        bt_B,
+                        toggle_B,
                         hidden_checkbox_B,
-                        resize_width_input_bis, 
-                        resize_height_input_bis)
+                        bt_AplusB,
+                        bt_nothing,
+                    ) = yomix.tools.subset_buttons(
+                        points_bokeh_plot, source_rotmatrix_etc
+                    )
+
+                    (select_color_by, hidden_text_label_column, hidden_legend_width) = (
+                        yomix.plotting.setup_legend(
+                            points_bokeh_plot,
+                            obs_string,
+                            obs_numerical,
+                            source_rotmatrix_etc,
+                            resize_width_input,
+                        )
+                    )
+
+                    offset_text_feature_color, offset_label = (
+                        yomix.plotting.color_by_feature_value(
+                            points_bokeh_plot,
+                            violins_bokeh_plot,
+                            heat_map,
+                            xd,
+                            select_color_by,
+                            hidden_text_label_column,
+                            resize_width_input,
+                            hidden_legend_width,
+                            hidden_checkbox_A,
+                            hidden_checkbox_B,
+                            resize_width_input_bis,
+                            resize_height_input_bis,
+                        )
+                    )
                     offset_label.visible = False
-                    
+
                     (
                         bt_sign1,
                         bt_sign2,
@@ -165,11 +205,16 @@ def main():
                         sign_nr,
                         label_signature,
                     ) = yomix.tools.signature_buttons(
-                            xd, offset_text_feature_color, offset_label,
-                            hidden_checkbox_A, hidden_checkbox_B)
+                        xd,
+                        offset_text_feature_color,
+                        offset_label,
+                        hidden_checkbox_A,
+                        hidden_checkbox_B,
+                    )
 
                     bt_open_link = yomix.tools.gene_query_button(
-                        offset_text_feature_color)
+                        offset_text_feature_color
+                    )
 
                     bt_sign3, help3 = yomix.tools.arrow_function(
                         points_bokeh_plot,
@@ -187,7 +232,7 @@ def main():
                         sl_component1,
                         sl_component2,
                         sl_component3,
-                        label_signature
+                        label_signature,
                     )
 
                     c1div = bokeh.models.Div(text="X axis:")
@@ -206,104 +251,116 @@ def main():
                     heat_map.toolbar.logo = None
                     heat_map.toolbar_location = None
 
-                    tabs = Tabs(tabs=[
-                        TabPanel(child=violins_bokeh_plot, title="Violin plots"),
-                        TabPanel(child=heat_map, title="Heatmap")
-                    ])
+                    tabs = Tabs(
+                        tabs=[
+                            TabPanel(child=violins_bokeh_plot, title="Violin plots"),
+                            TabPanel(child=heat_map, title="Heatmap"),
+                        ]
+                    )
 
-                    p = (
-                        bokeh.layouts.row(
+                    p = bokeh.layouts.row(
+                        bokeh.layouts.column(
+                            bt_select_embedding,
+                            bokeh.layouts.row(bt_A, toggle_A),
+                            bokeh.layouts.row(bt_B, toggle_B),
+                            bokeh.layouts.row(bt_nothing, bt_AplusB),
+                            bokeh.layouts.row(bt_sign1, help1),
+                            bokeh.layouts.row(bt_sign2, help2),
+                            bokeh.layouts.row(bt_sign3, help3),
+                            multiselect_signature,
+                            label_signature,
+                            div_signature_list,
+                        ),
+                        (
                             bokeh.layouts.column(
-                                bt_select_embedding,
-                                bokeh.layouts.row(bt_A, toggle_A),
-                                bokeh.layouts.row(bt_B, toggle_B),
-                                bokeh.layouts.row(bt_nothing, bt_AplusB),
-                                bokeh.layouts.row(bt_sign1, help1),
-                                bokeh.layouts.row(bt_sign2, help2),
-                                bokeh.layouts.row(bt_sign3, help3),
-                                multiselect_signature,
-                                label_signature,
-                                div_signature_list,
-                            ),
-                            (bokeh.layouts.column(
                                 bokeh.layouts.row(
+                                    bokeh.layouts.column(c1div, c2div, c3div),
                                     bokeh.layouts.column(
-                                        c1div, c2div, c3div
+                                        sl_component1, sl_component2, sl_component3
                                     ),
-                                    bokeh.layouts.column(
-                                        sl_component1,
-                                        sl_component2,
-                                        sl_component3
-                                    )
                                 ),
                                 bokeh.layouts.row(
                                     bokeh.layouts.row(
                                         bokeh.layouts.column(
                                             bt_slider_roll,
                                             bt_slider_yaw,
-                                            bt_toggle_anim),
+                                            bt_toggle_anim,
+                                        ),
                                         bt_slider_pitch,
-                                        bt_slider_point_size),
+                                        bt_slider_point_size,
+                                    ),
                                     bokeh.layouts.column(
                                         bokeh.layouts.row(
-                                            select_color_by,
-                                            sample_search_input),
+                                            select_color_by, sample_search_input
+                                        ),
                                         bokeh.layouts.row(
-                                            offset_text_feature_color,
-                                            bt_open_link),
-                                    )
+                                            offset_text_feature_color, bt_open_link
+                                        ),
+                                    ),
                                 ),
                                 bokeh.layouts.column(
                                     bokeh.layouts.row(
-                                        bokeh.layouts.column(resize_height_input, resize_width_input),
-                                        points_bokeh_plot),
-                                    bokeh.layouts.row(
-                                        bokeh.layouts.column(resize_height_input_bis, 
-                                                             resize_width_input_bis), 
-                                        tabs, div_sample_names)
-                                ),
-                                offset_label
-                            ) if sl_component1 is not None else
-                                bokeh.layouts.column(
-                                    bokeh.layouts.row(
-                                        bokeh.layouts.row(
-                                            bokeh.layouts.column(
-                                                bt_slider_roll,
-                                                bt_slider_yaw,
-                                                bt_toggle_anim),
-                                            bt_slider_pitch,
-                                            bt_slider_point_size),
                                         bokeh.layouts.column(
-                                            bokeh.layouts.row(
-                                                select_color_by,
-                                                sample_search_input),
-                                            bokeh.layouts.row(
-                                                offset_text_feature_color,
-                                                bt_open_link),
-                                        )
+                                            resize_height_input, resize_width_input
+                                        ),
+                                        points_bokeh_plot,
+                                    ),
+                                    bokeh.layouts.row(
+                                        bokeh.layouts.column(
+                                            resize_height_input_bis,
+                                            resize_width_input_bis,
+                                        ),
+                                        tabs,
+                                        div_sample_names,
+                                    ),
+                                ),
+                                offset_label,
+                            )
+                            if sl_component1 is not None
+                            else bokeh.layouts.column(
+                                bokeh.layouts.row(
+                                    bokeh.layouts.row(
+                                        bokeh.layouts.column(
+                                            bt_slider_roll,
+                                            bt_slider_yaw,
+                                            bt_toggle_anim,
+                                        ),
+                                        bt_slider_pitch,
+                                        bt_slider_point_size,
                                     ),
                                     bokeh.layouts.column(
                                         bokeh.layouts.row(
-                                            bokeh.layouts.column(resize_height_input, resize_width_input),
-                                            points_bokeh_plot),
+                                            select_color_by, sample_search_input
+                                        ),
                                         bokeh.layouts.row(
-                                            bokeh.layouts.column(resize_height_input_bis, 
-                                                                 resize_width_input_bis), 
-                                            tabs, div_sample_names)
+                                            offset_text_feature_color, bt_open_link
+                                        ),
                                     ),
-                                    offset_label
-                                )
-                            ),
-                        bt_hidden_slider_yaw
-                        )
+                                ),
+                                bokeh.layouts.column(
+                                    bokeh.layouts.row(
+                                        bokeh.layouts.column(
+                                            resize_height_input, resize_width_input
+                                        ),
+                                        points_bokeh_plot,
+                                    ),
+                                    bokeh.layouts.row(
+                                        bokeh.layouts.column(
+                                            resize_height_input_bis,
+                                            resize_width_input_bis,
+                                        ),
+                                        tabs,
+                                        div_sample_names,
+                                    ),
+                                ),
+                                offset_label,
+                            )
+                        ),
+                        bt_hidden_slider_yaw,
                     )
-                
+
                 else:
-                    p = (
-                        bokeh.layouts.row(
-                            bt_select_embedding
-                        )
-                    )
+                    p = bokeh.layouts.row(bt_select_embedding)
 
                 p.name = "root"
                 return p
@@ -312,35 +369,38 @@ def main():
                 doc.clear()
                 p_new = build_figure(new)
                 p_new.select_one(dict(name="bt_select_embedding")).on_change(
-                    "value",
-                    lambda attr, old, new: reset_figure(new)
+                    "value", lambda attr, old, new: reset_figure(new)
                 )
                 doc.add_root(p_new)
 
             p_0 = build_figure(None)
             p_0.select_one(dict(name="bt_select_embedding")).on_change(
-                "value",
-                lambda attr, old, new: reset_figure(new)
+                "value", lambda attr, old, new: reset_figure(new)
             )
 
             doc.add_root(p_0)
 
             def f():
-                slider = doc.get_model_by_name("root").select_one(dict(name="bt_hidden_slider_yaw"))
-                anim = doc.get_model_by_name("root").select_one(dict(name="bt_toggle_anim"))
-                #print(slider)
+                slider = doc.get_model_by_name("root").select_one(
+                    dict(name="bt_hidden_slider_yaw")
+                )
+                anim = doc.get_model_by_name("root").select_one(
+                    dict(name="bt_toggle_anim")
+                )
+                # print(slider)
                 if slider is not None and anim.active:
                     slider.value = 10
+
             doc.add_periodic_callback(f, 100)
 
         io_loop = IOLoop.current()
 
         bokeh_app = Application(FunctionHandler(modify_doc))
 
-        server = Server({'/': bokeh_app}, io_loop=io_loop)
+        server = Server({"/": bokeh_app}, io_loop=io_loop)
         server.start()
 
-        print('Opening Yomix on http://localhost:5006/\n')
+        print("Opening Yomix on http://localhost:5006/\n")
 
         io_loop.add_callback(server.show, "/")
         io_loop.start()

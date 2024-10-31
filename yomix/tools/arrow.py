@@ -20,7 +20,7 @@ def arrow_function(
     sl_component1,
     sl_component2,
     sl_component3,
-    label_sign
+    label_sign,
 ):
 
     arrow_clicks = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
@@ -56,8 +56,7 @@ def arrow_function(
     hidden_toggle = bokeh.models.Toggle(name="hidden_toggle", active=False)
 
     arrow_tool = bokeh.models.CustomAction(
-        description="Arrow Tool: click once for the start, twice for the end"
-                    "",
+        description="Arrow Tool: click once for the start, twice for the end" "",
         icon=(Path(__file__).parent.parent / "assets" / "arrow.png").absolute(),
         callback=bokeh.models.CustomJS(
             args=dict(arr=arrow, hidden_t=hidden_toggle, btta=bt_toggle_anim),
@@ -119,7 +118,11 @@ def arrow_function(
         bokeh.models.NumericInput(mode="float", value=0.0) for _ in range(10)
     ]
 
-    tooltip=bokeh.models.Tooltip(content="Requires drawing an arrow with the Arrow Tool and setting the subset A  ", position="right")
+    tooltip = bokeh.models.Tooltip(
+        content="Requires drawing an arrow with the Arrow Tool "
+        "and setting the subset A  ",
+        position="right",
+    )
     help_button_oriented = bokeh.models.HelpButton(tooltip=tooltip, margin=(3, 0, 3, 0))
     bt_sign_oriented = bokeh.models.Button(
         label="Compute oriented signature (A)", width=190, margin=(5, 0, 5, 5)
@@ -158,18 +161,20 @@ def arrow_function(
             if sl_component1 is None:
                 points3d = points_in_A[:, :3]
             else:
-                points3d = points_in_A[:, [
-                    max(sl_component1.active - 1, 0),
-                    max(sl_component2.active - 1, 0),
-                    max(sl_component3.active - 1, 0)
-                    ]
+                points3d = points_in_A[
+                    :,
+                    [
+                        max(sl_component1.active - 1, 0),
+                        max(sl_component2.active - 1, 0),
+                        max(sl_component3.active - 1, 0),
+                    ],
                 ].copy()
                 if sl_component1.active == 0:
-                    points3d[:, 0] = 0.
+                    points3d[:, 0] = 0.0
                 if sl_component2.active == 0:
-                    points3d[:, 1] = 0.
+                    points3d[:, 1] = 0.0
                 if sl_component3.active == 0:
-                    points3d[:, 2] = 0.
+                    points3d[:, 2] = 0.0
         else:
             points3d = np.hstack(
                 (points_in_A, np.zeros((len(points_in_A), 1), dtype=np.float32))
@@ -258,8 +263,9 @@ def arrow_function(
             unique_labels.append(("[  Subset A  ]", "[  Subset A  ]"))
             unique_labels.append(("[  Rest  ]", "[  Rest  ]"))
             unique_labels += [
-                (lbl + ">>yomix>>" + lbl_elt, shrink_text(lbl + " > " + lbl_elt, 35)) for 
-                (lbl, lbl_elt) in ad.uns["all_labels"]]
+                (lbl + ">>yomix>>" + lbl_elt, shrink_text(lbl + " > " + lbl_elt, 35))
+                for (lbl, lbl_elt) in ad.uns["all_labels"]
+            ]
 
             # Update label_sign options
             label_sign.options = unique_labels

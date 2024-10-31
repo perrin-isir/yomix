@@ -20,7 +20,7 @@ def color_by_feature_value(
     hidden_checkbox_A,
     hidden_checkbox_B,
     resize_w_input,
-    resize_h_input
+    resize_h_input,
 ):
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source
 
@@ -50,7 +50,7 @@ def color_by_feature_value(
             ]
         else:
             selected_labels = None
-        
+
         plot_var_features = []
         for elt in positive_matches + negative_matches:
             if elt in feature_dict:
@@ -123,7 +123,7 @@ def color_by_feature_value(
                 custom_color_mapper = bokeh.models.LinearColorMapper(
                     palette=viridis_colors, low=0.0, high=1.0
                 )
-                
+
                 def simple_shrink(s_in, size):
                     true_size = max(size, 3)
                     if len(s_in) > true_size:
@@ -139,7 +139,7 @@ def color_by_feature_value(
                     color_mapper=custom_color_mapper,
                     label_standoff=12,
                     ticker=bokeh.models.FixedTicker(ticks=[]),
-                    title = simple_shrink(stringval, 50),
+                    title=simple_shrink(stringval, 50),
                 )
                 points_bokeh_plot.add_layout(cbar, "right")
                 label_font_size = cbar.major_label_text_font_size
@@ -181,13 +181,13 @@ def color_by_feature_value(
     offset_text_feature_color.on_change(
         "value",
         lambda attr, old, new: color_modif(
-            new, 
-            hidden_text_label_column, 
-            resize_width_input, 
+            new,
+            hidden_text_label_column,
+            resize_width_input,
             hidden_legend_width,
             offset_label.value,  # Include the current label value
             resize_w_input,
-            resize_h_input
+            resize_h_input,
         ),
     )
 
@@ -201,7 +201,7 @@ def color_by_feature_value(
             hidden_legend_width,
             new_label,  # Pass the new label value to color_modif
             resize_w_input,
-            resize_h_input
+            resize_h_input,
         ),
     )
 
@@ -254,14 +254,14 @@ def plot_var(
                 lbl_elt = lblsplit[1]
                 data = xd[xd.obs[lbl] == lbl_elt, feat].X.toarray().reshape(-1)
                 if np.any(data):
-                    if xd.var['yomix_median_' + label][feat] < 0:
-                        xd.var.loc[feat, 'yomix_median_' + label] = np.median(data)
-                    median_expr = xd.var['yomix_median_' + label][feat]
+                    if xd.var["yomix_median_" + label][feat] < 0:
+                        xd.var.loc[feat, "yomix_median_" + label] = np.median(data)
+                    median_expr = xd.var["yomix_median_" + label][feat]
             if np.any(data) and (len(data) > 1 or mode != "violin"):
                 if mode == "violin":
                     x, y = get_kde(data)
                 else:  # heatmap
-                    x, y = np.ones(100), np.linspace(0,1,100)
+                    x, y = np.ones(100), np.linspace(0, 1, 100)
                 # same width for every subset
                 x = (2.5 - np.clip(0.01 * labels_nr, 0, 0.1)) * x / np.max(x)
                 data_tmp["x"].append(np.concatenate([x, -x[::-1]]) + step)
@@ -285,7 +285,7 @@ def plot_var(
                     data_tmp["median_expr"].append(0)
                     data_tmp["alpha"].append(1.0)
                 else:
-                    x, y = np.ones(100), np.linspace(0,1,100)
+                    x, y = np.ones(100), np.linspace(0, 1, 100)
                     x = (2.5 - np.clip(0.01 * labels_nr, 0, 0.1)) * x / np.max(x)
                     data_tmp["x"].append(np.concatenate([x, -x[::-1]]) + step)
                     data_tmp["y"].append(np.concatenate([y, y[::-1]]))
@@ -298,7 +298,7 @@ def plot_var(
         data_tmp["median_expr"].append(0)
         data_tmp["alpha"].append(0.2)
         data_tmp["x"].append(np.linspace(0 - bound, step - 5 + bound, 100))
-        data_tmp["y"].append(0. * np.ones(100))
+        data_tmp["y"].append(0.0 * np.ones(100))
         data_tmp["median_expr"].append(0)
         data_tmp["alpha"].append(0.2)
         return data_tmp
@@ -324,8 +324,8 @@ def plot_var(
             set_yticks = [0.5 + 1.1 * i for i in range(len(features))]
             vplot.yaxis.ticker = set_yticks
             vplot.yaxis.major_label_overrides = {
-                set_yticks[i]: features[
-                    len(features) - i - 1] for i in range(len(features))
+                set_yticks[i]: features[len(features) - i - 1]
+                for i in range(len(features))
             }
             vplot.yaxis.axis_label = ""
         else:
@@ -372,13 +372,19 @@ def plot_var(
         text_labels = []
         for label in labels:
             if label == "[  Subset A  ]":
-                samples_per_labels["[  Subset A  ]"] = str(len(hidden_checkbox_A.active))
+                samples_per_labels["[  Subset A  ]"] = str(
+                    len(hidden_checkbox_A.active)
+                )
                 text_labels.append(label + "\n ")
             elif label == "[  Subset B  ]":
-                samples_per_labels["[  Subset B  ]"] = str(len(hidden_checkbox_B.active))
+                samples_per_labels["[  Subset B  ]"] = str(
+                    len(hidden_checkbox_B.active)
+                )
                 text_labels.append(label + "\n ")
             elif label == "[  Rest  ]":
-                samples_per_labels["[  Rest  ]"] = str(len(adata) - len(hidden_checkbox_A.active))
+                samples_per_labels["[  Rest  ]"] = str(
+                    len(adata) - len(hidden_checkbox_A.active)
+                )
                 text_labels.append(label + "\n ")
             else:
                 lblsplit = label.split(">>yomix>>")
@@ -389,9 +395,13 @@ def plot_var(
 
         vplot.xaxis.major_label_overrides = {
             set_xticks[i]: (
-                text_labels[i] + "\n\n" + samples_per_labels[labels[i]] + "\nsamples" if int(samples_per_labels[labels[i]])>1 else
-                text_labels[i] + "\n\n" + samples_per_labels[labels[i]] + "\nsample"
-            ) 
+                text_labels[i] + "\n\n" + samples_per_labels[labels[i]] + "\nsamples"
+                if int(samples_per_labels[labels[i]]) > 1
+                else text_labels[i]
+                + "\n\n"
+                + samples_per_labels[labels[i]]
+                + "\nsample"
+            )
             for i in range(len(set_xticks))
         }
 

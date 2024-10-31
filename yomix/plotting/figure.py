@@ -20,7 +20,7 @@ from pathlib import Path
 
 def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
-    obs_string = list(adata.obs.select_dtypes("category").keys()) 
+    obs_string = list(adata.obs.select_dtypes("category").keys())
     obs_numerical = list(adata.obs.select_dtypes(np.number).keys())
 
     embedding_size = adata.obsm[embedding_key].shape[1]
@@ -58,8 +58,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
     if title == "":
         title = (
-            "Yomix "
-            + Path(__file__).parent.with_name("VERSION").read_text().strip()
+            "Yomix " + Path(__file__).parent.with_name("VERSION").read_text().strip()
         )
     xyz_vectors = np.vstack((data["x"], data["y"], data["z"]))
     true_center = np.array([[data["x"].mean(), data["y"].mean(), data["z"].mean()]]).T
@@ -348,7 +347,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         stylesheets=[stylesheet],
         width=100,
         show_value=False,
-        direction="rtl"
+        direction="rtl",
     )
 
     bt_hidden_slider_yaw = bokeh.models.Slider(
@@ -360,12 +359,11 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         width=100,
         show_value=False,
         name="bt_hidden_slider_yaw",
-        visible=False
+        visible=False,
     )
 
     bt_toggle_anim = bokeh.models.Toggle(
-        label="Animation: OFF", width=100, active=False,
-        name="bt_toggle_anim"
+        label="Animation: OFF", width=100, active=False, name="bt_toggle_anim"
     )
 
     bt_toggle_anim.js_on_change(
@@ -378,7 +376,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 this.label = 'Animation: OFF';
             }
         """,
-        )
+        ),
     )
 
     bt_slider_yaw = bokeh.models.Slider(
@@ -415,19 +413,19 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
     if higher_dim:
         sl_component1 = bokeh.models.RadioButtonGroup(
-            labels=["None"] + ["d" + str(i + 1) for i in range(embedding_size)], 
+            labels=["None"] + ["d" + str(i + 1) for i in range(embedding_size)],
             active=1,
-            margin=[0,0,0,0],
+            margin=[0, 0, 0, 0],
         )
         sl_component2 = bokeh.models.RadioButtonGroup(
-            labels=["None"] + ["d" + str(i + 1) for i in range(embedding_size)], 
+            labels=["None"] + ["d" + str(i + 1) for i in range(embedding_size)],
             active=2,
-            margin=[0,0,0,0],
+            margin=[0, 0, 0, 0],
         )
         sl_component3 = bokeh.models.RadioButtonGroup(
-            labels=["None"] + ["d" + str(i + 1) for i in range(embedding_size)], 
+            labels=["None"] + ["d" + str(i + 1) for i in range(embedding_size)],
             active=3,
-            margin=[0,0,0,0],
+            margin=[0, 0, 0, 0],
         )
 
     size_redef_code = """
@@ -659,30 +657,41 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         const delta_vec = addVectors(
             rc, multiplyMatrixVector(rotmataxis, substractVectors(rdelta, rc)));
         var rot_result = [0, 0, 0];
-        """ + ("""
+        """
+        + (
+            """
         const dim1 = 'original_embedding_' + (slc1.active - 1).toString();
         const dimif1 = (slc1.active > 0);
         const dim2 = 'original_embedding_' + (slc2.active - 1).toString();
         const dimif2 = (slc2.active > 0);
         const dim3 = 'original_embedding_' + (slc3.active - 1).toString();
         const dimif3 = (slc3.active > 0);
-        """ if higher_dim else "") + 
         """
+            if higher_dim
+            else ""
+        )
+        + """
         for (let i = 0; i < x.length; i++) {
-            """+("""
+            """
+        + (
+            """
             x_saved[i] = 0.;
             y_saved[i] = 0.;
             z_saved[i] = 0.;
-            if (dimif1) {     
+            if (dimif1) {
                 x_saved[i] += data[dim1][i];
             }
-            if (dimif2) {     
+            if (dimif2) {
                 y_saved[i] += data[dim2][i];
             }
-            if (dimif3) {     
+            if (dimif3) {
                 z_saved[i] += data[dim3][i];
             }
-            """ if higher_dim else "") + """
+            """
+            if higher_dim
+            else ""
+        )
+        + """
             rot_result = multiplyMatrixVector(
                 rot_m, [x_saved[i], y_saved[i], z_saved[i]]);
             x_tmp[i] = rot_result[0] + delta_vec[0];
@@ -843,7 +852,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code="""bta.active = false;""" + reset_slider_pitch
+            code="""bta.active = false;"""
+            + reset_slider_pitch
             + reset_slider_roll
             + code_part1_1
             + """
@@ -862,7 +872,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code="""bta.active = false;""" + reset_slider_pitch
+            code="""bta.active = false;"""
+            + reset_slider_pitch
             + reset_slider_roll
             + code_part1_1
             + """
@@ -981,7 +992,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code="""bta.active = false;""" + reset_slider_roll
+            code="""bta.active = false;"""
+            + reset_slider_roll
             + reset_slider_yaw
             + code_part1_1
             + """
@@ -1000,7 +1012,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code="""bta.active = false;""" + reset_slider_roll
+            code="""bta.active = false;"""
+            + reset_slider_roll
             + reset_slider_yaw
             + code_part1_1
             + """
@@ -1043,7 +1056,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code="""bta.active = false;""" + reset_slider_pitch
+            code="""bta.active = false;"""
+            + reset_slider_pitch
             + reset_slider_yaw
             + code_part1_1
             + """
@@ -1062,7 +1076,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 source=source,
                 source_rotmatrix_etc=source_rotmatrix_etc,
             ),
-            code="""bta.active = false;""" + reset_slider_pitch
+            code="""bta.active = false;"""
+            + reset_slider_pitch
             + reset_slider_yaw
             + code_part1_1
             + """
@@ -1071,7 +1086,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 const rotaxis = [0, 0, 1];
             """
             + code_part1_2,
-        )       
+        )
 
     callback_js7 = bokeh.models.CustomJS(
         args=dict(source=source, source_rotmatrix_etc=source_rotmatrix_etc),
@@ -1146,13 +1161,13 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
                 x_saved[i] = 0.;
                 y_saved[i] = 0.;
                 z_saved[i] = 0.;
-                if (dimif1) {     
+                if (dimif1) {
                     x_saved[i] += data[dim1][i];
                 }
-                if (dimif2) {     
+                if (dimif2) {
                     y_saved[i] += data[dim2][i];
                 }
-                if (dimif3) {     
+                if (dimif3) {
                     z_saved[i] += data[dim3][i];
                 }
                 rot_result = multiplyMatrixVector(
@@ -1294,7 +1309,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         title="Width:",
         name="resize_width",
         width=54,
-        margin = (5,0,5,0)
+        margin=(5, 0, 5, 0),
     )
     resize_width_input.js_on_change(
         "value",
@@ -1317,7 +1332,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         title="Height:",
         name="resize_height",
         width=54,
-        margin = (5,0,5,0)
+        margin=(5, 0, 5, 0),
     )
     resize_height_input.js_on_change(
         "value",
@@ -1371,20 +1386,17 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         new_fig.toolbar_location = "left"
         return new_fig
 
-    violin_plot = copy_figure(
-        points_bokeh_plot, "Violin plots"
-    )
+    violin_plot = copy_figure(points_bokeh_plot, "Violin plots")
     violin_plot.visible = False
     heatmap_plot = copy_figure(points_bokeh_plot, "Heatmap")
     heatmap_plot.visible = False
-
 
     resize_width_input_bis = bokeh.models.TextInput(
         value=str(points_bokeh_plot.width),
         title="Width:",
         name="resize_width_bis",
         width=54,
-        margin = (5,0,5,0)
+        margin=(5, 0, 5, 0),
     )
     resize_width_input_bis.js_on_change(
         "value",
@@ -1407,7 +1419,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         title="Height:",
         name="resize_height_bis",
         width=54,
-        margin = (5,0,5,0)
+        margin=(5, 0, 5, 0),
     )
     resize_height_input_bis.js_on_change(
         "value",
@@ -1427,7 +1439,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
     if higher_dim:
         return (
-            obs_string, 
+            obs_string,
             obs_numerical,
             points_bokeh_plot,
             violin_plot,
@@ -1451,7 +1463,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         )
     else:
         return (
-            obs_string, 
+            obs_string,
             obs_numerical,
             points_bokeh_plot,
             violin_plot,

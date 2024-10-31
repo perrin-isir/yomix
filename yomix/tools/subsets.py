@@ -4,7 +4,7 @@ import bokeh.models
 def subset_buttons(points_bokeh_plot, source_rotmatrix_etc):
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source
     button_width = 112
-    big_button_width = 235
+    # big_button_width = 235
 
     toggle_A = bokeh.models.Toggle(
         label="Highlight A: ON", width=button_width, active=True
@@ -61,7 +61,7 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc):
         }
         source.change.emit();
     """,
-        )
+        ),
     )
     toggle_B.js_on_change(
         "active",
@@ -95,7 +95,7 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc):
         }
         source.change.emit();
     """,
-        )
+        ),
     )
 
     callback_AB_part_1 = """
@@ -129,7 +129,7 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc):
             source_rotmatrix_etc=source_rotmatrix_etc,
             toggle=toggle_A,
             cbx=hidden_checkbox_A,
-            cbx_other=hidden_checkbox_B
+            cbx_other=hidden_checkbox_B,
         ),
         code=callback_AB_part_1
         + """
@@ -168,7 +168,7 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc):
             source_rotmatrix_etc=source_rotmatrix_etc,
             toggle=toggle_B,
             cbx=hidden_checkbox_B,
-            cbx_other=hidden_checkbox_A
+            cbx_other=hidden_checkbox_A,
         ),
         code=callback_AB_part_1
         + """
@@ -211,15 +211,11 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc):
     bt_A.js_on_click(callback_js_A)
     bt_B.js_on_click(callback_js_B)
 
-    bt_AplusB = bokeh.models.Button(
-        label="Select A+B", width=button_width
-    )
+    bt_AplusB = bokeh.models.Button(label="Select A+B", width=button_width)
     bt_AplusB.js_on_click(
         bokeh.models.CustomJS(
-        args=dict(
-            source=source
-        ), 
-        code = """
+            args=dict(source=source),
+            code="""
         const data = source.data;
         var t = [];
         const sA = data['subset_A'];
@@ -232,26 +228,29 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc):
         }
         source.selected.indices = t;
         source.change.emit();
-    """)
+    """,
+        )
     )
 
-    bt_nothing = bokeh.models.Button(
-        label="Select nothing", width=button_width
-    )
+    bt_nothing = bokeh.models.Button(label="Select nothing", width=button_width)
     bt_nothing.js_on_click(
         bokeh.models.CustomJS(
-        args=dict(
-            source=source
-        ), 
-        code = """
+            args=dict(source=source),
+            code="""
         const data = source.data;
         source.selected.indices = [];
         source.change.emit();
-    """)
+    """,
+        )
     )
 
     return (
-        bt_A, toggle_A, hidden_checkbox_A, bt_B, toggle_B, hidden_checkbox_B,
-        bt_AplusB, bt_nothing
+        bt_A,
+        toggle_A,
+        hidden_checkbox_A,
+        bt_B,
+        toggle_B,
+        hidden_checkbox_B,
+        bt_AplusB,
+        bt_nothing,
     )
-

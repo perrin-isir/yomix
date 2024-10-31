@@ -25,7 +25,7 @@ def signature_buttons(
         denominator = (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)
         if denominator == 0:
             # return np.nan
-            return 0.
+            return 0.0
 
         mcc = (tp * tn - fp * fn) / np.sqrt(denominator)
         return mcc
@@ -59,12 +59,12 @@ def signature_buttons(
             c = (
                 sig2square * mu1**2 / 2
                 - sig1square * mu2**2 / 2
-                - sig1square * sig2square * ( np.log(sigma2) - np.log(sigma1) )
+                - sig1square * sig2square * (np.log(sigma2) - np.log(sigma1))
             )
 
             discr = b**2 - 4 * a * c
             if np.abs(discr) < 1e-8:
-                discr = 0.
+                discr = 0.0
             x1 = (-b + np.sqrt(discr)) / (2 * a)
             x2 = (-b - np.sqrt(discr)) / (2 * a)
 
@@ -123,12 +123,14 @@ def signature_buttons(
         target_size = 1000
         divisor = max((len(obs_indices_A) + len(rest_indices)) / target_size, 1.0)
 
-        size_A = max(int(len(obs_indices_A) / divisor), 
-                     min(len(obs_indices_A), 10)  # take at least 10 samples if possible
-                     )
-        size_B = max(int(len(rest_indices) / divisor), 
-                     min(len(rest_indices), 10)  # take at least 10 samples if possible
-                     )
+        size_A = max(
+            int(len(obs_indices_A) / divisor),
+            min(len(obs_indices_A), 10),  # take at least 10 samples if possible
+        )
+        size_B = max(
+            int(len(rest_indices) / divisor),
+            min(len(rest_indices), 10),  # take at least 10 samples if possible
+        )
         samples_A = np.random.choice(obs_indices_A, size_A, replace=False)
         samples_B = np.random.choice(rest_indices, size_B, replace=False)
         intersection = np.intersect1d(samples_A, samples_B)
@@ -316,8 +318,9 @@ def signature_buttons(
             unique_labels.append(("[  Subset A  ]", "[  Subset A  ]"))
             unique_labels.append(("[  Rest  ]", "[  Rest  ]"))
             unique_labels += [
-                (lbl + ">>yomix>>" + lbl_elt, shrink_text(lbl + " > " + lbl_elt, 35)) for 
-                (lbl, lbl_elt) in ad.uns["all_labels"]]
+                (lbl + ">>yomix>>" + lbl_elt, shrink_text(lbl + " > " + lbl_elt, 35))
+                for (lbl, lbl_elt) in ad.uns["all_labels"]
+            ]
 
             # Update label_sign options
             label_sign.options = unique_labels
@@ -364,16 +367,17 @@ def signature_buttons(
             unique_labels.append(("[  Subset A  ]", "[  Subset A  ]"))
             unique_labels.append(("[  Subset B  ]", "[  Subset B  ]"))
             unique_labels += [
-                (lbl + ">>yomix>>" + lbl_elt, shrink_text(lbl + " > " + lbl_elt, 35)) for 
-                (lbl, lbl_elt) in ad.uns["all_labels"]]
+                (lbl + ">>yomix>>" + lbl_elt, shrink_text(lbl + " > " + lbl_elt, 35))
+                for (lbl, lbl_elt) in ad.uns["all_labels"]
+            ]
 
             # Update label_sign options
             label_sign.options = unique_labels
             label_sign.size = len(label_sign.options)
-            
+
             # finalize label_sign
-            label_sign.title = "Groups"    
-            label_sign.value = ["[  Subset A  ]", "[  Subset B  ]"]     
+            label_sign.title = "Groups"
+            label_sign.value = ["[  Subset A  ]", "[  Subset B  ]"]
 
     div_signature_list = bokeh.models.Div(
         width=235, height=50, height_policy="fixed", text="Signature #0:"
@@ -422,9 +426,13 @@ def signature_buttons(
 
     label_signature.on_change("value", lambda attr, old, new: label_function(new))
 
-    tooltip1=bokeh.models.Tooltip(content="Requires setting the subset A  ", position="right")
+    tooltip1 = bokeh.models.Tooltip(
+        content="Requires setting the subset A  ", position="right"
+    )
     help_button1 = bokeh.models.HelpButton(tooltip=tooltip1, margin=(3, 0, 3, 0))
-    bt_sign1 = bokeh.models.Button(label="Compute signature (A vs. rest)", width=190, margin=(5, 0, 5, 5))
+    bt_sign1 = bokeh.models.Button(
+        label="Compute signature (A vs. rest)", width=190, margin=(5, 0, 5, 5)
+    )
 
     bt_sign1.on_click(
         lambda event: sign_A_vs_rest(
@@ -437,9 +445,13 @@ def signature_buttons(
         )
     )
 
-    tooltip2=bokeh.models.Tooltip(content="Requires setting the subsets A and B  ", position="right")
+    tooltip2 = bokeh.models.Tooltip(
+        content="Requires setting the subsets A and B  ", position="right"
+    )
     help_button2 = bokeh.models.HelpButton(tooltip=tooltip2, margin=(3, 0, 3, 0))
-    bt_sign2 = bokeh.models.Button(label="Compute signature (A vs. B)", width=190, margin=(5, 0, 5, 5))
+    bt_sign2 = bokeh.models.Button(
+        label="Compute signature (A vs. B)", width=190, margin=(5, 0, 5, 5)
+    )
 
     bt_sign2.on_click(
         lambda event: sign_A_vs_B(
@@ -454,12 +466,12 @@ def signature_buttons(
     )
 
     return (
-        bt_sign1, 
-        bt_sign2, 
-        help_button1, 
-        help_button2, 
-        multiselect_signature, 
-        div_signature_list, 
+        bt_sign1,
+        bt_sign2,
+        help_button1,
+        help_button2,
+        multiselect_signature,
+        div_signature_list,
         signature_nr,
         label_signature,
     )
