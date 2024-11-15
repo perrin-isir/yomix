@@ -311,6 +311,10 @@ def setup_legend(
     select_color_by = bokeh.models.Select(
         title="Color by ", value="", options=menu, width=235
     )
+    tooltip = bokeh.models.Tooltip(
+        content="Fields with a number of different unique items greater than 50 \n or greater than half the number of samples will be ignored ", position="right"
+    )
+    help_button = bokeh.models.HelpButton(tooltip=tooltip, margin=(21, 0, 3, 0))
 
     select_color_by.on_change(
         "value",
@@ -327,4 +331,4 @@ def setup_legend(
         ),
     )
 
-    return select_color_by, hidden_text_label_column, hidden_legend_width
+    return select_color_by, help_button, hidden_text_label_column, hidden_legend_width
