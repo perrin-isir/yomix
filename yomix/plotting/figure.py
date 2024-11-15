@@ -21,7 +21,7 @@ MAX_UNIQUE_VALUES = 50
 MAX_UNIQUE_RATIO = 0.5
 
 def check_obs_field(xd, field):
-    return len(xd.obs[field].unique()) < MAX_UNIQUE_VALUES and len(xd.obs[field].unique())/xd.X.shape[0] < MAX_UNIQUE_RATIO
+    return len(xd.obs[field].unique()) < MAX_UNIQUE_VALUES or len(xd.obs[field].unique())/xd.X.shape[0] < MAX_UNIQUE_RATIO
 
 def main_figure(adata, embedding_key, width=900, height=600, title=""):
 

@@ -51,7 +51,7 @@ def main():
     argument = args.example
 
     if argument:
-        filearg = Path(__file__).parent / "example" / "_meth_test.h5ad"
+        filearg = Path(__file__).parent / "example" / "pbmc.h5ad"
     else:
         assert (
             args.file is not None
