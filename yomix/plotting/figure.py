@@ -21,11 +21,13 @@ MAX_UNIQUE_VALUES = 50
 MAX_UNIQUE_RATIO = 0.5
 
 def check_obs_field(xd, field):
-    return len(xd.obs[field].unique()) < MAX_UNIQUE_VALUES or len(xd.obs[field].unique())/xd.X.shape[0] < MAX_UNIQUE_RATIO
+    unique_items_nr = len(xd.obs[field].unique())
+    return unique_items_nr < MAX_UNIQUE_VALUES and unique_items_nr/xd.n_obs <= MAX_UNIQUE_RATIO
 
 def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
-    obs_string = [x for x in list(adata.obs.select_dtypes("category").keys()) if check_obs_field(adata, x)]
+    obs_string = [
+        x for x in list(adata.obs.select_dtypes(include=["category", "object"]).keys()) if check_obs_field(adata, x)]
     obs_numerical = list(adata.obs.select_dtypes(np.number).keys())
 
     embedding_size = adata.obsm[embedding_key].shape[1]
