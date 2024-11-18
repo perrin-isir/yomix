@@ -309,8 +309,14 @@ def setup_legend(
     # menu = [(o_c, o_c) for o_c in obs_string + obs_numerical]
     menu = obs_string + obs_numerical
     select_color_by = bokeh.models.Select(
-        title="Color by ", value="", options=menu, width=235
+        title="Color by (select field):", value="", options=menu, width=235
     )
+    tooltip = bokeh.models.Tooltip(
+        content="Categorical fields with many different unique items (more than 50 \n or more than half the "
+                "number of samples) are ignored",
+        position="right"
+    )
+    help_button = bokeh.models.HelpButton(tooltip=tooltip, margin=(21, 0, 3, 0))
 
     select_color_by.on_change(
         "value",
@@ -327,4 +333,4 @@ def setup_legend(
         ),
     )
 
-    return select_color_by, hidden_text_label_column, hidden_legend_width
+    return select_color_by, help_button, hidden_text_label_column, hidden_legend_width

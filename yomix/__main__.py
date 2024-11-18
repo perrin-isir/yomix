@@ -83,12 +83,14 @@ def main():
         obs_string_init = list(xd.obs.select_dtypes("category").keys())
         all_labels_list = []
         for lbl in obs_string_init:
-            labels = np.array(list(dict.fromkeys(xd.obs[str(lbl)])))
-            all_labels_list += [(str(lbl), str(elt)) for elt in labels]
-            for elt in labels:
-                xd.var["yomix_median_" + str(lbl) + ">>yomix>>" + str(elt)] = -np.ones(
-                    xd.n_vars
-                )
+            # filter labels
+            if yomix.plotting.check_obs_field(xd, str(lbl)):
+                labels = np.array(list(dict.fromkeys(xd.obs[str(lbl)])))
+                all_labels_list += [(str(lbl), str(elt)) for elt in labels]
+                for elt in labels:
+                    xd.var["yomix_median_" + str(lbl) + ">>yomix>>" + str(elt)] = -np.ones(
+                        xd.n_vars
+                    )
         xd.uns["all_labels"] = all_labels_list
 
         def var_mean_values(adata) -> np.ndarray:
@@ -167,7 +169,7 @@ def main():
                         points_bokeh_plot, source_rotmatrix_etc
                     )
 
-                    (select_color_by, hidden_text_label_column, hidden_legend_width) = (
+                    (select_color_by, help_color_by, hidden_text_label_column, hidden_legend_width) = (
                         yomix.plotting.setup_legend(
                             points_bokeh_plot,
                             obs_string,
@@ -291,7 +293,7 @@ def main():
                                     ),
                                     bokeh.layouts.column(
                                         bokeh.layouts.row(
-                                            select_color_by, sample_search_input
+                                            select_color_by, help_color_by, sample_search_input
                                         ),
                                         bokeh.layouts.row(
                                             offset_text_feature_color, bt_open_link
@@ -330,7 +332,7 @@ def main():
                                     ),
                                     bokeh.layouts.column(
                                         bokeh.layouts.row(
-                                            select_color_by, sample_search_input
+                                            select_color_by, help_color_by, sample_search_input
                                         ),
                                         bokeh.layouts.row(
                                             offset_text_feature_color, bt_open_link
