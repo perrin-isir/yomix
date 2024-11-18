@@ -1,0 +1,16 @@
+yomix package
+=============
+
+.. toctree::
+   :maxdepth: 4
+
+   yomix.plotting
+   yomix.tools
+
+Module contents
+---------------
+
+.. automodule:: yomix
+   :members:
+   :undoc-members:
+   :show-inheritance:

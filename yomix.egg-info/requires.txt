@@ -1,0 +1,7 @@
+pandas>=2.2.2
+numpy>=1.26.0
+matplotlib>=3.8.0
+bokeh>=3.4.1
+anndata>=0.10.7
+scipy>=1.13.1
+requests>=2.32.3

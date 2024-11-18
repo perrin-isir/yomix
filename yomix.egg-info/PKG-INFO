@@ -1,0 +1,129 @@
+Metadata-Version: 2.1
+Name: yomix
+Version: 1.0.1
+Summary: yomix: an interactive tool to explore low dimensional embeddings of omics data
+Home-page: https://github.com/perrin-isir/yomix
+License: BSD 3-Clause License
+        
+        Copyright (c) 2024, CNRS & Inserm.
+        All rights reserved.
+        
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are met:
+        
+        1. Redistributions of source code must retain the above copyright notice, this
+           list of conditions and the following disclaimer.
+        
+        2. Redistributions in binary form must reproduce the above copyright notice,
+           this list of conditions and the following disclaimer in the documentation
+           and/or other materials provided with the distribution.
+        
+        3. Neither the name of the copyright holder nor the names of its
+           contributors may be used to endorse or promote products derived from
+           this software without specific prior written permission.
+        
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+        AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+        IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+        FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+        OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pandas>=2.2.2
+Requires-Dist: numpy>=1.26.0
+Requires-Dist: matplotlib>=3.8.0
+Requires-Dist: bokeh>=3.4.1
+Requires-Dist: anndata>=0.10.7
+Requires-Dist: scipy>=1.13.1
+Requires-Dist: requests>=2.32.3
+
+# ![alt text](https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_logo.png "Yomix logo")
+
+[![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+Yomix is an interactive tool to explore low dimensional embeddings of omics data.
+
+## INSTALL
+
+    pip install yomix
+
+
+Then try the tool with:
+
+    yomix --example
+
+
+To use it on your own files:
+
+    yomix yourfile.h5ad
+
+where `yourfile.h5ad` is an anndata object saved in h5ad format (see
+ [anndata - Annotated data](https://anndata.readthedocs.io/en/latest/index.html#)), 
+ with at least one `.obsm` field of dimension 2 or more.
+
+When there are many samples in the dataset, the --subsampling option can be passed to improve reactiveness:
+
+    yomix --subsampling N yourfile.h5ad
+
+It randomly subsamples the dataset to a maximum number of N samples. For example:
+
+    yomix --subsampling 5000 yourfile.h5ad
+
+
+<details><summary> <b>Other option: INSTALL FROM SOURCE</b> </summary><p>
+
+    git clone https://github.com/perrin-isir/yomix.git
+
+
+We recommand to create a python environment with [micromamba](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html),
+but any python package manager can be used instead.
+
+    cd yomix
+
+    micromamba create --name yomixenv --file environment.yaml
+
+    micromamba activate yomixenv
+
+    pip install -e .
+
+
+Then try the tool with:
+
+    yomix yomix/example/pbmc.h5ad
+
+The input file must be an anndata object saved in h5ad format (see
+ [anndata - Annotated data](https://anndata.readthedocs.io/en/latest/index.html#)), 
+ with at least one `.obsm` field of dimension 2 or more.
+
+</p></details>
+
+## List of contributors
+
+Nicolas Perrin-Gilbert
+
+Joshua Waterfall
+
+Pierre Fumeron
+
+Nisma Amjad
+
+Jason Z. Kim
+
+Erkan Narmanli
+
+Christopher R. Myers
+
+James P. Sethna
+
+Jérôme Contant
+
+Thomas Fuks
+
+Julien Vibert
