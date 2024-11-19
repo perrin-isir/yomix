@@ -7,10 +7,4 @@ yomix package
    yomix.plotting
    yomix.tools
 
-Module contents
----------------
 
-.. automodule:: yomix
-   :members:
-   :undoc-members:
-   :show-inheritance:

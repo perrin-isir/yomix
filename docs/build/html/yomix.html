@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="yomix.plotting" href="yomix.plotting.html" /><link rel="prev" title="yomix" href="modules.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>yomix package - yomix documentation</title>
@@ -178,7 +178,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -201,17 +201,20 @@
   <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions (FAQ)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
-<ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">yomix</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of yomix</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">yomix package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of yomix package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="yomix.plotting.html">yomix.plotting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="yomix.tools.html">yomix.tools</a></li>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="yomix.plotting.html">yomix.plotting</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of yomix.plotting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.features.html">yomix.plotting.features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.figure.html">yomix.plotting.figure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.legend.html">yomix.plotting.legend</a></li>
 </ul>
 </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="yomix.tools.html">yomix.tools</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of yomix.tools</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.arrow.html">yomix.tools.arrow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.gene_query.html">yomix.tools.gene_query</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.signatures.html">yomix.tools.signatures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.subsets.html">yomix.tools.subsets</a></li>
 </ul>
 </li>
 </ul>
@@ -244,7 +247,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -255,25 +258,63 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="yomix.plotting.html">yomix.plotting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.html#yomix-plotting-features-module">yomix.plotting.features module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.html#yomix-plotting-figure-module">yomix.plotting.figure module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.html#yomix-plotting-legend-module">yomix.plotting.legend module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.features.html">yomix.plotting.features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="yomix.plotting.features.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="yomix.plotting.features.html#yomix.plotting.features.color_by_feature_value"><code class="docutils literal notranslate"><span class="pre">color_by_feature_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="yomix.plotting.features.html#yomix.plotting.features.plot_var"><code class="docutils literal notranslate"><span class="pre">plot_var()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.figure.html">yomix.plotting.figure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="yomix.plotting.figure.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="yomix.plotting.figure.html#yomix.plotting.figure.main_figure"><code class="docutils literal notranslate"><span class="pre">main_figure()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.legend.html">yomix.plotting.legend</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="yomix.plotting.legend.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="yomix.plotting.legend.html#yomix.plotting.legend.setup_legend"><code class="docutils literal notranslate"><span class="pre">setup_legend()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="yomix.tools.html">yomix.tools</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="yomix.tools.html#yomix-tools-arrow-module">yomix.tools.arrow module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="yomix.tools.html#yomix-tools-gene-query-module">yomix.tools.gene_query module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="yomix.tools.html#yomix-tools-signatures-module">yomix.tools.signatures module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="yomix.tools.html#yomix-tools-subsets-module">yomix.tools.subsets module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="yomix.tools.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.arrow.html">yomix.tools.arrow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="yomix.tools.arrow.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="yomix.tools.arrow.html#yomix.tools.arrow.arrow_function"><code class="docutils literal notranslate"><span class="pre">arrow_function()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.gene_query.html">yomix.tools.gene_query</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="yomix.tools.gene_query.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="yomix.tools.gene_query.html#yomix.tools.gene_query.gene_query_button"><code class="docutils literal notranslate"><span class="pre">gene_query_button()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.signatures.html">yomix.tools.signatures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="yomix.tools.signatures.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="yomix.tools.signatures.html#yomix.tools.signatures.signature_buttons"><code class="docutils literal notranslate"><span class="pre">signature_buttons()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.subsets.html">yomix.tools.subsets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="yomix.tools.subsets.html#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="yomix.tools.subsets.html#yomix.tools.subsets.subset_buttons"><code class="docutils literal notranslate"><span class="pre">subset_buttons()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </div>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
-</section>
 </section>
 
         </article>
@@ -281,26 +322,8 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="yomix.plotting.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">yomix.plotting</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="modules.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">yomix</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -319,27 +342,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">yomix package</a><ul>
-<li><a class="reference internal" href="#module-contents">Module contents</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

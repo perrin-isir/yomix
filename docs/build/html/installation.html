@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Frequently Asked Questions (FAQ)" href="faq.html" /><link rel="prev" title="YOMIX Documentation" href="index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="yomix.plotting" href="yomix.plotting.html" /><link rel="prev" title="YOMIX Documentation" href="index.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>Installation Guide - yomix documentation</title>
@@ -178,7 +178,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -201,16 +201,20 @@
   <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Installation Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions (FAQ)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">yomix</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of yomix</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="yomix.html">yomix package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of yomix package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="yomix.plotting.html">yomix.plotting package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="yomix.tools.html">yomix.tools package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="yomix.plotting.html">yomix.plotting</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of yomix.plotting</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.features.html">yomix.plotting.features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.figure.html">yomix.plotting.figure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.plotting.legend.html">yomix.plotting.legend</a></li>
 </ul>
 </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="yomix.tools.html">yomix.tools</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of yomix.tools</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.arrow.html">yomix.tools.arrow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.gene_query.html">yomix.tools.gene_query</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.signatures.html">yomix.tools.signatures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yomix.tools.subsets.html">yomix.tools.subsets</a></li>
 </ul>
 </li>
 </ul>
@@ -243,7 +247,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -251,7 +255,89 @@
         <article role="main" id="furo-main-content">
           <section id="installation-guide">
 <h1>Installation Guide<a class="headerlink" href="#installation-guide" title="Link to this heading">¶</a></h1>
-<p>This file provides instructions on how to install YOMIX.</p>
+<p>This section explains how to install and use the <cite>yomix</cite> tool.</p>
+<section id="install-via-pip">
+<h2>Install via pip<a class="headerlink" href="#install-via-pip" title="Link to this heading">¶</a></h2>
+<p>In a Python virtual environment, do the following:</p>
+<ol class="arabic">
+<li><p>Install <cite>yomix</cite> using pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>yomix
+</pre></div>
+</div>
+</li>
+<li><p>Try the tool with the example dataset:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yomix<span class="w"> </span>--example
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="to-use-it-on-your-own-files">
+<h2>To use it on your own files:<a class="headerlink" href="#to-use-it-on-your-own-files" title="Link to this heading">¶</a></h2>
+<ol class="arabic">
+<li><p>Ensure your input file is an AnnData object saved in <cite>.h5ad</cite> format (see <cite>AnnData - Annotated Data &lt;https://anndata.readthedocs.io/en/latest/&gt;</cite>) with at least one <cite>.obsm</cite> field of dimension 2 or more.</p></li>
+<li><p>Run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yomix<span class="w"> </span>yourfile.h5ad
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Where <cite>yourfile.h5ad</cite> is your own dataset in <cite>.h5ad</cite> format.</p>
+</section>
+<section id="improve-reactiveness-with-subsampling">
+<h2>Improve Reactiveness with Subsampling<a class="headerlink" href="#improve-reactiveness-with-subsampling" title="Link to this heading">¶</a></h2>
+<p>When there are many samples in the dataset, you can use the <cite>–subsampling</cite> option to improve reactiveness. This option will randomly subsample the dataset to a maximum number of <cite>N</cite> samples. For example:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yomix<span class="w"> </span>--subsampling<span class="w"> </span><span class="m">5000</span><span class="w"> </span>yourfile.h5ad
+</pre></div>
+</div>
+</div></blockquote>
+<p>This will subsample the dataset to a maximum of 5000 samples.</p>
+</section>
+<section id="install-from-source">
+<h2>Install from Source<a class="headerlink" href="#install-from-source" title="Link to this heading">¶</a></h2>
+<p>If you prefer to install <cite>yomix</cite> from source, follow these steps:</p>
+<ol class="arabic">
+<li><p>Clone the repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/perrin-isir/yomix.git
+</pre></div>
+</div>
+<p>We recommend using <cite>micromamba</cite> to create a Python environment, but you can use any Python package manager instead.</p>
+</li>
+<li><p>Navigate to the <cite>yomix</cite> directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>yomix
+</pre></div>
+</div>
+</li>
+<li><p>Create the environment using <cite>micromamba</cite>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>micromamba<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>yomixenv<span class="w"> </span>--file<span class="w"> </span>environment.yaml
+</pre></div>
+</div>
+</li>
+<li><p>Activate the environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>micromamba<span class="w"> </span>activate<span class="w"> </span>yomixenv
+</pre></div>
+</div>
+</li>
+<li><p>Install the package in editable mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</li>
+<li><p>Try the tool with an example file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yomix<span class="w"> </span>yomix/example/pbmc.h5ad
+</pre></div>
+</div>
+</li>
+</ol>
+<p>The input file must be an AnnData object saved in <cite>.h5ad</cite> format with at least one <cite>.obsm</cite> field of dimension 2 or more.</p>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>The input file must be an <cite>.h5ad</cite> file containing an AnnData object with at least one <cite>.obsm</cite> field of dimension 2 or more (e.g., PCA, UMAP embeddings).</p></li>
+</ul>
+</section>
 </section>
 
         </article>
@@ -259,12 +345,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="faq.html">
+          <a class="next-page" href="yomix.plotting.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Frequently Asked Questions (FAQ)</div>
+                <div class="title">yomix.plotting</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -297,8 +383,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Installation Guide</a><ul>
+<li><a class="reference internal" href="#install-via-pip">Install via pip</a></li>
+<li><a class="reference internal" href="#to-use-it-on-your-own-files">To use it on your own files:</a></li>
+<li><a class="reference internal" href="#improve-reactiveness-with-subsampling">Improve Reactiveness with Subsampling</a></li>
+<li><a class="reference internal" href="#install-from-source">Install from Source</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
