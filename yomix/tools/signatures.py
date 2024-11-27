@@ -2,7 +2,7 @@ import numpy as np
 import bokeh.models
 import bokeh.layouts
 import sys
-
+import time
 
 def signature_buttons(
     adata, offset_text_feature_color, offset_label, hidden_checkbox_A, hidden_checkbox_B
@@ -79,36 +79,51 @@ def signature_buttons(
     def compute_signature(adata, means, stds, obs_indices_A, obs_indices_B=None):
         # STEP 1: sort features using Wasserstein distances
 
-        # TODO: vectorize this
-        dist_list = []
-        mu1_list = []
-        mu2_list = []
-        sigma1_list = []
-        sigma2_list = []
-        for i in range(adata.n_vars):
-            a2 = adata.X[obs_indices_A, i]
-            mu2 = a2.mean()
-            sigma2 = a2.std()
-            if obs_indices_B is None:
-                mu = means.iloc[i]
-                sigma1 = stds.iloc[i]
-                mu1 = (mu * adata.n_obs - mu2 * len(obs_indices_A)) / (
+        a2 = adata.X[obs_indices_A,:]
+        mu2_array = a2.mean(axis=0)
+        sigma2_array = a2.std(axis=0)
+        print(a2.shape, mu2_array.shape, sigma2_array.shape)
+        if obs_indices_B is None:
+            mu = means
+            sigma1_array = stds.to_numpy()
+            mu1_array = (
+                (mu * adata.n_obs - mu2_array * len(obs_indices_A)) / (
                     adata.n_obs - len(obs_indices_A)
                 )
-            else:
-                a1 = adata.X[obs_indices_B, i]
-                mu1 = a1.mean()
-                sigma1 = a1.std()
-            if sigma1 < 1e-8:
-                sigma1 = 1e-8
-            if sigma2 < 1e-8:
-                sigma2 = 1e-8
-            dist_h = wasserstein_distance(mu1, sigma1, mu2, sigma2)
-            mu1_list.append(mu1)  # mean on subset B or rest
-            mu2_list.append(mu2)  # mean on subset A
-            sigma1_list.append(sigma1)
-            sigma2_list.append(sigma2)
-            dist_list.append(dist_h)
+                ).to_numpy()
+        else:
+            a1 = adata.X[obs_indices_B,:]
+            mu1_array = a1.mean(axis=0)
+            sigma1_array = a1.std(axis=0)
+        sigma1_array[sigma1_array < 1e-8] = 1e-8
+        sigma2_array[sigma2_array < 1e-8] = 1e-8
+        dist_list = wasserstein_distance(mu1_array, sigma1_array, mu2_array, sigma2_array)
+        
+        #  TODO: vectorize this
+        # for i in range(adata.n_vars):
+        #     a2 = adata.X[obs_indices_A, i]
+        #     mu2 = a2.mean()
+        #     sigma2 = a2.std()
+        #     if obs_indices_B is None:
+        #         mu = means.iloc[i]
+        #         sigma1 = stds.iloc[i]
+        #         mu1 = (mu * adata.n_obs - mu2 * len(obs_indices_A)) / (
+        #             adata.n_obs - len(obs_indices_A)
+        #         )
+        #     else:
+        #         a1 = adata.X[obs_indices_B, i]
+        #         mu1 = a1.mean()
+        #         sigma1 = a1.std()
+        #     if sigma1 < 1e-8:
+        #         sigma1 = 1e-8
+        #     if sigma2 < 1e-8:
+        #         sigma2 = 1e-8
+        #     dist_h = wasserstein_distance(mu1, sigma1, mu2, sigma2)
+        #     mu1_array.append(mu1)  # mean on subset B or rest
+        #     mu2_array.append(mu2)  # mean on subset A
+        #     sigma1_array.append(sigma1)
+        #     sigma2_array.append(sigma2)
+        #     dist_list.append(dist_h)
 
         sorted_features = np.argsort(dist_list)[::-1]
 
@@ -152,10 +167,10 @@ def signature_buttons(
         # STEP 3: compute MCC scores
         mcc_scores = []
         for i in range(small_data.n_vars):
-            mu1 = mu1_list[selected_features[i]]
-            sigma1 = sigma1_list[selected_features[i]]
-            mu2 = mu2_list[selected_features[i]]
-            sigma2 = sigma2_list[selected_features[i]]
+            mu1 = mu1_array[selected_features[i]]
+            sigma1 = sigma1_array[selected_features[i]]
+            mu2 = mu2_array[selected_features[i]]
+            sigma2 = sigma2_array[selected_features[i]]
             cut1, cut2 = find_intersection_gaussians(mu1, sigma1, mu2, sigma2)
 
             if sigma1 == sigma2:
@@ -262,12 +277,16 @@ def signature_buttons(
         # new_sorted_features = np.hstack((filtered_features, rest_features))
 
         new_sorted_features = new_sorted_features[:20]
-        up_or_down_dict = {}
-        for ft in new_sorted_features:
-            if mu1_list[ft] > mu2_list[ft]:
-                up_or_down_dict[ft] = "-"
-            else:
-                up_or_down_dict[ft] = "+"
+        up_or_down_dict = {
+            ft:("-" if mu1_array[ft] > mu2_array[ft] else "+" ) for ft in new_sorted_features
+            }
+        
+        # up_or_down_dict = {}
+        # for ft in new_sorted_features:
+        #     if mu1_array[ft] > mu2_array[ft]:
+        #         up_or_down_dict[ft] = "-"
+        #     else:
+        #         up_or_down_dict[ft] = "+"
 
         # del small_data.obs["new_label_must_not_be_an_existing_column"]
         return new_sorted_features, mcc_dict, up_or_down_dict
