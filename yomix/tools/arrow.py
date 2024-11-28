@@ -120,7 +120,7 @@ def arrow_function(
 
     tooltip = bokeh.models.Tooltip(
         content="Requires drawing an arrow with the Arrow Tool "
-        "and setting the subset A  ",
+        "and setting subset A.\u00A0\u00A0",
         position="right",
     )
     help_button_oriented = bokeh.models.HelpButton(tooltip=tooltip, margin=(3, 0, 3, 0))

@@ -3,6 +3,7 @@ import bokeh.models
 import bokeh.layouts
 import sys
 
+
 def signature_buttons(
     adata, offset_text_feature_color, offset_label, hidden_checkbox_A, hidden_checkbox_B
 ):
@@ -78,25 +79,26 @@ def signature_buttons(
     def compute_signature(adata, means, stds, obs_indices_A, obs_indices_B=None):
         # STEP 1: sort features using Wasserstein distances
 
-        a2 = adata.X[obs_indices_A,:]
+        a2 = adata.X[obs_indices_A, :]
         mu2_array = a2.mean(axis=0)
         sigma2_array = a2.std(axis=0)
         if obs_indices_B is None:
             mu = means
             sigma1_array = stds.to_numpy()
             mu1_array = (
-                (mu * adata.n_obs - mu2_array * len(obs_indices_A)) / (
-                    adata.n_obs - len(obs_indices_A)
-                )
-                ).to_numpy()
+                (mu * adata.n_obs - mu2_array * len(obs_indices_A))
+                / (adata.n_obs - len(obs_indices_A))
+            ).to_numpy()
         else:
-            a1 = adata.X[obs_indices_B,:]
+            a1 = adata.X[obs_indices_B, :]
             mu1_array = a1.mean(axis=0)
             sigma1_array = a1.std(axis=0)
         sigma1_array[sigma1_array < 1e-8] = 1e-8
         sigma2_array[sigma2_array < 1e-8] = 1e-8
-        dist_list = wasserstein_distance(mu1_array, sigma1_array, mu2_array, sigma2_array)
-        
+        dist_list = wasserstein_distance(
+            mu1_array, sigma1_array, mu2_array, sigma2_array
+        )
+
         #  TODO: vectorize this
         # for i in range(adata.n_vars):
         #     a2 = adata.X[obs_indices_A, i]
@@ -276,9 +278,10 @@ def signature_buttons(
 
         new_sorted_features = new_sorted_features[:20]
         up_or_down_dict = {
-            ft:("-" if mu1_array[ft] > mu2_array[ft] else "+" ) for ft in new_sorted_features
-            }
-        
+            ft: ("-" if mu1_array[ft] > mu2_array[ft] else "+")
+            for ft in new_sorted_features
+        }
+
         # up_or_down_dict = {}
         # for ft in new_sorted_features:
         #     if mu1_array[ft] > mu2_array[ft]:
@@ -444,7 +447,7 @@ def signature_buttons(
     label_signature.on_change("value", lambda attr, old, new: label_function(new))
 
     tooltip1 = bokeh.models.Tooltip(
-        content="Requires setting the subset A  ", position="right"
+        content="Requires setting subset A.\u00A0\u00A0", position="right"
     )
     help_button1 = bokeh.models.HelpButton(tooltip=tooltip1, margin=(3, 0, 3, 0))
     bt_sign1 = bokeh.models.Button(
@@ -463,7 +466,7 @@ def signature_buttons(
     )
 
     tooltip2 = bokeh.models.Tooltip(
-        content="Requires setting the subsets A and B  ", position="right"
+        content="Requires setting subsets A and B.\u00A0\u00A0", position="right"
     )
     help_button2 = bokeh.models.HelpButton(tooltip=tooltip2, margin=(3, 0, 3, 0))
     bt_sign2 = bokeh.models.Button(
