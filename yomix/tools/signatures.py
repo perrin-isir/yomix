@@ -2,7 +2,6 @@ import numpy as np
 import bokeh.models
 import bokeh.layouts
 import sys
-import time
 
 def signature_buttons(
     adata, offset_text_feature_color, offset_label, hidden_checkbox_A, hidden_checkbox_B
@@ -82,7 +81,6 @@ def signature_buttons(
         a2 = adata.X[obs_indices_A,:]
         mu2_array = a2.mean(axis=0)
         sigma2_array = a2.std(axis=0)
-        print(a2.shape, mu2_array.shape, sigma2_array.shape)
         if obs_indices_B is None:
             mu = means
             sigma1_array = stds.to_numpy()
