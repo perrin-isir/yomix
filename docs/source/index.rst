@@ -12,7 +12,7 @@ Contents:
    :caption: User Guide
 
    installation
-   getting_started
+   faq
   
 .. toctree::
    :maxdepth: 2
@@ -20,4 +20,3 @@ Contents:
 
    yomix.plotting
    yomix.tools
-
