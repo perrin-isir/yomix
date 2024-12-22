@@ -2,6 +2,7 @@ import numpy as np
 import bokeh.models
 import bokeh.layouts
 import sys
+from scipy.stats import rankdata
 
 
 def signature_buttons(
@@ -171,8 +172,6 @@ def signature_buttons(
         #] * size_A + ["label_0"] * size_B
 
         # directmcc branch modifs
-
-        from scipy.stats import rankdata
 
         def all_mcc(scores1, scores2):
             l1 = scores1.shape[1]
