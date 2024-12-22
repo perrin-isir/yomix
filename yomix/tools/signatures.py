@@ -135,22 +135,28 @@ def signature_buttons(
             rest_indices = np.arange(adata.n_obs)[~np.in1d(ref_array, obs_indices_A)]
         else:
             rest_indices = obs_indices_B
-        target_size = 1000
-        divisor = max((len(obs_indices_A) + len(rest_indices)) / target_size, 1.0)
 
-        size_A = max(
-            int(len(obs_indices_A) / divisor),
-            min(len(obs_indices_A), 10),  # take at least 10 samples if possible
-        )
-        size_B = max(
-            int(len(rest_indices) / divisor),
-            min(len(rest_indices), 10),  # take at least 10 samples if possible
-        )
-        samples_A = np.random.choice(obs_indices_A, size_A, replace=False)
-        samples_B = np.random.choice(rest_indices, size_B, replace=False)
-        intersection = np.intersect1d(samples_A, samples_B)
-        samples_A = np.setdiff1d(samples_A, intersection)
-        samples_B = np.setdiff1d(samples_B, intersection)
+        # target_size = 1000
+        # divisor = max((len(obs_indices_A) + len(rest_indices)) / target_size, 1.0)
+        #
+        # size_A = max(
+        #     int(len(obs_indices_A) / divisor),
+        #     min(len(obs_indices_A), 10),  # take at least 10 samples if possible
+        # )
+        # size_B = max(
+        #     int(len(rest_indices) / divisor),
+        #     min(len(rest_indices), 10),  # take at least 10 samples if possible
+        # )
+        # samples_A = np.random.choice(obs_indices_A, size_A, replace=False)
+        # samples_B = np.random.choice(rest_indices, size_B, replace=False)
+        # intersection = np.intersect1d(samples_A, samples_B)
+        # samples_A = np.setdiff1d(samples_A, intersection)
+        # samples_B = np.setdiff1d(samples_B, intersection)
+        # size_A = len(samples_A)
+        # size_B = len(samples_B)
+
+        samples_A = obs_indices_A
+        samples_B = rest_indices
         size_A = len(samples_A)
         size_B = len(samples_B)
         all_samples = np.hstack((samples_A, samples_B))
@@ -163,6 +169,95 @@ def signature_buttons(
         small_data.obs["new_label_must_not_be_an_existing_column"] = [
             "label_1"
         ] * size_A + ["label_0"] * size_B
+
+        # directmcc branch modifs
+
+        from scipy.stats import rankdata
+
+        def all_mcc(scores1, scores2):
+            l1 = scores1.shape[1]
+            l2 = scores2.shape[1]
+
+            scores1.sort(axis=1)
+            scores2.sort(axis=1)
+
+            # rng = np.arange(l1 + l2) + 1
+            rng = np.repeat(np.arange(l1 + l2), scores1.shape[0]).reshape(l1 + l2, -1).T + 1
+
+            all_scores = np.hstack((scores1, scores2))
+
+            ranks = rankdata(all_scores, method='min', axis=1).astype(int)
+
+            all_scores.sort(axis=1)
+
+            ranks1 = ranks[:, :l1]
+            ranks2 = ranks[:, l1:]
+
+            def matthews_c(a_, b_, c_, d_, l1_, l2_):
+                tp = a_
+                fp = b_
+                fn = c_
+                tn = d_
+                # __import__("IPython").embed()
+                # normalizing confusion_matrix
+                # max_value = np.maximum.reduce([tp, fp, fn, tn])
+                max_value = np.maximum(l1_, l2_)
+                tp = tp / max_value
+                fp = fp / max_value
+                fn = fn / max_value
+                tn = tn / max_value
+
+                denominator = (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)
+
+                mcc = (tp * tn - fp * fn) / np.sqrt(denominator)
+                return mcc
+
+            def searchsorted2d(a_, b_):
+                m, n = a_.shape
+                max_num = np.maximum(a_.max(), b_.max()) + 1
+                r = max_num * np.arange(a_.shape[0])[:, None]
+                p_ = np.searchsorted((a_ + r).ravel(), (b_ + r).ravel()).reshape(m, -1)
+                return p_ - n * (np.arange(m)[:, None])
+
+            a = searchsorted2d(ranks1, rng)[:, 1:]
+            b = l1 - a
+            c = searchsorted2d(ranks2, rng)[:, 1:]
+            d = l2 - c
+
+            #print(ranks1[:10,:10], ranks2[:10,:10])
+
+            results = matthews_c(a, b, c, d, l1, l2)
+
+            idx = l1 + l2 - 2 - np.abs(results[:, ::-1]).argmax(axis=1)
+
+            first_axis_range = np.arange(scores1.shape[0]),
+            mccscore = results[first_axis_range, idx]
+            cut = (all_scores[first_axis_range, idx] + all_scores[first_axis_range, idx + 1]) / 2.
+            return mccscore, cut
+
+        print("go")
+        sc1 = adata[samples_A, selected_features].copy().X.T
+        sc2 = adata[samples_B, selected_features].copy().X.T
+        mccs, cuts = all_mcc(sc1, sc2)
+        #print(adata[samples_A, selected_features].var_names)
+        nsf = selected_features[np.argsort(np.abs(mccs.flatten()))[::-1]]
+        mcc_d = dict(map(lambda i, j: (i, j), selected_features, mccs.flatten()))
+        mcc_d_abs = dict(map(lambda i, j: (i, j), selected_features, np.abs(mccs).flatten()))
+        nsf  = nsf[:20]
+        up_or_down_d = {
+            ft: ("-" if mcc_d[ft] > 0. else "+")
+            for ft in nsf
+        }
+        #print(mccs)
+        #print(mcc_d)
+        #print(np.argsort(np.abs(mccs.flatten()))[::-1])
+        # from scipy.stats import wilcoxon
+        # print(a1.shape)
+        # U1, p = mannwhitneyu(a1, a2, method="asymptotic")
+        print("end")
+        return nsf, mcc_d_abs, up_or_down_d
+
+        # end of directmcc branch modifs
 
         # STEP 3: compute MCC scores
         mcc_scores = []
@@ -247,7 +342,6 @@ def signature_buttons(
 
         mcc_dict = dict(map(lambda i, j: (i, j), selected_features, mcc_scores))
         new_sorted_features = selected_features[np.argsort(mcc_scores)[::-1]]
-
         # # STEP 4 : correlation filtering
 
         # corr_df_original = np.abs(
