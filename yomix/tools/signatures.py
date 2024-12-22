@@ -157,18 +157,18 @@ def signature_buttons(
 
         samples_A = obs_indices_A
         samples_B = rest_indices
-        size_A = len(samples_A)
-        size_B = len(samples_B)
-        all_samples = np.hstack((samples_A, samples_B))
+        #size_A = len(samples_A)
+        #size_B = len(samples_B)
+        #all_samples = np.hstack((samples_A, samples_B))
 
         # Keep only 100 features:
         selected_features = sorted_features[:100]
 
-        small_data = adata[all_samples, selected_features].copy()
+        #small_data = adata[all_samples, selected_features].copy()
         # small_data = adata[all_samples, selected_features]
-        small_data.obs["new_label_must_not_be_an_existing_column"] = [
-            "label_1"
-        ] * size_A + ["label_0"] * size_B
+        #small_data.obs["new_label_must_not_be_an_existing_column"] = [
+        #    "label_1"
+        #] * size_A + ["label_0"] * size_B
 
         # directmcc branch modifs
 
@@ -181,9 +181,6 @@ def signature_buttons(
             scores1.sort(axis=1)
             scores2.sort(axis=1)
 
-            # rng = np.arange(l1 + l2) + 1
-            rng = np.repeat(np.arange(l1 + l2), scores1.shape[0]).reshape(l1 + l2, -1).T + 1
-
             all_scores = np.hstack((scores1, scores2))
 
             ranks = rankdata(all_scores, method='min', axis=1).astype(int)
@@ -194,18 +191,15 @@ def signature_buttons(
             ranks2 = ranks[:, l1:]
 
             def matthews_c(a_, b_, c_, d_, l1_, l2_):
-                tp = a_
-                fp = b_
-                fn = c_
-                tn = d_
+
                 # __import__("IPython").embed()
                 # normalizing confusion_matrix
                 # max_value = np.maximum.reduce([tp, fp, fn, tn])
                 max_value = np.maximum(l1_, l2_)
-                tp = tp / max_value
-                fp = fp / max_value
-                fn = fn / max_value
-                tn = tn / max_value
+                tp = a_ / max_value
+                fp = b_ / max_value
+                fn = c_ / max_value
+                tn = d_ / max_value
 
                 denominator = (tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)
 
@@ -219,12 +213,15 @@ def signature_buttons(
                 p_ = np.searchsorted((a_ + r).ravel(), (b_ + r).ravel()).reshape(m, -1)
                 return p_ - n * (np.arange(m)[:, None])
 
-            a = searchsorted2d(ranks1, rng)[:, 1:]
-            b = l1 - a
-            c = searchsorted2d(ranks2, rng)[:, 1:]
-            d = l2 - c
+            maxis = np.maximum(np.max(ranks1, axis=1), np.max(ranks2, axis=1))
+            rng = (
+                    np.repeat(np.arange(l1 + l2), scores1.shape[0]).reshape(l1 + l2, -1).T + 1
+            ).clip(max=maxis[:, None])
 
-            #print(ranks1[:10,:10], ranks2[:10,:10])
+            a = np.minimum(searchsorted2d(ranks1, rng)[:, 1:], l1)
+            b = l1 - a
+            c = np.minimum(searchsorted2d(ranks2, rng)[:, 1:], l2)
+            d = l2 - c
 
             results = matthews_c(a, b, c, d, l1, l2)
 
@@ -235,7 +232,7 @@ def signature_buttons(
             cut = (all_scores[first_axis_range, idx] + all_scores[first_axis_range, idx + 1]) / 2.
             return mccscore, cut
 
-        print("go")
+        #print("go")
         sc1 = adata[samples_A, selected_features].copy().X.T
         sc2 = adata[samples_B, selected_features].copy().X.T
         mccs, cuts = all_mcc(sc1, sc2)
@@ -254,7 +251,7 @@ def signature_buttons(
         # from scipy.stats import wilcoxon
         # print(a1.shape)
         # U1, p = mannwhitneyu(a1, a2, method="asymptotic")
-        print("end")
+        #print("end")
         return nsf, mcc_d_abs, up_or_down_d
 
         # end of directmcc branch modifs
