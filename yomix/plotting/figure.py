@@ -17,7 +17,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-MAX_UNIQUE_VALUES = 50
+MAX_UNIQUE_VALUES = 70
 MAX_UNIQUE_RATIO = 0.5
 
 

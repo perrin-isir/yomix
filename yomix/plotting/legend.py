@@ -312,8 +312,8 @@ def setup_legend(
         title="Color by (select field):", value="", options=menu, width=235
     )
     tooltip = bokeh.models.Tooltip(
-        content="Categorical fields with many different unique items (more than 50 "
-        "or more than half the number of samples) are ignored.\u00A0\u00A0",
+        content="Ignores categorical fields with many different unique items (more "
+        "than 70 or more than half the number of samples).\u00A0\u00A0",
         position="right",
     )
     help_button = bokeh.models.HelpButton(tooltip=tooltip, margin=(21, 0, 3, 0))
