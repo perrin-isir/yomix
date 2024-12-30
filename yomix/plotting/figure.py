@@ -352,6 +352,11 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         "{height: 100px;} .noUi-target.noUi-vertical {margin: 10px 0px 0px 25px;}"
     )
 
+    stylesheet2 = InlineStyleSheet(
+        css=".noUi-vertical .noUi-origin {top: 0%;} .noUi-base .noUi-connects "
+        "{height: 335px;} .noUi-target.noUi-vertical {margin: 15px 0px 0px -105px;}"
+    )
+
     bt_slider_point_size = bokeh.models.Slider(
         start=0.0,
         end=10.0,
@@ -375,6 +380,19 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         show_value=False,
         name="bt_hidden_slider_yaw",
         visible=False,
+    )
+
+    bt_slider_range = bokeh.models.RangeSlider(
+        start=0.0,
+        end=1.0,
+        value=(0.5, 0.7),
+        step=0.01,
+        title="Select by color",
+        orientation="vertical",
+        stylesheets=[stylesheet2],
+        width=100,
+        show_value=False,
+        direction="rtl",
     )
 
     bt_toggle_anim = bokeh.models.Toggle(
@@ -1352,7 +1370,10 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     resize_height_input.js_on_change(
         "value",
         bokeh.models.CustomJS(
-            args=dict(pbp=points_bokeh_plot, source_rotmatrix_etc=source_rotmatrix_etc),
+            args=dict(
+                pbp=points_bokeh_plot,
+                source_rotmatrix_etc=source_rotmatrix_etc,
+                slider_range=bt_slider_range),
             code="""
         var parsed_int = parseInt(this.value);
         if (!isNaN(parsed_int)) {
@@ -1360,9 +1381,22 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             source_rotmatrix_etc.data['height'][0] = Math.max(parsed_int - 31., 1.);
             source_rotmatrix_etc.change.emit();
             pbp.change.emit();
+            //slider_range.value = [ 0.0, 1.0 ];
+            //slider_range.change.emit();
         }
     """,
         ),
+    )
+
+    def modif_slider_range(attr, old, new):
+        # bt_slider_range.value = (0.2, 1.)
+        bt_slider_range.stylesheets = [InlineStyleSheet(
+            css=".noUi-vertical .noUi-origin {top: 0%;} .noUi-base .noUi-connects "
+            "{height: " + str(max(int(new)-50, 0)) + "px;} .noUi-target.noUi-vertical {margin: 10px 0px 0px 25px;}")]
+
+    resize_height_input.on_change(
+        "value",
+        lambda attr, old, new: modif_slider_range(attr, old, new)
     )
 
     sample_search_input = bokeh.models.TextInput(
@@ -1461,6 +1495,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             heatmap_plot,
             bt_slider_point_size,
             bt_hidden_slider_yaw,
+            bt_slider_range,
             bt_toggle_anim,
             bt_slider_yaw,
             bt_slider_pitch,
@@ -1485,6 +1520,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             heatmap_plot,
             bt_slider_point_size,
             bt_hidden_slider_yaw,
+            bt_slider_range,
             bt_toggle_anim,
             bt_slider_yaw,
             bt_slider_pitch,

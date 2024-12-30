@@ -137,6 +137,7 @@ def main():
                         heat_map,
                         bt_slider_point_size,
                         bt_hidden_slider_yaw,
+                        bt_slider_range,
                         bt_toggle_anim,
                         bt_slider_yaw,
                         bt_slider_pitch,
@@ -311,6 +312,7 @@ def main():
                                             resize_height_input, resize_width_input
                                         ),
                                         points_bokeh_plot,
+                                        bt_slider_range
                                     ),
                                     bokeh.layouts.row(
                                         bokeh.layouts.column(
@@ -352,6 +354,7 @@ def main():
                                             resize_height_input, resize_width_input
                                         ),
                                         points_bokeh_plot,
+                                        bt_slider_range
                                     ),
                                     bokeh.layouts.row(
                                         bokeh.layouts.column(

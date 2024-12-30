@@ -206,6 +206,7 @@ def setup_legend(
                 cbar = bokeh.models.ColorBar(
                     color_mapper=custom_color_mapper,
                     label_standoff=12,
+                    width=75,
                     ticker=bokeh.models.FixedTicker(ticks=ltick_vals),
                 )
 
@@ -225,7 +226,7 @@ def setup_legend(
                 )
                 all_tick_width = [font.getlength(x) for x in tick_strings]
                 max_tick_width = max(all_tick_width)
-                legend_width = 48 + max_tick_width
+                legend_width = cbar.width + 23 + max_tick_width
                 rwi.value = str(int(bokeh_plot.width - float(hlw.value) + legend_width))
                 hlw.value = str(int(legend_width))
                 legend_dict[obs_col] = ([cbar], legend_width)
