@@ -181,6 +181,7 @@ def main():
                         obs_numerical,
                         source_rotmatrix_etc,
                         resize_width_input,
+                        bt_slider_range
                     )
 
                     offset_text_feature_color, offset_label = (
@@ -197,6 +198,7 @@ def main():
                             hidden_checkbox_B,
                             resize_width_input_bis,
                             resize_height_input_bis,
+                            bt_slider_range
                         )
                     )
                     offset_label.visible = False

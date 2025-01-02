@@ -2,10 +2,12 @@ import bokeh.models
 import numpy as np
 from pathlib import Path
 from PIL import ImageFont
+import re
+from bokeh.models import InlineStyleSheet
 
 
 def setup_legend(
-    pb_plot, obs_string, obs_numerical, source_rotmatrix_etc, resize_width_input
+    pb_plot, obs_string, obs_numerical, source_rotmatrix_etc, resize_width_input, bt_slider_range
 ):
     source = pb_plot.select(dict(name="scatterplot"))[0].data_source
 
@@ -69,7 +71,7 @@ def setup_legend(
     )
 
     def redefine_custom_legend(
-        bokeh_plot, htls, htlc, hlw, obs_col, legend_dict, rwi, obs_s, obs_n
+        bokeh_plot, htls, htlc, hlw, obs_col, legend_dict, rwi, obs_s, obs_n, bt_slider_range
     ):
         if obs_col in obs_s:
             bokeh_plot.right = []
@@ -177,6 +179,7 @@ def setup_legend(
                 rwi.value = str(int(bokeh_plot.width - float(hlw.value) + legend_width))
                 hlw.value = str(int(legend_width))
                 legend_dict[obs_col] = (legend_list, legend_width)
+        bt_slider_range.visible = False
         if obs_col in obs_n:
             bokeh_plot.right = []
             htlc.value = obs_col
@@ -184,10 +187,14 @@ def setup_legend(
                 legend_list = legend_dict[obs_col][0]
                 for legend in legend_list:
                     bokeh_plot.add_layout(legend, "right")
+                cbar = legend_list[0]
+                min_val = cbar.ticker.ticks[0]
+                max_val = cbar.ticker.ticks[-1]
+                legend_width = legend_dict[obs_col][1]
                 rwi.value = str(
-                    int(bokeh_plot.width - float(hlw.value) + legend_dict[obs_col][1])
+                    int(bokeh_plot.width - float(hlw.value) + legend_width)
                 )
-                hlw.value = str(legend_dict[obs_col][1])
+                hlw.value = str(legend_width)
             else:
                 data = bokeh_plot.select(dict(name="scatterplot"))[0].data_source.data
                 max_val = data[obs_col].max()
@@ -206,10 +213,9 @@ def setup_legend(
                 cbar = bokeh.models.ColorBar(
                     color_mapper=custom_color_mapper,
                     label_standoff=12,
-                    width=75,
+                    width=47,
                     ticker=bokeh.models.FixedTicker(ticks=ltick_vals),
                 )
-
                 cbar.major_label_overrides = {
                     nbr: f"""{float(f"{nbr:.3E}"):.10f}""".rstrip("0") + "0"
                     for nbr in ltick_vals
@@ -230,6 +236,16 @@ def setup_legend(
                 rwi.value = str(int(bokeh_plot.width - float(hlw.value) + legend_width))
                 hlw.value = str(int(legend_width))
                 legend_dict[obs_col] = ([cbar], legend_width)
+            current_style = bt_slider_range.stylesheets[0].css
+            pattern = r"\{margin: 32px 0px 0px -\d+px;\}"
+            new_style = re.sub(pattern,
+                               "{margin: 32px 0px 0px -" + str(int(legend_width)) + "px;}", current_style)
+            bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]
+            bt_slider_range.start = min_val
+            bt_slider_range.end = max_val
+            bt_slider_range.value = (min_val, max_val)
+            bt_slider_range.step = (max_val - min_val)/100.
+            bt_slider_range.visible = True
 
     hidden_text_label_search = bokeh.models.TextInput(
         value="", title="Label search", name="hidden_text_label_search", width=999
@@ -331,6 +347,7 @@ def setup_legend(
             resize_width_input,
             obs_string,
             obs_numerical,
+            bt_slider_range
         ),
     )
 

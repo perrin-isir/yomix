@@ -1,5 +1,5 @@
 from scipy.stats import gaussian_kde
-from bokeh.models import ColumnDataSource, LinearColorMapper, ColorBar
+from bokeh.models import ColumnDataSource, LinearColorMapper, ColorBar, InlineStyleSheet
 from bokeh.transform import linear_cmap
 from bokeh.palettes import Viridis256
 import bokeh.models
@@ -21,6 +21,7 @@ def color_by_feature_value(
     hidden_checkbox_B,
     resize_w_input,
     resize_h_input,
+    bt_slider_range
 ):
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source
 
@@ -31,7 +32,7 @@ def color_by_feature_value(
     for i, featname in enumerate(adata.var_names):
         feature_dict[featname] = [i, feat_min[i], feat_max[i]]
 
-    def color_modif(stringval, htlc, rwi, hlw, label_stringval, resize_w, resize_h):
+    def color_modif(stringval, htlc, rwi, hlw, label_stringval, resize_w, resize_h, bt_slider_range):
         stringval_modif = ("  +  " + stringval).replace("  +    -  ", "  -  ").replace(
             "  +    +  ", "  +  "
         ).replace("  +  ", "§§§§§§§§§§  +  ").replace(
@@ -138,18 +139,29 @@ def color_by_feature_value(
                 cbar = bokeh.models.ColorBar(
                     color_mapper=custom_color_mapper,
                     label_standoff=12,
+                    width=47,
                     ticker=bokeh.models.FixedTicker(ticks=[]),
                     title=simple_shrink(stringval, 50),
                 )
                 points_bokeh_plot.add_layout(cbar, "right")
-                label_font_size = cbar.major_label_text_font_size
-                label_font_size = int(label_font_size[:-2])
-                legend_width = 33
+                # label_font_size = cbar.major_label_text_font_size
+                # label_font_size = int(label_font_size[:-2])
+                legend_width = 55
                 rwi.value = str(
                     int(points_bokeh_plot.width - float(hlw.value) + legend_width)
                 )
                 hlw.value = str(int(legend_width))
                 select_color_by.value = ""
+                current_style = bt_slider_range.stylesheets[0].css
+                pattern = r"\{margin: 32px 0px 0px -\d+px;\}"
+                new_style = re.sub(pattern,
+                                   "{margin: 32px 0px 0px -" + str(int(legend_width)) + "px;}", current_style)
+                bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]
+                bt_slider_range.start = 0.
+                bt_slider_range.end = 1.
+                bt_slider_range.value = (0., 1.)
+                bt_slider_range.step = 0.01
+                bt_slider_range.visible = True
 
     source.js_on_change(
         "data",
@@ -188,6 +200,7 @@ def color_by_feature_value(
             offset_label.value,  # Include the current label value
             resize_w_input,
             resize_h_input,
+            bt_slider_range
         ),
     )
 
@@ -202,6 +215,7 @@ def color_by_feature_value(
             new_label,  # Pass the new label value to color_modif
             resize_w_input,
             resize_h_input,
+            bt_slider_range
         ),
     )
 

@@ -2,6 +2,7 @@ import numpy as np
 import bokeh.models
 import bokeh.io
 import bokeh.layouts
+import re
 from bokeh.models import (
     HoverTool,
     LassoSelectTool,
@@ -354,7 +355,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
     stylesheet2 = InlineStyleSheet(
         css=".noUi-vertical .noUi-origin {top: 0%;} .noUi-base .noUi-connects "
-        "{height: 335px;} .noUi-target.noUi-vertical {margin: 15px 0px 0px -105px;}"
+        "{height: " + str(height - 55) + "px;} .noUi-target.noUi-vertical {margin: 32px 0px 0px -55px;}"
     )
 
     bt_slider_point_size = bokeh.models.Slider(
@@ -385,15 +386,38 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     bt_slider_range = bokeh.models.RangeSlider(
         start=0.0,
         end=1.0,
-        value=(0.5, 0.7),
+        value=(0., 1.0),
         step=0.01,
-        title="Select by color",
         orientation="vertical",
         stylesheets=[stylesheet2],
         width=100,
         show_value=False,
         direction="rtl",
+        visible=False
     )
+
+    callback_js_slider_range = bokeh.models.CustomJS(
+        args=dict(source=source),
+        code="""
+        const maxv = cb_obj.end;
+        const minv = cb_obj.start;
+        const spread = maxv - minv;
+        const value_low = (cb_obj.value[0] - minv) / spread;
+        const value_high = (cb_obj.value[1] - minv) / spread;
+        const data = source.data;
+        var t = [];
+        const color = data['color'];
+        for (let i = 0; i < color.length; i++) {
+            if (color[i] >= value_low && color[i] <= value_high) {
+                t.push(i);
+            }
+        }
+        source.selected.indices = t;
+        source.change.emit();
+    """,
+    )
+
+    bt_slider_range.js_on_change("value_throttled", callback_js_slider_range)
 
     bt_toggle_anim = bokeh.models.Toggle(
         label="Animation: OFF", width=100, active=False, name="bt_toggle_anim"
@@ -1389,10 +1413,10 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     )
 
     def modif_slider_range(attr, old, new):
-        # bt_slider_range.value = (0.2, 1.)
-        bt_slider_range.stylesheets = [InlineStyleSheet(
-            css=".noUi-vertical .noUi-origin {top: 0%;} .noUi-base .noUi-connects "
-            "{height: " + str(max(int(new)-50, 0)) + "px;} .noUi-target.noUi-vertical {margin: 10px 0px 0px 25px;}")]
+        current_style = bt_slider_range.stylesheets[0].css
+        pattern = r"\{height: \d+px;\}"
+        new_style = re.sub(pattern, "{height: " + str(max(int(new)-55, 0)) + "px;}", current_style)
+        bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]
 
     resize_height_input.on_change(
         "value",
