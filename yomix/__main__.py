@@ -181,7 +181,7 @@ def main():
                         obs_numerical,
                         source_rotmatrix_etc,
                         resize_width_input,
-                        bt_slider_range
+                        bt_slider_range,
                     )
 
                     offset_text_feature_color, offset_label = (
@@ -198,7 +198,7 @@ def main():
                             hidden_checkbox_B,
                             resize_width_input_bis,
                             resize_height_input_bis,
-                            bt_slider_range
+                            bt_slider_range,
                         )
                     )
                     offset_label.visible = False
@@ -314,7 +314,7 @@ def main():
                                             resize_height_input, resize_width_input
                                         ),
                                         points_bokeh_plot,
-                                        bt_slider_range
+                                        bt_slider_range,
                                     ),
                                     bokeh.layouts.row(
                                         bokeh.layouts.column(
@@ -356,7 +356,7 @@ def main():
                                             resize_height_input, resize_width_input
                                         ),
                                         points_bokeh_plot,
-                                        bt_slider_range
+                                        bt_slider_range,
                                     ),
                                     bokeh.layouts.row(
                                         bokeh.layouts.column(

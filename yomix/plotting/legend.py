@@ -7,7 +7,12 @@ from bokeh.models import InlineStyleSheet
 
 
 def setup_legend(
-    pb_plot, obs_string, obs_numerical, source_rotmatrix_etc, resize_width_input, bt_slider_range
+    pb_plot,
+    obs_string,
+    obs_numerical,
+    source_rotmatrix_etc,
+    resize_width_input,
+    bt_slider_range,
 ):
     source = pb_plot.select(dict(name="scatterplot"))[0].data_source
 
@@ -71,7 +76,16 @@ def setup_legend(
     )
 
     def redefine_custom_legend(
-        bokeh_plot, htls, htlc, hlw, obs_col, legend_dict, rwi, obs_s, obs_n, bt_slider_range
+        bokeh_plot,
+        htls,
+        htlc,
+        hlw,
+        obs_col,
+        legend_dict,
+        rwi,
+        obs_s,
+        obs_n,
+        bt_slider_range,
     ):
         if obs_col in obs_s:
             bokeh_plot.right = []
@@ -191,9 +205,7 @@ def setup_legend(
                 min_val = cbar.ticker.ticks[0]
                 max_val = cbar.ticker.ticks[-1]
                 legend_width = legend_dict[obs_col][1]
-                rwi.value = str(
-                    int(bokeh_plot.width - float(hlw.value) + legend_width)
-                )
+                rwi.value = str(int(bokeh_plot.width - float(hlw.value) + legend_width))
                 hlw.value = str(legend_width)
             else:
                 data = bokeh_plot.select(dict(name="scatterplot"))[0].data_source.data
@@ -238,13 +250,16 @@ def setup_legend(
                 legend_dict[obs_col] = ([cbar], legend_width)
             current_style = bt_slider_range.stylesheets[0].css
             pattern = r"\{margin: 32px 0px 0px -\d+px;\}"
-            new_style = re.sub(pattern,
-                               "{margin: 32px 0px 0px -" + str(int(legend_width)) + "px;}", current_style)
+            new_style = re.sub(
+                pattern,
+                "{margin: 32px 0px 0px -" + str(int(legend_width)) + "px;}",
+                current_style,
+            )
             bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]
             bt_slider_range.start = min_val
             bt_slider_range.end = max_val
             bt_slider_range.value = (min_val, max_val)
-            bt_slider_range.step = (max_val - min_val)/100.
+            bt_slider_range.step = (max_val - min_val) / 100.0
             bt_slider_range.visible = True
 
     hidden_text_label_search = bokeh.models.TextInput(
@@ -347,7 +362,7 @@ def setup_legend(
             resize_width_input,
             obs_string,
             obs_numerical,
-            bt_slider_range
+            bt_slider_range,
         ),
     )
 

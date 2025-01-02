@@ -21,7 +21,7 @@ def color_by_feature_value(
     hidden_checkbox_B,
     resize_w_input,
     resize_h_input,
-    bt_slider_range
+    bt_slider_range,
 ):
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source
 
@@ -32,7 +32,9 @@ def color_by_feature_value(
     for i, featname in enumerate(adata.var_names):
         feature_dict[featname] = [i, feat_min[i], feat_max[i]]
 
-    def color_modif(stringval, htlc, rwi, hlw, label_stringval, resize_w, resize_h, bt_slider_range):
+    def color_modif(
+        stringval, htlc, rwi, hlw, label_stringval, resize_w, resize_h, bt_slider_range
+    ):
         stringval_modif = ("  +  " + stringval).replace("  +    -  ", "  -  ").replace(
             "  +    +  ", "  +  "
         ).replace("  +  ", "§§§§§§§§§§  +  ").replace(
@@ -154,12 +156,15 @@ def color_by_feature_value(
                 select_color_by.value = ""
                 current_style = bt_slider_range.stylesheets[0].css
                 pattern = r"\{margin: 32px 0px 0px -\d+px;\}"
-                new_style = re.sub(pattern,
-                                   "{margin: 32px 0px 0px -" + str(int(legend_width)) + "px;}", current_style)
+                new_style = re.sub(
+                    pattern,
+                    "{margin: 32px 0px 0px -" + str(int(legend_width)) + "px;}",
+                    current_style,
+                )
                 bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]
-                bt_slider_range.start = 0.
-                bt_slider_range.end = 1.
-                bt_slider_range.value = (0., 1.)
+                bt_slider_range.start = 0.0
+                bt_slider_range.end = 1.0
+                bt_slider_range.value = (0.0, 1.0)
                 bt_slider_range.step = 0.01
                 bt_slider_range.visible = True
 
@@ -200,7 +205,7 @@ def color_by_feature_value(
             offset_label.value,  # Include the current label value
             resize_w_input,
             resize_h_input,
-            bt_slider_range
+            bt_slider_range,
         ),
     )
 
@@ -215,7 +220,7 @@ def color_by_feature_value(
             new_label,  # Pass the new label value to color_modif
             resize_w_input,
             resize_h_input,
-            bt_slider_range
+            bt_slider_range,
         ),
     )
 

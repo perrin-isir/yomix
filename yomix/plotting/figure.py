@@ -355,7 +355,9 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
     stylesheet2 = InlineStyleSheet(
         css=".noUi-vertical .noUi-origin {top: 0%;} .noUi-base .noUi-connects "
-        "{height: " + str(height - 55) + "px;} .noUi-target.noUi-vertical {margin: 32px 0px 0px -55px;}"
+        "{height: "
+        + str(height - 55)
+        + "px;} .noUi-target.noUi-vertical {margin: 32px 0px 0px -55px;}"
     )
 
     bt_slider_point_size = bokeh.models.Slider(
@@ -386,14 +388,14 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     bt_slider_range = bokeh.models.RangeSlider(
         start=0.0,
         end=1.0,
-        value=(0., 1.0),
+        value=(0.0, 1.0),
         step=0.01,
         orientation="vertical",
         stylesheets=[stylesheet2],
         width=100,
         show_value=False,
         direction="rtl",
-        visible=False
+        visible=False,
     )
 
     callback_js_slider_range = bokeh.models.CustomJS(
@@ -1397,7 +1399,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             args=dict(
                 pbp=points_bokeh_plot,
                 source_rotmatrix_etc=source_rotmatrix_etc,
-                slider_range=bt_slider_range),
+                slider_range=bt_slider_range,
+            ),
             code="""
         var parsed_int = parseInt(this.value);
         if (!isNaN(parsed_int)) {
@@ -1415,12 +1418,13 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
     def modif_slider_range(attr, old, new):
         current_style = bt_slider_range.stylesheets[0].css
         pattern = r"\{height: \d+px;\}"
-        new_style = re.sub(pattern, "{height: " + str(max(int(new)-55, 0)) + "px;}", current_style)
+        new_style = re.sub(
+            pattern, "{height: " + str(max(int(new) - 55, 0)) + "px;}", current_style
+        )
         bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]
 
     resize_height_input.on_change(
-        "value",
-        lambda attr, old, new: modif_slider_range(attr, old, new)
+        "value", lambda attr, old, new: modif_slider_range(attr, old, new)
     )
 
     sample_search_input = bokeh.models.TextInput(
