@@ -220,6 +220,21 @@ def main():
                         hidden_checkbox_B,
                     )
 
+                    select_color_by.js_on_change(
+                        "value",
+                        bokeh.models.CustomJS(
+                            args=dict(
+                                otfc=offset_text_feature_color, ms=multiselect_signature
+                            ),
+                            code="""
+                                if (cb_obj.value != "") {
+                                    otfc.value="";
+                                    ms.value=[];
+                                }
+                            """,
+                        ),
+                    )
+
                     bt_open_link = yomix.tools.gene_query_button(
                         offset_text_feature_color
                     )
