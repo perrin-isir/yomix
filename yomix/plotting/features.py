@@ -83,40 +83,32 @@ def color_by_feature_value(
                     elt = positive_matches[0]
                     vmin = feature_dict[elt][1]
                     vmax = feature_dict[elt][2]
-                    new_data_color = np.empty(len(source.data["color"]))
-                    for i in range(len(source.data["color"])):
-                        new_data_color[i] = (
-                            adata.X[source.data["index"][i], feature_dict[elt][0]]
-                            - vmin
-                        ) / (vmax - vmin + 0.000001)
+                    new_data_color = (
+                        adata.X[source.data["index"][:], feature_dict[elt][0]] - vmin
+                    ) / (vmax - vmin + 0.000001)
                 elif len(positive_matches) == 0 and len(negative_matches) == 1:
                     elt = negative_matches[0]
                     vmax = -feature_dict[elt][1]
                     vmin = -feature_dict[elt][2]
-                    new_data_color = np.empty(len(source.data["color"]))
-                    for i in range(len(source.data["color"])):
-                        new_data_color[i] = (
-                            -adata.X[source.data["index"][i], feature_dict[elt][0]]
+                    new_data_color = (
+                        -adata.X[source.data["index"][:], feature_dict[elt][0]] - vmin
+                    ) / (vmax - vmin + 0.000001)
+                else:
+                    new_data_color = np.zeros(len(source.data["color"]))
+                    for elt in positive_matches:
+                        vmin = feature_dict[elt][1]
+                        vmax = feature_dict[elt][2]
+                        new_data_color += (
+                            adata.X[source.data["index"][:], feature_dict[elt][0]]
                             - vmin
                         ) / (vmax - vmin + 0.000001)
-                else:
-                    new_data_color = np.empty(len(source.data["color"]))
-                    for i in range(len(source.data["color"])):
-                        new_data_color[i] = 0.0
-                        for elt in positive_matches:
-                            vmin = feature_dict[elt][1]
-                            vmax = feature_dict[elt][2]
-                            new_data_color[i] += (
-                                adata.X[source.data["index"][i], feature_dict[elt][0]]
-                                - vmin
-                            ) / (vmax - vmin + 0.000001)
-                        for elt in negative_matches:
-                            vmax = -feature_dict[elt][1]
-                            vmin = -feature_dict[elt][2]
-                            new_data_color[i] += (
-                                -adata.X[source.data["index"][i], feature_dict[elt][0]]
-                                - vmin
-                            ) / (vmax - vmin + 0.000001)
+                    for elt in negative_matches:
+                        vmax = -feature_dict[elt][1]
+                        vmin = -feature_dict[elt][2]
+                        new_data_color += (
+                            -adata.X[source.data["index"][:], feature_dict[elt][0]]
+                            - vmin
+                        ) / (vmax - vmin + 0.000001)
                     new_data_color = new_data_color / (new_data_color.max() + 0.000001)
                 source.data["color_ref"] = new_data_color
 
