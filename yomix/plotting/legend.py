@@ -107,6 +107,7 @@ def setup_legend(
 
                 data = bokeh_plot.select(dict(name="scatterplot"))[0].data_source.data
                 list_vals = all_values(data[obs_col])
+
                 if len(list_vals) == 1:
                     l_values = [0.0]
                 else:
@@ -131,13 +132,22 @@ def setup_legend(
                 legend_list = []
                 legend_width = 0
 
+                scatter_circles = [
+                    bokeh_plot.add_glyph(
+                        bokeh.models.Scatter(
+                            size=0, x=0, y=0, line_width=0, fill_color=l_colors[i]
+                        )
+                    )
+                    for i in range(full_length)
+                ]
+
                 iteration = 0
                 for itvl in list_intervals:
                     iteration += 1
                     items_list = [
                         (
                             list_vals[i],
-                            [bokeh_plot.scatter(size=0, x=0, y=0, color=l_colors[i])],
+                            [scatter_circles[i]],
                         )
                         for i in itvl
                     ]
