@@ -57,6 +57,12 @@ def setup_legend(
     """,
         ),
     )
+    hidden_text_label_column_bis = bokeh.models.TextInput(
+        value="",
+        title="Label column bis",
+        name="hidden_text_label_column_bis",
+        width=999,
+    )
 
     hidden_legend_width = bokeh.models.TextInput(
         value="0", title="Legend width", name="hidden_legend_width", width=999
@@ -79,6 +85,7 @@ def setup_legend(
         bokeh_plot,
         htls,
         htlc,
+        htlcbis,
         hlw,
         obs_col,
         legend_dict,
@@ -90,6 +97,7 @@ def setup_legend(
         if obs_col in obs_s:
             bokeh_plot.right = []
             htlc.value = obs_col
+            htlcbis.value = obs_col
             if obs_col in legend_dict:
                 legend_list = legend_dict[obs_col][0]
                 for legend in legend_list:
@@ -129,7 +137,8 @@ def setup_legend(
                 list_intervals = [
                     np.arange(cuts[i], cuts[i + 1]) for i in range(len(cuts) - 1)
                 ]
-                legend_list = []
+                legend_list = [bokeh.models.Legend(items=[], visible=False, name="0")]
+                bokeh_plot.add_layout(legend_list[0], "right")
                 legend_width = 0
 
                 scatter_circles = [
@@ -178,7 +187,6 @@ def setup_legend(
                             """,
                         )
                         legend.items[i].renderers[0].js_on_change("change:muted", cb_js)
-                    bokeh_plot.add_layout(legend, "right")
                     legend.label_text_font = "Helvetica"
                     if iteration == 1:
                         label_font_size = legend.label_text_font_size
@@ -194,29 +202,43 @@ def setup_legend(
                         font.getlength(x.label["value"]) for x in legend.items
                     ]
                     max_label_width = max(all_label_width)
-                    legend_width += (
+                    width_increment = (
                         2 * (legend.border_line_width)
                         + legend.glyph_width
                         + max_label_width
                     )
+                    legend_width += width_increment
+                    legend.name = str(width_increment)
+                    bokeh_plot.add_layout(legend, "right")
                     legend_list.append(legend)
                 rwi.value = str(int(bokeh_plot.width - float(hlw.value) + legend_width))
                 hlw.value = str(int(legend_width))
                 legend_dict[obs_col] = (legend_list, legend_width)
         bt_slider_range.visible = False
         if obs_col in obs_n:
-            bokeh_plot.right = []
+            if bokeh_plot.right:
+                decrement = float(bokeh_plot.right[0].name)
+                bokeh_plot.right.pop(0)
+            else:
+                decrement = 0.0
             htlc.value = obs_col
             if obs_col in legend_dict:
                 legend_list = legend_dict[obs_col][0]
-                for legend in legend_list:
-                    bokeh_plot.add_layout(legend, "right")
+                legend_len = len(bokeh_plot.right)
                 cbar = legend_list[0]
+                bokeh_plot.right = [cbar] + bokeh_plot.right
                 min_val = cbar.ticker.ticks[0]
                 max_val = cbar.ticker.ticks[-1]
-                legend_width = legend_dict[obs_col][1]
-                rwi.value = str(int(bokeh_plot.width - float(hlw.value) + legend_width))
-                hlw.value = str(legend_width)
+                if legend_len > 0:
+                    legend_width_modif = (
+                        legend_dict[obs_col][1] + float(hlw.value) - decrement
+                    )
+                else:
+                    legend_width_modif = legend_dict[obs_col][1]
+                rwi.value = str(
+                    int(bokeh_plot.width - float(hlw.value) + legend_width_modif)
+                )
+                hlw.value = str(legend_width_modif)
             else:
                 data = bokeh_plot.select(dict(name="scatterplot"))[0].data_source.data
                 max_val = data[obs_col].max()
@@ -242,7 +264,8 @@ def setup_legend(
                     nbr: f"""{float(f"{nbr:.3E}"):.10f}""".rstrip("0") + "0"
                     for nbr in ltick_vals
                 }
-                bokeh_plot.add_layout(cbar, "right")
+                legend_len = len(bokeh_plot.right)
+                bokeh_plot.right = [cbar] + bokeh_plot.right
                 tick_strings = list(cbar.major_label_overrides.values())
                 label_font_size = cbar.major_label_text_font_size
                 label_font_size = int(label_font_size[:-2])
@@ -255,14 +278,21 @@ def setup_legend(
                 all_tick_width = [font.getlength(x) for x in tick_strings]
                 max_tick_width = max(all_tick_width)
                 legend_width = cbar.width + 23 + max_tick_width
-                rwi.value = str(int(bokeh_plot.width - float(hlw.value) + legend_width))
-                hlw.value = str(int(legend_width))
+                cbar.name = str(legend_width)
+                if legend_len > 0:
+                    legend_width_modif = legend_width + float(hlw.value)
+                else:
+                    legend_width_modif = legend_width
+                rwi.value = str(
+                    int(bokeh_plot.width - float(hlw.value) + legend_width_modif)
+                )
+                hlw.value = str(int(legend_width_modif))
                 legend_dict[obs_col] = ([cbar], legend_width)
             current_style = bt_slider_range.stylesheets[0].css
             pattern = r"\{margin: 32px 0px 0px -\d+px;\}"
             new_style = re.sub(
                 pattern,
-                "{margin: 32px 0px 0px -" + str(int(legend_width)) + "px;}",
+                "{margin: 32px 0px 0px -" + str(int(legend_width_modif)) + "px;}",
                 current_style,
             )
             bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]
@@ -308,12 +338,13 @@ def setup_legend(
                 source=source,
                 source_modif=source_modifiers,
                 htlc=hidden_text_label_column,
+                htlc_bis=hidden_text_label_column_bis,
                 hlw=hidden_legend_width,
             ),
             code="""
         const smd = source_modif.data;
         const data = source.data;
-        const labels = data[htlc.value];
+        const labels = data[htlc_bis.value];
         if (smd["shift"][0] == 1) {
             if (this.value.slice(-25, this.value.length) != "[-.-.-.-.-shift-.-.-.-.-]")
             {
@@ -366,6 +397,7 @@ def setup_legend(
             pb_plot,
             hidden_text_label_search,
             hidden_text_label_column,
+            hidden_text_label_column_bis,
             hidden_legend_width,
             new,
             legend_dict,

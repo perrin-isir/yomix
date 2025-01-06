@@ -112,7 +112,6 @@ def color_by_feature_value(
                     new_data_color = new_data_color / (new_data_color.max() + 0.000001)
                 source.data["color_ref"] = new_data_color
 
-                points_bokeh_plot.right = []
                 htlc.value = ""
                 viridis_colors = list(bokeh.palettes.Viridis256)
                 custom_color_mapper = bokeh.models.LinearColorMapper(
@@ -137,20 +136,31 @@ def color_by_feature_value(
                     ticker=bokeh.models.FixedTicker(ticks=[]),
                     title=simple_shrink(stringval, 50),
                 )
-                points_bokeh_plot.add_layout(cbar, "right")
+                if points_bokeh_plot.right:
+                    decrement = float(points_bokeh_plot.right[0].name)
+                    points_bokeh_plot.right.pop(0)
+                else:
+                    decrement = 0.0
+                legend_len = len(points_bokeh_plot.right)
+                points_bokeh_plot.right = [cbar] + points_bokeh_plot.right
                 # label_font_size = cbar.major_label_text_font_size
                 # label_font_size = int(label_font_size[:-2])
                 legend_width = 55
+                cbar.name = "55"
+                if legend_len > 0:
+                    legend_width_modif = legend_width + float(hlw.value) - decrement
+                else:
+                    legend_width_modif = legend_width
                 rwi.value = str(
-                    int(points_bokeh_plot.width - float(hlw.value) + legend_width)
+                    int(points_bokeh_plot.width - float(hlw.value) + legend_width_modif)
                 )
-                hlw.value = str(int(legend_width))
+                hlw.value = str(int(legend_width_modif))
                 select_color_by.value = ""
                 current_style = bt_slider_range.stylesheets[0].css
                 pattern = r"\{margin: 32px 0px 0px -\d+px;\}"
                 new_style = re.sub(
                     pattern,
-                    "{margin: 32px 0px 0px -" + str(int(legend_width)) + "px;}",
+                    "{margin: 32px 0px 0px -" + str(int(legend_width_modif)) + "px;}",
                     current_style,
                 )
                 bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]
