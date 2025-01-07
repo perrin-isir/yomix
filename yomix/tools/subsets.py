@@ -214,7 +214,7 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
     bt_AplusB = bokeh.models.Button(label="Select A+B", width=button_width)
     bt_AplusB.js_on_click(
         bokeh.models.CustomJS(
-            args=dict(source=source, btsr=bt_slider_range),
+            args=dict(source=source),
             code="""
         const data = source.data;
         var t = [];
@@ -228,8 +228,6 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
         }
         source.selected.indices = t;
         source.change.emit();
-        btsr.value = [btsr.start, btsr.end];
-        btsr.change.emit();
     """,
         )
     )
