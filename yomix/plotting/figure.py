@@ -1485,7 +1485,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             vp.width = parsed_int;
             hp.width = parsed_int;
             vp.change.emit();
-            hp.width.emit();
+            hp.change.emit();
         }
     """,
         ),

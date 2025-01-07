@@ -167,7 +167,7 @@ def main():
                         bt_AplusB,
                         bt_nothing,
                     ) = yomix.tools.subset_buttons(
-                        points_bokeh_plot, source_rotmatrix_etc
+                        points_bokeh_plot, source_rotmatrix_etc, bt_slider_range
                     )
 
                     (

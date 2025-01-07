@@ -203,9 +203,10 @@ def setup_legend(
                     ]
                     max_label_width = max(all_label_width)
                     width_increment = (
-                        2 * (legend.border_line_width)
+                        legend.border_line_width
                         + legend.glyph_width
                         + max_label_width
+                        + 14
                     )
                     legend_width += width_increment
                     legend.name = str(width_increment)
@@ -277,10 +278,10 @@ def setup_legend(
                 )
                 all_tick_width = [font.getlength(x) for x in tick_strings]
                 max_tick_width = max(all_tick_width)
-                legend_width = cbar.width + 23 + max_tick_width
+                legend_width = 30 + cbar.width + max_tick_width
                 cbar.name = str(legend_width)
                 if legend_len > 0:
-                    legend_width_modif = legend_width + float(hlw.value)
+                    legend_width_modif = legend_width + float(hlw.value) - decrement
                 else:
                     legend_width_modif = legend_width
                 rwi.value = str(
@@ -292,7 +293,7 @@ def setup_legend(
             pattern = r"\{margin: 32px 0px 0px -\d+px;\}"
             new_style = re.sub(
                 pattern,
-                "{margin: 32px 0px 0px -" + str(int(legend_width_modif)) + "px;}",
+                "{margin: 32px 0px 0px -" + str(int(legend_width_modif - 13)) + "px;}",
                 current_style,
             )
             bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]

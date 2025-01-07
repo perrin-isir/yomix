@@ -145,8 +145,8 @@ def color_by_feature_value(
                 points_bokeh_plot.right = [cbar] + points_bokeh_plot.right
                 # label_font_size = cbar.major_label_text_font_size
                 # label_font_size = int(label_font_size[:-2])
-                legend_width = 55
-                cbar.name = "55"
+                legend_width = cbar.width + 34
+                cbar.name = str(legend_width)
                 if legend_len > 0:
                     legend_width_modif = legend_width + float(hlw.value) - decrement
                 else:
@@ -160,7 +160,9 @@ def color_by_feature_value(
                 pattern = r"\{margin: 32px 0px 0px -\d+px;\}"
                 new_style = re.sub(
                     pattern,
-                    "{margin: 32px 0px 0px -" + str(int(legend_width_modif)) + "px;}",
+                    "{margin: 32px 0px 0px -"
+                    + str(int(legend_width_modif) - 34)
+                    + "px;}",
                     current_style,
                 )
                 bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]

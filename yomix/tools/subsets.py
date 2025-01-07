@@ -1,7 +1,7 @@
 import bokeh.models
 
 
-def subset_buttons(points_bokeh_plot, source_rotmatrix_etc):
+def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source
     button_width = 112
     # big_button_width = 235
@@ -214,7 +214,7 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc):
     bt_AplusB = bokeh.models.Button(label="Select A+B", width=button_width)
     bt_AplusB.js_on_click(
         bokeh.models.CustomJS(
-            args=dict(source=source),
+            args=dict(source=source, btsr=bt_slider_range),
             code="""
         const data = source.data;
         var t = [];
@@ -228,6 +228,8 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc):
         }
         source.selected.indices = t;
         source.change.emit();
+        btsr.value = [btsr.start, btsr.end];
+        btsr.change.emit();
     """,
         )
     )
@@ -235,11 +237,13 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc):
     bt_nothing = bokeh.models.Button(label="Select nothing", width=button_width)
     bt_nothing.js_on_click(
         bokeh.models.CustomJS(
-            args=dict(source=source),
+            args=dict(source=source, btsr=bt_slider_range),
             code="""
         const data = source.data;
         source.selected.indices = [];
         source.change.emit();
+        btsr.value = [btsr.start, btsr.end];
+        btsr.change.emit();
     """,
         )
     )
