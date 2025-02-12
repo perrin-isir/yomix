@@ -31,6 +31,15 @@ def main():
     parser.add_argument(
         "file", type=str, nargs="?", default=None, help="the .ha5d file to open"
     )
+
+    parser.add_argument(
+        "--port",
+        "-p",
+        type=int,
+        default=5006,
+        help="port on which the app should run",
+    )
+
     parser.add_argument(
         "--subsampling",
         type=int,
@@ -61,10 +70,10 @@ def main():
 
         bokeh_app = Application(FunctionHandler(modify_doc))
 
-        server = Server({"/": bokeh_app}, io_loop=io_loop)
+        server = Server({"/": bokeh_app}, io_loop=io_loop, port=args.port)
         server.start()
 
-        print("Opening Yomix on http://localhost:5006/\n")
+        print(f"Opening Yomix on http://localhost:{args.port}/\n")
 
         io_loop.add_callback(server.show, "/")
         io_loop.start()
