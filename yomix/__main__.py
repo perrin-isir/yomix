@@ -41,6 +41,14 @@ def main():
     )
 
     parser.add_argument(
+        "--name",
+        "-n",
+        type=str,
+        default="",
+        help="name given to the main plot",
+    )
+
+    parser.add_argument(
         "--subsampling",
         type=int,
         help="randomly subsample the dataset to a maximum number of observations "
@@ -64,7 +72,7 @@ def main():
 
     if filearg.exists():
 
-        modify_doc = yomix.server.gen_modify_doc(filearg, args.subsampling)
+        modify_doc = yomix.server.gen_modify_doc(filearg, args.subsampling, args.name)
 
         io_loop = IOLoop.current()
 

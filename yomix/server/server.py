@@ -6,9 +6,10 @@ import yomix
 import numpy as np
 import anndata
 from scipy.sparse import issparse
+import os
 
 
-def gen_modify_doc(filearg, subsampling):
+def gen_modify_doc(filearg, subsampling, title):
 
     xd = anndata.read_h5ad(filearg.absolute())
 
@@ -101,7 +102,7 @@ def gen_modify_doc(filearg, subsampling):
                     sl_component1,
                     sl_component2,
                     sl_component3,
-                ) = yomix.plotting.main_figure(xd, embedding_key, 890, 390, "")
+                ) = yomix.plotting.main_figure(xd, embedding_key, 890, 390, title)
 
                 resize_width_input_bis.visible = False
                 resize_height_input_bis.visible = False
@@ -366,5 +367,7 @@ def gen_modify_doc(filearg, subsampling):
                 slider.value = 10
 
         doc.add_periodic_callback(f, 100)
+
+        doc.title = f"Yomix - {os.path.basename(filearg)}"
 
     return modify_doc
