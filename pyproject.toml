@@ -12,7 +12,7 @@ file = "VERSION"
 name = "yomix"
 dynamic = ["version", "description"]
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "pandas>=2.2.2",
     "numpy>=1.26.0",
