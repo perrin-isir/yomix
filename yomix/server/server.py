@@ -32,11 +32,11 @@ def gen_modify_doc(filearg, subsampling, title):
     xd.X = np.divide(xd.X - min_norm, max_norm - min_norm + 1e-8)
     obs_string_init = list(xd.obs.select_dtypes("category").keys())
     all_labels_list = []
-    for lbl in obs_string_init:
+    for lbl in sorted(obs_string_init):
         # filter labels
         if yomix.plotting.check_obs_field(xd, str(lbl)):
             labels = np.array(list(dict.fromkeys(xd.obs[str(lbl)])))
-            all_labels_list += [(str(lbl), str(elt)) for elt in labels]
+            all_labels_list += [(str(lbl), str(elt)) for elt in sorted(labels)]
             for elt in labels:
                 xd.var["yomix_median_" + str(lbl) + ">>yomix>>" + str(elt)] = -np.ones(
                     xd.n_vars
