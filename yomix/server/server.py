@@ -7,6 +7,7 @@ import numpy as np
 import anndata
 from scipy.sparse import issparse
 import os
+import pandas as pd
 
 
 def gen_modify_doc(filearg, subsampling, title):
@@ -32,15 +33,17 @@ def gen_modify_doc(filearg, subsampling, title):
     xd.X = np.divide(xd.X - min_norm, max_norm - min_norm + 1e-8)
     obs_string_init = list(xd.obs.select_dtypes("category").keys())
     all_labels_list = []
+    var_dict = {}
     for lbl in sorted(obs_string_init):
         # filter labels
         if yomix.plotting.check_obs_field(xd, str(lbl)):
             labels = np.array(list(dict.fromkeys(xd.obs[str(lbl)])))
             all_labels_list += [(str(lbl), str(elt)) for elt in sorted(labels)]
             for elt in labels:
-                xd.var["yomix_median_" + str(lbl) + ">>yomix>>" + str(elt)] = -np.ones(
-                    xd.n_vars
+                var_dict["yomix_median_" + str(lbl) + ">>yomix>>" + str(elt)] = (
+                    -np.ones(xd.n_vars)
                 )
+    xd.var = pd.concat([xd.var, pd.DataFrame(var_dict, index=xd.var.index)], axis=1)
     xd.uns["all_labels"] = all_labels_list
 
     def var_mean_values(adata) -> np.ndarray:
