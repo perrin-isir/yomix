@@ -4,6 +4,8 @@
 
 Yomix is an interactive tool to explore low dimensional embeddings of omics data.
 
+# ![alt text](https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_gif.gif "GIF demo of the Yomix tool interface")
+
 ## INSTALL
 
 In a python virtual environment, do:
