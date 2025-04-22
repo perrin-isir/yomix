@@ -3,6 +3,7 @@ import bokeh.models
 import bokeh.layouts
 import sys
 from scipy.stats import rankdata
+from bokeh.io import curdoc
 
 
 def signature_buttons(
@@ -360,6 +361,7 @@ def signature_buttons(
             label_signature,
         )
     )
+
 
     return (
         bt_sign1,
