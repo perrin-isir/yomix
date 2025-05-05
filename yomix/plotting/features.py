@@ -158,7 +158,7 @@ def color_by_feature_value(
                 hlw.value = str(int(legend_width_modif))
                 select_color_by.value = ""
                 current_style = bt_slider_range.stylesheets[0].css
-                pattern = r"\{margin: \d+px 0px 0px -\d+px;\}"
+                pattern = r"\{margin: -{0,1}\d+px 0px 0px -\d+px;\}"
                 if select_field.visible:
                     new_style = re.sub(
                         pattern,

@@ -102,6 +102,16 @@ def setup_legend(
         ),
     )
 
+    options = []
+    label_signature = bokeh.models.MultiSelect(
+        title="Groups",
+        options=options,
+        width=235,
+        max_width=235,
+        width_policy="max",
+    )
+    label_signature.visible = False
+
     def redefine_custom_legend(
         bokeh_plot,
         htls,
@@ -117,6 +127,7 @@ def setup_legend(
         obs_n,
         bt_slider_range,
     ):
+        label_signature.visible = False
         if obs_col in obs_s:
             s_field.visible = False
             bokeh_plot.right = []
@@ -250,7 +261,7 @@ def setup_legend(
             s_field.visible = True
         bt_slider_range.visible = False
         if obs_col in obs_n:
-            s_field.visible = False
+            # s_field.visible = False
             if bokeh_plot.right:
                 decrement = float(bokeh_plot.right[0].name)
                 bokeh_plot.right.pop(0)
@@ -325,11 +336,22 @@ def setup_legend(
                 legend_dict[obs_col] = ([cbar], legend_width)
             current_style = bt_slider_range.stylesheets[0].css
             pattern = r"\{margin: -{0,1}\d+px 0px 0px -\d+px;\}"
-            new_style = re.sub(
-                pattern,
-                "{margin: 32px 0px 0px -" + str(int(legend_width_modif - 13)) + "px;}",
-                current_style,
-            )
+            if select_field.visible:
+                new_style = re.sub(
+                    pattern,
+                    "{margin: -25px 0px 0px -"
+                    + str(int(legend_width_modif) - 11)
+                    + "px;}",
+                    current_style,
+                )
+            else:
+                new_style = re.sub(
+                    pattern,
+                    "{margin: 32px 0px 0px -"
+                    + str(int(legend_width_modif - 13))
+                    + "px;}",
+                    current_style,
+                )
             bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]
             bt_slider_range.start = min_val
             bt_slider_range.end = max_val
@@ -463,4 +485,5 @@ def setup_legend(
         hidden_text_label_column,
         hidden_legend_width,
         select_field,
+        label_signature,
     )

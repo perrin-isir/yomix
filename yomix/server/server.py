@@ -13,6 +13,7 @@ import pandas as pd
 def gen_modify_doc(filearg, subsampling, title):
 
     xd = anndata.read_h5ad(filearg.absolute())
+    print("Data loaded.")
 
     def _to_dense(x):
         if issparse(x):
@@ -31,9 +32,11 @@ def gen_modify_doc(filearg, subsampling, title):
     min_norm = np.min(xd.X, axis=0)
     max_norm = np.max(xd.X, axis=0)
     xd.X = np.divide(xd.X - min_norm, max_norm - min_norm + 1e-8)
+    print("Data normalized.")
     obs_string_init = list(xd.obs.select_dtypes("category").keys())
     all_labels_list = []
     var_dict = {}
+
     for lbl in sorted(obs_string_init):
         labels = np.array(list(dict.fromkeys(xd.obs[str(lbl)])))
         all_labels_list += [(str(lbl), str(elt)) for elt in sorted(labels)]
@@ -129,6 +132,7 @@ def gen_modify_doc(filearg, subsampling, title):
                     hidden_text_label_column,
                     hidden_legend_width,
                     select_field,
+                    label_signature,
                 ) = yomix.plotting.setup_legend(
                     points_bokeh_plot,
                     obs_string,
@@ -168,13 +172,13 @@ def gen_modify_doc(filearg, subsampling, title):
                     multiselect_signature,
                     div_signature_list,
                     sign_nr,
-                    label_signature,
                 ) = yomix.tools.signature_buttons(
                     xd,
                     offset_text_feature_color,
                     offset_label,
                     hidden_checkbox_A,
                     hidden_checkbox_B,
+                    label_signature,
                 )
 
                 select_color_by.js_on_change(

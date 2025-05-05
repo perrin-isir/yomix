@@ -6,7 +6,12 @@ from scipy.stats import rankdata
 
 
 def signature_buttons(
-    adata, offset_text_feature_color, offset_label, hidden_checkbox_A, hidden_checkbox_B
+    adata,
+    offset_text_feature_color,
+    offset_label,
+    hidden_checkbox_A,
+    hidden_checkbox_B,
+    label_signature,
 ):
 
     def wasserstein_distance(mu1, sigma1, mu2, sigma2):
@@ -220,7 +225,7 @@ def signature_buttons(
 
             # Update label_sign options
             label_sign.options = unique_labels
-            label_sign.size = len(label_sign.options)
+            label_sign.size = min(len(label_sign.options), 20)
             # finalize label_sign
             label_sign.title = "Groups"
             label_sign.value = ["[  Subset A  ]", "[  Rest  ]"]
@@ -289,15 +294,6 @@ def signature_buttons(
         width_policy="max",
     )
 
-    options = []
-    label_signature = bokeh.models.MultiSelect(
-        title="Groups",
-        options=options,
-        width=235,
-        max_width=235,
-        width_policy="max",
-    )
-
     def multiselect_function(feature_list):
         of_text = ""
         for i in range(len(feature_list)):
@@ -309,6 +305,8 @@ def signature_buttons(
             else:  # feature_list[i][0] == "-"
                 of_text += "  -  " + feature_list[i][1:]
         offset_text_feature_color.value = of_text
+        if of_text != "":
+            label_signature.visible = True
 
     multiselect_signature.on_change(
         "value", lambda attr, old, new: multiselect_function(new)
@@ -369,5 +367,4 @@ def signature_buttons(
         multiselect_signature,
         div_signature_list,
         signature_nr,
-        label_signature,
     )
