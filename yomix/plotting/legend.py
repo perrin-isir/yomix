@@ -9,28 +9,49 @@ from bokeh.models import InlineStyleSheet
 def setup_legend(
     pb_plot,
     obs_string,
+    obs_string_many,
     obs_numerical,
     source_rotmatrix_etc,
     resize_width_input,
     bt_slider_range,
+    unique_dict,
 ):
     source = pb_plot.select(dict(name="scatterplot"))[0].data_source
 
     hidden_text_label_column = bokeh.models.TextInput(
         value="", title="Label column", name="hidden_text_label_column", width=999
     )
+
     hidden_text_label_column.js_on_change(
         "value",
         bokeh.models.CustomJS(
-            args=dict(source=source, obss=obs_string, obsn=obs_numerical),
+            args=dict(
+                source=source,
+                udicts=unique_dict,
+                obss=obs_string,
+                obsm=obs_string_many,
+                obsn=obs_numerical,
+            ),
             code="""
         if (obss.includes(this.value)) {
             const data = source.data;
-            function onlyUnique(value, index, array) {
-                return array.indexOf(value) === index;
+            var unique = udicts[this.value];
+            var l_values = new Array(unique.length).fill(0);
+            const step = 1./(Math.max(unique.length - 1, 1)) * 0.999999;
+            var l_values_dict = {};
+            l_values_dict[unique[0]] = -1.;
+            for (let i = 1; i < l_values.length; i++) {
+                l_values[i] = l_values[i-1] + step;
+                l_values_dict[unique[i]] = l_values[i]-1.;
             }
-            var unique = data[this.value].filter(onlyUnique);
-            unique.sort();
+            for (let i = 0; i < data["color"].length; i++) {
+                data["color"][i] = l_values_dict[data[this.value][i]];
+            }
+            source.change.emit();
+        }
+        if (obsm.includes(this.value)) {
+            const data = source.data;
+            var unique = udicts[this.value];
             var l_values = new Array(unique.length).fill(0);
             const step = 1./(Math.max(unique.length - 1, 1)) * 0.999999;
             var l_values_dict = {};
@@ -87,14 +108,17 @@ def setup_legend(
         htlc,
         htlcbis,
         hlw,
+        s_field,
         obs_col,
         legend_dict,
         rwi,
         obs_s,
+        obs_s_many,
         obs_n,
         bt_slider_range,
     ):
         if obs_col in obs_s:
+            s_field.visible = False
             bokeh_plot.right = []
             htlc.value = obs_col
             htlcbis.value = obs_col
@@ -215,8 +239,18 @@ def setup_legend(
                 rwi.value = str(int(bokeh_plot.width - float(hlw.value) + legend_width))
                 hlw.value = str(int(legend_width))
                 legend_dict[obs_col] = (legend_list, legend_width)
+        elif obs_col in obs_s_many:
+            bokeh_plot.right = []
+            htlc.value = obs_col
+            htlcbis.value = obs_col
+            rwi.value = str(int(bokeh_plot.width - float(hlw.value)))
+            hlw.value = str(0)
+            s_field.title = f"Select [ {str(obs_col)} ]:"
+            s_field.options = [""] + unique_dict[obs_col]
+            s_field.visible = True
         bt_slider_range.visible = False
         if obs_col in obs_n:
+            s_field.visible = False
             if bokeh_plot.right:
                 decrement = float(bokeh_plot.right[0].name)
                 bokeh_plot.right.pop(0)
@@ -290,7 +324,7 @@ def setup_legend(
                 hlw.value = str(int(legend_width_modif))
                 legend_dict[obs_col] = ([cbar], legend_width)
             current_style = bt_slider_range.stylesheets[0].css
-            pattern = r"\{margin: 32px 0px 0px -\d+px;\}"
+            pattern = r"\{margin: -{0,1}\d+px 0px 0px -\d+px;\}"
             new_style = re.sub(
                 pattern,
                 "{margin: 32px 0px 0px -" + str(int(legend_width_modif - 13)) + "px;}",
@@ -306,6 +340,18 @@ def setup_legend(
     hidden_text_label_search = bokeh.models.TextInput(
         value="", title="Label search", name="hidden_text_label_search", width=999
     )
+
+    select_field = bokeh.models.Select(title="", value="", options=[""])
+    select_field.js_on_change(
+        "value",
+        bokeh.models.CustomJS(
+            args=dict(htls=hidden_text_label_search),
+            code="""
+        htls.value = this.value;
+    """,
+        ),
+    )
+    select_field.visible = False
 
     legend_dict = {}
 
@@ -381,13 +427,13 @@ def setup_legend(
     )
 
     # menu = [(o_c, o_c) for o_c in obs_string + obs_numerical]
-    menu = obs_string + obs_numerical
+    menu = obs_string + obs_string_many + obs_numerical
     select_color_by = bokeh.models.Select(
         title="Color by (select field):", value="", options=menu, width=235
     )
     tooltip = bokeh.models.Tooltip(
-        content="Ignores categorical fields with many different unique items (more "
-        "than 70 or more than half the number of samples).\u00A0\u00A0",
+        content="Categorical fields are treated differently when they have many "
+        "different unique items (more than 40).\u00A0\u00A0",
         position="right",
     )
     help_button = bokeh.models.HelpButton(tooltip=tooltip, margin=(21, 0, 3, 0))
@@ -400,13 +446,21 @@ def setup_legend(
             hidden_text_label_column,
             hidden_text_label_column_bis,
             hidden_legend_width,
+            select_field,
             new,
             legend_dict,
             resize_width_input,
             obs_string,
+            obs_string_many,
             obs_numerical,
             bt_slider_range,
         ),
     )
 
-    return select_color_by, help_button, hidden_text_label_column, hidden_legend_width
+    return (
+        select_color_by,
+        help_button,
+        hidden_text_label_column,
+        hidden_legend_width,
+        select_field,
+    )

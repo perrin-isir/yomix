@@ -1,4 +1,6 @@
+<div align="center">
 # ![alt text](https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_logo.png "Yomix logo")
+</div>
 
 [![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 

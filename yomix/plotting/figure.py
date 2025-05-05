@@ -18,24 +18,39 @@ import matplotlib
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-MAX_UNIQUE_VALUES = 200
-MAX_UNIQUE_RATIO = 0.5
+MAX_UNIQUE_VALUES = 40
 
 
-def check_obs_field(xd, field):
-    unique_items_nr = len(xd.obs[field].unique())
-    return (
-        unique_items_nr < MAX_UNIQUE_VALUES
-        and unique_items_nr / xd.n_obs <= MAX_UNIQUE_RATIO
-    )
+# def check_obs_field(xd, field):
+#     unique_items_nr = len(xd.obs[field].unique())
+#     return (
+#         unique_items_nr <= MAX_UNIQUE_VALUES
+#     )
+
+
+def check_obs_field(udict, field):
+    unique_items_nr = len(udict[field])
+    return unique_items_nr <= MAX_UNIQUE_VALUES
 
 
 def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
+    everything = [
+        x for x in list(adata.obs.select_dtypes(include=["category", "object"]).keys())
+    ]
+    unique_dict = {}
+    for elt in everything:
+        unique_dict[elt] = list(np.unique(adata.obs[elt]))
+
     obs_string = [
         x
         for x in list(adata.obs.select_dtypes(include=["category", "object"]).keys())
-        if check_obs_field(adata, x)
+        if check_obs_field(unique_dict, x)
+    ]
+    obs_string_many = [
+        x
+        for x in list(adata.obs.select_dtypes(include=["category", "object"]).keys())
+        if x not in obs_string
     ]
     obs_numerical = list(adata.obs.select_dtypes(np.number).keys())
 
@@ -1516,7 +1531,9 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
     if higher_dim:
         return (
+            unique_dict,
             obs_string,
+            obs_string_many,
             obs_numerical,
             points_bokeh_plot,
             violin_plot,
@@ -1541,7 +1558,9 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         )
     else:
         return (
+            unique_dict,
             obs_string,
+            obs_string_many,
             obs_numerical,
             points_bokeh_plot,
             violin_plot,

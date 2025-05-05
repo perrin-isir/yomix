@@ -35,14 +35,12 @@ def gen_modify_doc(filearg, subsampling, title):
     all_labels_list = []
     var_dict = {}
     for lbl in sorted(obs_string_init):
-        # filter labels
-        if yomix.plotting.check_obs_field(xd, str(lbl)):
-            labels = np.array(list(dict.fromkeys(xd.obs[str(lbl)])))
-            all_labels_list += [(str(lbl), str(elt)) for elt in sorted(labels)]
-            for elt in labels:
-                var_dict["yomix_median_" + str(lbl) + ">>yomix>>" + str(elt)] = (
-                    -np.ones(xd.n_vars)
-                )
+        labels = np.array(list(dict.fromkeys(xd.obs[str(lbl)])))
+        all_labels_list += [(str(lbl), str(elt)) for elt in sorted(labels)]
+        for elt in labels:
+            var_dict["yomix_median_" + str(lbl) + ">>yomix>>" + str(elt)] = -np.ones(
+                xd.n_vars
+            )
     xd.var = pd.concat([xd.var, pd.DataFrame(var_dict, index=xd.var.index)], axis=1)
     xd.uns["all_labels"] = all_labels_list
 
@@ -83,7 +81,9 @@ def gen_modify_doc(filearg, subsampling, title):
                 assert embedding_size > 1
 
                 (
+                    unique_dict,
                     obs_string,
+                    obs_string_many,
                     obs_numerical,
                     points_bokeh_plot,
                     violins_bokeh_plot,
@@ -128,13 +128,16 @@ def gen_modify_doc(filearg, subsampling, title):
                     help_color_by,
                     hidden_text_label_column,
                     hidden_legend_width,
+                    select_field,
                 ) = yomix.plotting.setup_legend(
                     points_bokeh_plot,
                     obs_string,
+                    obs_string_many,
                     obs_numerical,
                     source_rotmatrix_etc,
                     resize_width_input,
                     bt_slider_range,
+                    unique_dict,
                 )
 
                 offset_text_feature_color, offset_label = (
@@ -152,6 +155,7 @@ def gen_modify_doc(filearg, subsampling, title):
                         resize_width_input_bis,
                         resize_height_input_bis,
                         bt_slider_range,
+                        select_field,
                     )
                 )
                 offset_label.visible = False
@@ -280,7 +284,10 @@ def gen_modify_doc(filearg, subsampling, title):
                                         resize_height_input, resize_width_input
                                     ),
                                     points_bokeh_plot,
-                                    bt_slider_range,
+                                    bokeh.layouts.column(
+                                        select_field,
+                                        bt_slider_range,
+                                    ),
                                 ),
                                 bokeh.layouts.row(
                                     bokeh.layouts.column(
@@ -322,7 +329,10 @@ def gen_modify_doc(filearg, subsampling, title):
                                         resize_height_input, resize_width_input
                                     ),
                                     points_bokeh_plot,
-                                    bt_slider_range,
+                                    bokeh.layouts.column(
+                                        select_field,
+                                        bt_slider_range,
+                                    ),
                                 ),
                                 bokeh.layouts.row(
                                     bokeh.layouts.column(

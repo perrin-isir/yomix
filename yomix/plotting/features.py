@@ -22,6 +22,7 @@ def color_by_feature_value(
     resize_w_input,
     resize_h_input,
     bt_slider_range,
+    select_field,
 ):
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source
 
@@ -157,14 +158,23 @@ def color_by_feature_value(
                 hlw.value = str(int(legend_width_modif))
                 select_color_by.value = ""
                 current_style = bt_slider_range.stylesheets[0].css
-                pattern = r"\{margin: 32px 0px 0px -\d+px;\}"
-                new_style = re.sub(
-                    pattern,
-                    "{margin: 32px 0px 0px -"
-                    + str(int(legend_width_modif) - 34)
-                    + "px;}",
-                    current_style,
-                )
+                pattern = r"\{margin: \d+px 0px 0px -\d+px;\}"
+                if select_field.visible:
+                    new_style = re.sub(
+                        pattern,
+                        "{margin: -25px 0px 0px -"
+                        + str(int(legend_width_modif) - 34)
+                        + "px;}",
+                        current_style,
+                    )
+                else:
+                    new_style = re.sub(
+                        pattern,
+                        "{margin: 32px 0px 0px -"
+                        + str(int(legend_width_modif) - 34)
+                        + "px;}",
+                        current_style,
+                    )
                 bt_slider_range.stylesheets = [InlineStyleSheet(css=new_style)]
                 bt_slider_range.start = 0.0
                 bt_slider_range.end = 1.0
