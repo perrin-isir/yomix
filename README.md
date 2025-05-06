@@ -28,7 +28,7 @@ To use it on your own files:
 
 where `yourfile.h5ad` is an anndata object saved in h5ad format (see
  [anndata - Annotated data](https://anndata.readthedocs.io/en/latest/index.html#)), 
- with at least one `.obsm` field of dimension 2 or more.
+ with at least one `.obsm` field of dimension 2 or more (the low dimensional embedding).
 
 When there are many samples in the dataset, the --subsampling option can be passed to improve reactiveness:
 
