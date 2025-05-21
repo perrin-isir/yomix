@@ -160,18 +160,35 @@ def signature_buttons(
         sc1 = adata[samples_A, selected_features].copy().X.T
         sc2 = adata[samples_B, selected_features].copy().X.T
         mccs = all_mcc(sc1, sc2)
-        new_selected_features = selected_features[
-            np.argsort(np.abs(mccs.flatten()))[::-1]
-        ]
-        mcc_dict = dict(map(lambda i, j: (i, j), selected_features, mccs.flatten()))
-        mcc_dict_abs = dict(
-            map(lambda i, j: (i, j), selected_features, np.abs(mccs).flatten())
-        )
-        new_selected_features = new_selected_features[:20]
-        up_or_down_d = {
-            ft: ("-" if mcc_dict[ft] > 0.0 else "+") for ft in new_selected_features
-        }
-        return new_selected_features, mcc_dict_abs, up_or_down_d
+        
+        # Sort by absolute MCC
+        sorted_by_mcc = np.argsort(np.abs(mccs.flatten()))[::-1]
+        sorted_features_mcc = selected_features[sorted_by_mcc]
+
+        # Build dictionaries for signed and absolute MCC
+        mcc_dict = dict(zip(selected_features, mccs.flatten()))
+        mcc_dict_abs = dict(zip(selected_features, np.abs(mccs).flatten()))
+
+        # -------------------------------------------------
+        # Generate signatures for sizes [1, 3, 10, 20, 25]
+        # -------------------------------------------------
+        signature_sizes = [1, 3 , 10 ,20]
+        signatures_dict = {}
+
+        for size in signature_sizes:
+            top_feats = sorted_features_mcc[:size]
+            up_or_down_d = {
+                ft: ("-" if mcc_dict[ft] > 0.0 else "+") for ft in top_feats
+            }
+
+            # Store in a tuple, but you can adjust format as needed
+            signatures_dict[size] = (
+                top_feats,                         # array of top feature indices
+                {ft: mcc_dict_abs[ft] for ft in top_feats},  # dict of abs(MCC)
+                up_or_down_d                                # dict: feature -> '+' or '-'
+            )
+
+        return signatures_dict
 
     def shrink_text(s_in, size):
         true_size = max(size, 3)
@@ -185,50 +202,122 @@ def signature_buttons(
         else:
             new_s = s_in
         return new_s
+    def sign_A_vs_rest(ad, obs_indices, dv, ms_sign, sign_nr, label_sign, benchmark_name="BenchmarkRun"):
+        import time
+        import os
+        import pandas as pd
+        import numpy as np
+        from sklearn.svm import SVC
+        from sklearn.metrics import (
+            matthews_corrcoef,
+            precision_score,
+            recall_score,
+            f1_score
+        )
+        from sklearn.model_selection import train_test_split
+        from scipy.sparse import vstack
 
-    def sign_A_vs_rest(ad, obs_indices, dv, ms_sign, sign_nr, label_sign):
-        if len(obs_indices) > 0 and len(obs_indices) < ad.n_obs:
-            ms_sign.title = "..."
-            label_sign.title = "..."
-            outputs, mcc_dict, up_or_down_dict = compute_signature(
-                ad,
-                ad.var["mean_values_local_yomix"],
-                ad.var["standard_deviations_local_yomix"],
-                obs_indices,
-                None,
-            )
-            sign_nr[0] += 1
-            dv.text = (
-                "Signature #"
-                + str(sign_nr[0])
-                + ": "
-                + ", ".join(['<b>"' + elt + '"</b>' for elt in ad.var_names[outputs]])
-            )
-            ms_sign.options = [
-                (
-                    up_or_down_dict[outp] + ad.var_names[outp],
-                    up_or_down_dict[outp]
-                    + " (MCC:{:.3f}) ".format(mcc_dict[outp])
-                    + shrink_text(ad.var_names[outp], 25),
+        if len(obs_indices) == 0 or len(obs_indices) == ad.n_obs:
+            print("Skipping: empty or full group.")
+            return
+
+        label_key = ad.obs["labels"].iloc[obs_indices[0]] if "labels" in ad.obs else "Unknown_Label"
+
+        if ms_sign:
+            ms_sign.title = f"Signature: {label_key}"
+        if label_sign:
+            label_sign.title = f"Label: {label_key}"
+
+        start_time = time.time()
+
+        signatures_dict = compute_signature(
+            ad,
+            ad.var["mean_values_local_yomix"],
+            ad.var["standard_deviations_local_yomix"],
+            obs_indices,
+            None,
+        )
+
+        elapsed_time = time.time() - start_time
+        print(f" Signature computation time: {elapsed_time:.2f}s")
+
+        # Store full results
+        all_results = {}
+
+        for size, (gene_indices, mcc_dict_abs, up_or_down_dict) in signatures_dict.items():
+            print(f" Signature size: {size}")
+            gene_indices = np.array(gene_indices)
+            ad_subset_genes = ad[:, gene_indices]
+
+            subset_A = ad_subset_genes[obs_indices, :]
+            rest_indices_bool = ~ad.obs.index.isin(ad.obs.index[obs_indices])
+            rest = ad_subset_genes[rest_indices_bool, :]
+
+            X_A = subset_A.X
+            X_rest = rest.X
+            X = vstack([X_A, X_rest])
+            y = np.concatenate((np.ones(X_A.shape[0]), np.zeros(X_rest.shape[0])))
+
+            mcc_scores, precision_scores, recall_scores, f1_scores = [], [], [], []
+            n_runs = 10
+
+            for run in range(n_runs):
+                X_train, X_test, y_train, y_test = train_test_split(
+                    X, y, test_size=0.3, stratify=y, random_state=run
                 )
-                for outp in outputs
-            ]
-            ms_sign.title = "Signature #" + str(sign_nr[0])
+                clf = SVC(kernel='linear', class_weight='balanced', C=1.0, random_state=run)
+                clf.fit(X_train, y_train)
+                y_pred = clf.predict(X_test)
 
-            unique_labels = []
-            unique_labels.append(("[  Subset A  ]", "[  Subset A  ]"))
-            unique_labels.append(("[  Rest  ]", "[  Rest  ]"))
-            unique_labels += [
-                (lbl + ">>yomix>>" + lbl_elt, shrink_text(lbl + " > " + lbl_elt, 35))
-                for (lbl, lbl_elt) in ad.uns["all_labels"]
-            ]
+                mcc_scores.append(matthews_corrcoef(y_test, y_pred))
+                precision_scores.append(precision_score(y_test, y_pred))
+                recall_scores.append(recall_score(y_test, y_pred))
+                f1_scores.append(f1_score(y_test, y_pred))
 
-            # Update label_sign options
-            label_sign.options = unique_labels
-            label_sign.size = min(len(label_sign.options), 20)
-            # finalize label_sign
-            label_sign.title = "Groups"
-            label_sign.value = ["[  Subset A  ]", "[  Rest  ]"]
+            all_results[size] = {
+                "MCC_Mean": np.mean(mcc_scores),
+                "MCC_Std": np.std(mcc_scores),
+                "Precision_Mean": np.mean(precision_scores),
+                "Precision_Std": np.std(precision_scores),
+                "Recall_Mean": np.mean(recall_scores),
+                "Recall_Std": np.std(recall_scores),
+                "F1_Mean": np.mean(f1_scores),
+                "F1_Std": np.std(f1_scores)
+            }
+
+            print(f"✅ Size {size}: MCC={np.mean(mcc_scores):.4f}, F1={np.mean(f1_scores):.4f}")
+
+        # === Format as Flattened CSV Row ===
+        flattened_row = {"Benchmark": benchmark_name, "DE_Time_Taken": elapsed_time}
+        for size in [1, 3, 10, 20]:
+            metrics = all_results.get(size)
+            if metrics:
+                flattened_row.update({
+                    f"{size}_features_mcc": metrics["MCC_Mean"],
+                    f"{size}_features_mcc_std": metrics["MCC_Std"],
+                    f"{size}_features_precision": metrics["Precision_Mean"],
+                    f"{size}_features_precision_std": metrics["Precision_Std"],
+                    f"{size}_features_recall": metrics["Recall_Mean"],
+                    f"{size}_features_recall_std": metrics["Recall_Std"],
+                    f"{size}_features_f1": metrics["F1_Mean"],
+                    f"{size}_features_f1_std": metrics["F1_Std"]
+                })
+
+        df_new = pd.DataFrame([flattened_row])
+        csv_path = '/home/nisma/Benchmark_Signature_Stats1.csv'
+
+        if os.path.exists(csv_path):
+            df_existing = pd.read_csv(csv_path)
+            df_combined = pd.concat([df_existing, df_new], ignore_index=True)
+        else:
+            df_combined = df_new
+
+        df_combined.to_csv(csv_path, index=False)
+        print(f"📝 CSV updated at: {csv_path}")
+
+        return csv_path
+
+
 
     def sign_A_vs_B(ad, obs_indices_A, obs_indices_B, dv, ms_sign, sign_nr, label_sign):
         if (
