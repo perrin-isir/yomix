@@ -4,7 +4,7 @@ from pathlib import Path
 from PIL import ImageFont
 import re
 from bokeh.models import InlineStyleSheet
-
+from bokeh.models import CustomJS
 
 def setup_legend(
     pb_plot,
@@ -15,6 +15,7 @@ def setup_legend(
     resize_width_input,
     bt_slider_range,
     unique_dict,
+    spinner,
 ):
     source = pb_plot.select(dict(name="scatterplot"))[0].data_source
 
@@ -31,8 +32,11 @@ def setup_legend(
                 obss=obs_string,
                 obsm=obs_string_many,
                 obsn=obs_numerical,
+                spinner=spinner
             ),
             code="""
+        // turn on spinner
+        spinner.visible = true;
         if (obss.includes(this.value)) {
             const data = source.data;
             var unique = udicts[this.value];
@@ -75,6 +79,8 @@ def setup_legend(
             }
             source.change.emit();
         }
+        // turn spinner OFF after all legend items are in place
+        spinner.visible = false;
     """,
         ),
     )

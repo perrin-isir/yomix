@@ -8,6 +8,31 @@ import anndata
 from scipy.sparse import issparse
 import os
 import pandas as pd
+from bokeh.models import Div, CustomJS
+from bokeh.layouts import column
+
+corner_spinner_css = """
+<style>                 /* ← CSS starts */
+.corner-spinner {
+position: fixed; bottom: 15px; right: 15px; z-index: 9999;
+}
+.loader {
+border: 4px solid #f3f3f3;
+border-top: 4px solid #3498db;
+border-radius: 50%;
+width: 18px; height: 18px;
+animation: spin 1s linear infinite;
+}
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+</style>                /* ← CSS ends */
+<div class="corner-spinner">   <!-- ← HTML starts -->
+<div class="loader"></div>  <!-- ← HTML ends -->
+</div>
+"""
+corner_spinner = Div(text=corner_spinner_css, visible=False)
 
 
 def gen_modify_doc(filearg, subsampling, title):
@@ -142,7 +167,23 @@ def gen_modify_doc(filearg, subsampling, title):
                     resize_width_input,
                     bt_slider_range,
                     unique_dict,
+                    corner_spinner,
                 )
+
+                # 1) Client‑side: show spinner immediately when the pull‑down changes
+                select_color_by.js_on_change(
+                    "value",
+                    CustomJS(args=dict(spinner=corner_spinner), code="""
+                        spinner.visible = true;
+                    """),
+                )
+
+                # 2) Server‑side: after legend is fully rebuilt, hide the spinner
+                def _hide_spinner(attr, old, new):
+                    # schedule it for the next tick 
+                    doc.add_next_tick_callback(lambda: setattr(corner_spinner, 'visible', False))
+
+                select_color_by.on_change("value", _hide_spinner)
 
                 offset_text_feature_color, offset_label = (
                     yomix.plotting.color_by_feature_value(
@@ -181,20 +222,6 @@ def gen_modify_doc(filearg, subsampling, title):
                     label_signature,
                 )
 
-                select_color_by.js_on_change(
-                    "value",
-                    bokeh.models.CustomJS(
-                        args=dict(
-                            otfc=offset_text_feature_color, ms=multiselect_signature
-                        ),
-                        code="""
-                            if (cb_obj.value != "") {
-                                otfc.value="";
-                                ms.value=[];
-                            }
-                        """,
-                    ),
-                )
 
                 bt_open_link = yomix.tools.gene_query_button(offset_text_feature_color)
 
@@ -372,7 +399,7 @@ def gen_modify_doc(filearg, subsampling, title):
             "value", lambda attr, old, new: reset_figure(new)
         )
 
-        doc.add_root(p_0)
+        doc.add_root(column(corner_spinner, p_0))
 
         def f():
             slider = doc.get_model_by_name("root").select_one(
@@ -381,6 +408,9 @@ def gen_modify_doc(filearg, subsampling, title):
             anim = doc.get_model_by_name("root").select_one(dict(name="bt_toggle_anim"))
             # print(slider)
             if slider is not None and anim.active:
+                slider = doc.get_model_by_name("bt_hidden_slider_yaw")
+                anim   = doc.get_model_by_name("bt_toggle_anim")
+            if slider and anim.active:
                 slider.value = 10
 
         doc.add_periodic_callback(f, 100)
