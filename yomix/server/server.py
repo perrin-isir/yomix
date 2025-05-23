@@ -2,12 +2,15 @@ import yomix.plotting
 import yomix.tools
 import bokeh.layouts
 from bokeh.models import TabPanel, Tabs
+from yomix.tools.download import download_selected_button
 import yomix
 import numpy as np
 import anndata
 from scipy.sparse import issparse
 import os
 import pandas as pd
+
+
 
 
 def gen_modify_doc(filearg, subsampling, title):
@@ -240,9 +243,14 @@ def gen_modify_doc(filearg, subsampling, title):
                     ]
                 )
 
+                scatter = points_bokeh_plot.select_one(dict(name="scatterplot"))
+                source = scatter.data_source
+                download_button = download_selected_button(source)
+
                 p = bokeh.layouts.row(
                     bokeh.layouts.column(
                         bt_select_embedding,
+                        download_button,
                         bokeh.layouts.row(bt_A, toggle_A),
                         bokeh.layouts.row(bt_B, toggle_B),
                         bokeh.layouts.row(bt_nothing, bt_AplusB),
