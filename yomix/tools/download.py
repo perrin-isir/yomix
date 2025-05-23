@@ -1,18 +1,20 @@
 from bokeh.models import Button, CustomJS
 
-def download_selected_button(source):
-    button = Button(label="Download Selected as CSV", button_type="success", width=235)
-    button.js_on_click(CustomJS(args=dict(source=source), code="""
+def download_selected_button(source, original_keys):
+    button = Button(label="Download selected as CSV", button_type="success", width=235)
+    button.js_on_click(CustomJS(args=dict(source=source, okeys=original_keys), code="""
         const inds = source.selected.indices;
         const data = source.data;
         if (inds.length === 0) {
             alert('No points selected!');
             return;
         }
-        const columns = Object.keys(data);
-        let csv = columns.join(',') + '\\n';
+        const columns = okeys;
+        let csv = 'index,name,' + columns.join(',') + '\\n';
         for (let i = 0; i < inds.length; i++) {
             let row = [];
+            row.push(data['index'][inds[i]]);
+            row.push(data['name'][inds[i]]);
             for (let j = 0; j < columns.length; j++) {
                 row.push(data[columns[j]][inds[i]]);
             }
