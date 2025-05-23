@@ -78,6 +78,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         data["name"][i] = adata.obs_names[i]
     # tooltip_list.append("index")
     tooltip_list.append("name")
+    original_keys = list(adata.obs.keys())
     for key in adata.obs.keys():
         if key not in ("name", "index"):
             data[key] = np.asarray(adata.obs[key])
@@ -1531,6 +1532,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
     if higher_dim:
         return (
+            original_keys,
             unique_dict,
             obs_string,
             obs_string_many,
@@ -1558,6 +1560,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         )
     else:
         return (
+            original_keys,
             unique_dict,
             obs_string,
             obs_string_many,

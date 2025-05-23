@@ -211,7 +211,47 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
     bt_A.js_on_click(callback_js_A)
     bt_B.js_on_click(callback_js_B)
 
-    bt_AplusB = bokeh.models.Button(label="Select A+B", width=button_width)
+    bt_selectA = bokeh.models.Button(label="A", width=button_width//4)
+    bt_selectA.js_on_click(
+        bokeh.models.CustomJS(
+            args=dict(source=source),
+            code="""
+        const data = source.data;
+        var t = [];
+        const sA = data['subset_A'];
+        const point_s = data['point_size'];
+        for (let i = 0; i < point_s.length; i++) {
+            if (sA[i] == 1.) {
+                t.push(i);
+            }
+        }
+        source.selected.indices = t;
+        source.change.emit();
+    """,
+        )
+    )
+
+    bt_selectB = bokeh.models.Button(label="B", width=button_width//4)
+    bt_selectB.js_on_click(
+        bokeh.models.CustomJS(
+            args=dict(source=source),
+            code="""
+        const data = source.data;
+        var t = [];
+        const sB = data['subset_B'];
+        const point_s = data['point_size'];
+        for (let i = 0; i < point_s.length; i++) {
+            if (sB[i] == 1.) {
+                t.push(i);
+            }
+        }
+        source.selected.indices = t;
+        source.change.emit();
+    """,
+        )
+    )
+
+    bt_AplusB = bokeh.models.Button(label="A+B", width=43)
     bt_AplusB.js_on_click(
         bokeh.models.CustomJS(
             args=dict(source=source),
@@ -232,7 +272,7 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
         )
     )
 
-    bt_nothing = bokeh.models.Button(label="Select nothing", width=button_width)
+    bt_nothing = bokeh.models.Button(label="nothing", width=50)
     bt_nothing.js_on_click(
         bokeh.models.CustomJS(
             args=dict(source=source, btsr=bt_slider_range),
@@ -255,4 +295,6 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
         hidden_checkbox_B,
         bt_AplusB,
         bt_nothing,
+        bt_selectA,
+        bt_selectB
     )
