@@ -2,15 +2,13 @@ import yomix.plotting
 import yomix.tools
 import bokeh.layouts
 from bokeh.models import TabPanel, Tabs
-from yomix.tools.download import download_selected_button
+from yomix.tools.download import download_selected_button, csv_load_button
 import yomix
 import numpy as np
 import anndata
 from scipy.sparse import issparse
 import os
 import pandas as pd
-
-
 
 
 def gen_modify_doc(filearg, subsampling, title):
@@ -127,7 +125,7 @@ def gen_modify_doc(filearg, subsampling, title):
                     bt_AplusB,
                     bt_nothing,
                     bt_selectA,
-                    bt_selectB
+                    bt_selectB,
                 ) = yomix.tools.subset_buttons(
                     points_bokeh_plot, source_rotmatrix_etc, bt_slider_range
                 )
@@ -249,6 +247,7 @@ def gen_modify_doc(filearg, subsampling, title):
                 scatter = points_bokeh_plot.select_one(dict(name="scatterplot"))
                 source = scatter.data_source
                 download_button = download_selected_button(source, original_keys)
+                load_button = csv_load_button(source)
 
                 p = bokeh.layouts.row(
                     bokeh.layouts.column(
@@ -257,8 +256,12 @@ def gen_modify_doc(filearg, subsampling, title):
                         bokeh.layouts.row(bt_B, toggle_B),
                         bokeh.layouts.row(
                             bokeh.models.Div(text="Select:", width=30),
-                            bt_selectA, bt_selectB, bt_AplusB, bt_nothing),
-                        download_button,
+                            bt_selectA,
+                            bt_selectB,
+                            bt_AplusB,
+                            bt_nothing,
+                        ),
+                        bokeh.layouts.row(download_button, load_button),
                         bokeh.layouts.row(bt_sign1, help1),
                         bokeh.layouts.row(bt_sign2, help2),
                         bokeh.layouts.row(bt_sign3, help3),

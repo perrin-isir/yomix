@@ -1,8 +1,63 @@
 from bokeh.models import Button, CustomJS
 
+
+def csv_load_button(source):
+    # source = ColumnDataSource(data=dict(x=[], y=[]))  # Example fields
+
+    button = Button(label="Upload CSV", button_type="success", width=112)
+
+    # JavaScript to load CSV file and update ColumnDataSource
+    callback = CustomJS(
+        args=dict(source=source),
+        code="""
+        // Create an invisible file input
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.csv';
+        input.style.display = 'none';
+
+        // When a file is selected
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const text = event.target.result;
+
+                const lines = text.trim().split('\\n');
+                const headers = lines[0].split(',');
+
+                var t = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const idx = lines[i].split(',')[0];
+                    t.push(parseInt(idx));
+                }
+
+                source.selected.indices = t;
+                source.change.emit();
+            };
+            reader.readAsText(file);
+        };
+
+        // Trigger the input
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+    """,
+    )
+
+    button.js_on_click(callback)
+    return button
+
+
 def download_selected_button(source, original_keys):
-    button = Button(label="Download selected as CSV", button_type="success", width=235)
-    button.js_on_click(CustomJS(args=dict(source=source, okeys=original_keys), code="""
+    button = Button(label="Download selected as CSV", button_type="success", width=112)
+    button.js_on_click(
+        CustomJS(
+            args=dict(source=source, okeys=original_keys),
+            code="""
         const inds = source.selected.indices;
         const data = source.data;
         if (inds.length === 0) {
@@ -10,10 +65,10 @@ def download_selected_button(source, original_keys):
             return;
         }
         const columns = okeys;
-        let csv = 'index,name,' + columns.join(',') + '\\n';
+        // let csv = 'name,' + columns.join(',') + '\\n';
+        let csv = 'name\\n';
         for (let i = 0; i < inds.length; i++) {
             let row = [];
-            row.push(data['index'][inds[i]]);
             row.push(data['name'][inds[i]]);
             for (let j = 0; j < columns.length; j++) {
                 row.push(data[columns[j]][inds[i]]);
@@ -29,5 +84,7 @@ def download_selected_button(source, original_keys):
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-    """))
+    """,
+        )
+    )
     return button
