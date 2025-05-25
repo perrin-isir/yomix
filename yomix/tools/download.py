@@ -36,12 +36,12 @@ def csv_load_button(source):
                 const text = event.target.result;
 
                 const lines = text.trim().split('\\n');
-                const headers = lines[0].split(',');
+                const headers = lines[1].split(',');
 
                 var t = [];
 
                 for (let i = 1; i < lines.length; i++) {
-                    const name = lines[i].split(',')[0];
+                    const name = lines[i].split('\t')[0];
                     t.push(names_to_index[name]);
                 }
 
@@ -75,14 +75,14 @@ def download_selected_button(source, original_keys):
             return;
         }
         const columns = okeys;
-        let csv = 'name,' + columns.join(',') + '\\n';
+        let csv = 'sep=\t\\n' + 'name\t' + columns.join('\t') + '\\n';
         for (let i = 0; i < inds.length; i++) {
             let row = [];
             row.push(data['name'][inds[i]]);
             for (let j = 0; j < columns.length; j++) {
                 row.push(data[columns[j]][inds[i]]);
             }
-            csv += row.join(',') + '\\n';
+            csv += row.join('\t') + '\\n';
         }
         const blob = new Blob([csv], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
