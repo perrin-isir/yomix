@@ -4,7 +4,7 @@ from bokeh.models import Button, CustomJS
 def csv_load_button(source):
     # source = ColumnDataSource(data=dict(x=[], y=[]))  # Example fields
 
-    button = Button(label="Upload CSV", button_type="success", width=112)
+    button = Button(label="Load selection", button_type="success", width=112)
 
     # JavaScript to load CSV file and update ColumnDataSource
     callback = CustomJS(
@@ -18,6 +18,16 @@ def csv_load_button(source):
 
         // When a file is selected
         input.onchange = (e) => {
+
+            const data = source.data;
+            data['name'].length;
+
+            var names_to_index = {}
+
+            for (let i = 1; i < data['name'].length; i++) {
+                names_to_index[data['name'][i]] = i;
+            }
+
             const file = e.target.files[0];
             if (!file) return;
 
@@ -31,8 +41,8 @@ def csv_load_button(source):
                 var t = [];
 
                 for (let i = 1; i < lines.length; i++) {
-                    const idx = lines[i].split(',')[0];
-                    t.push(parseInt(idx));
+                    const name = lines[i].split(',')[0];
+                    t.push(names_to_index[name]);
                 }
 
                 source.selected.indices = t;
@@ -53,7 +63,7 @@ def csv_load_button(source):
 
 
 def download_selected_button(source, original_keys):
-    button = Button(label="Download selected as CSV", button_type="success", width=112)
+    button = Button(label="Save selected", button_type="success", width=112)
     button.js_on_click(
         CustomJS(
             args=dict(source=source, okeys=original_keys),
@@ -65,8 +75,7 @@ def download_selected_button(source, original_keys):
             return;
         }
         const columns = okeys;
-        // let csv = 'name,' + columns.join(',') + '\\n';
-        let csv = 'name\\n';
+        let csv = 'name,' + columns.join(',') + '\\n';
         for (let i = 0; i < inds.length; i++) {
             let row = [];
             row.push(data['name'][inds[i]]);
