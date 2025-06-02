@@ -65,6 +65,39 @@ The input file must be an anndata object saved in h5ad format (see
  with at least one `.obsm` field of dimension 2 or more.
 
 </p></details>
+<details><summary> <b>Using Seurat objects with Yomix </b> </summary><p>
+
+
+You can use Seurat objects by converting them to .h5ad format in R:
+
+Load required libraries:
+```
+library(rhdf5)
+library(dplyr)
+library(patchwork)
+library(SeuratDisk)
+library(Seurat)
+library(SeuratData)
+```
+Load the Seurat object:
+```
+my_file <- readRDS("path.rds")
+```
+If the object is a SingleCellExperiment, convert to Seurat:
+```
+if (inherits(my_file, "SingleCellExperiment")) {
+  my_file <- as.Seurat(my_file)
+}
+```
+Save as H5Seurat:
+```
+SaveH5Seurat(my_file, filename = "filename.h5seurat")
+```
+Convert to .h5ad:
+```
+Convert("filename.h5seurat", dest = "h5ad", output.path = "/.h5ad")
+```
+</p></details>
 
 ## List of contributors
 
