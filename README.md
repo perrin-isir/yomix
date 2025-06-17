@@ -79,11 +79,11 @@ library(SeuratDisk)
 library(Seurat)
 library(SeuratData)
 ```
-Load the Seurat object:
+Load the object:
 ```
 my_file <- readRDS("path.rds")
 ```
-If the object is a SingleCellExperiment, convert to Seurat:
+If it is a SingleCellExperiment object, convert to Seurat:
 ```
 if (inherits(my_file, "SingleCellExperiment")) {
   my_file <- as.Seurat(my_file)
