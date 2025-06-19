@@ -7,14 +7,32 @@ import yomix
 import numpy as np
 import anndata
 from scipy.sparse import issparse
-import os
 import pandas as pd
+from tornado.ioloop import IOLoop
+from bokeh.application.handlers import FunctionHandler
+from bokeh.application import Application
+from bokeh.server.server import Server
 
 
 def gen_modify_doc(filearg, subsampling, title):
 
     xd = anndata.read_h5ad(filearg.absolute())
     print("Data loaded.")
+    gen_modify_doc_xd(xd, subsampling, title)
+
+
+def start_server(xd, subsampling=None, title="", port=5006):
+    modify_doc = gen_modify_doc_xd(xd, subsampling, title)
+    io_loop = IOLoop.current()
+    bokeh_app = Application(FunctionHandler(modify_doc))
+    server = Server({"/": bokeh_app}, io_loop=io_loop, port=port)
+    server.start()
+    print(f"Opening Yomix on http://localhost:{port}/\n")
+    io_loop.add_callback(server.show, "/")
+    io_loop.start()
+
+
+def gen_modify_doc_xd(xd, subsampling, title):
 
     def _to_dense(x):
         if issparse(x):
@@ -22,13 +40,13 @@ def gen_modify_doc(filearg, subsampling, title):
         else:
             return x
 
-    xd.X = np.asarray(_to_dense(xd.X))
-
     if subsampling is not None:
         if xd.n_obs > subsampling:
             selected_obs = np.random.choice(xd.n_obs, subsampling, replace=False)
             selected_obs.sort()
             xd = xd[selected_obs].copy()
+
+    xd.X = np.asarray(_to_dense(xd.X))
 
     min_norm = np.min(xd.X, axis=0)
     max_norm = np.max(xd.X, axis=0)
@@ -401,6 +419,6 @@ def gen_modify_doc(filearg, subsampling, title):
 
         doc.add_periodic_callback(f, 100)
 
-        doc.title = f"Yomix - {os.path.basename(filearg)}"
+        doc.title = "Yomix"
 
     return modify_doc
