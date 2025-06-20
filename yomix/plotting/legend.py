@@ -128,8 +128,11 @@ def setup_legend(
         bt_slider_range,
     ):
         label_signature.visible = False
+        bt_slider_range.visible = False 
+        bokeh_plot.right = []    
         if obs_col in obs_s:
             s_field.visible = False
+            bt_slider_range.visible = False 
             bokeh_plot.right = []
             htlc.value = obs_col
             htlcbis.value = obs_col
