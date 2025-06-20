@@ -37,14 +37,16 @@ def start_server(xd, subsampling=None, title="", port=5006):
     if _io_loop is not None:
         print("Stopping previously opened Yomix server.")
         _server.stop()  # stops accepting new connections
-        _io_loop.run_sync(_server._http.close_all_connections)
-        for socket in _server._http._sockets.values():
-            socket.close()  # forcefully release the port
-        _server = None
-        _io_loop.add_callback(_io_loop.stop)
+
+        async def close_and_stop():
+            await _server._http.close_all_connections()
+            _io_loop.stop()
+
+        _io_loop.add_callback(close_and_stop)
         _thread.join(timeout=5)
         _io_loop = None
-        _thread.join()
+        _server = None
+        _thread = None
 
     def run_loop():
         global _io_loop, _server
@@ -54,7 +56,6 @@ def start_server(xd, subsampling=None, title="", port=5006):
         _server = Server(
             {"/": bokeh_app},
             io_loop=_io_loop,
-            # allow_websocket_origin=["localhost:8888", f"localhost:{port}"],
             port=port,
         )
         _server.start()
