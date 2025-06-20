@@ -12,24 +12,58 @@ from tornado.ioloop import IOLoop
 from bokeh.application.handlers import FunctionHandler
 from bokeh.application import Application
 from bokeh.server.server import Server
+import nest_asyncio
+import threading
+
+_io_loop = None
+_thread = None
+_server = None
+_first_start_done = None
 
 
 def gen_modify_doc(filearg, subsampling, title):
-
     xd = anndata.read_h5ad(filearg.absolute())
     print("Data loaded.")
-    gen_modify_doc_xd(xd, subsampling, title)
+    return gen_modify_doc_xd(xd, subsampling, title)
 
 
 def start_server(xd, subsampling=None, title="", port=5006):
-    modify_doc = gen_modify_doc_xd(xd, subsampling, title)
-    io_loop = IOLoop.current()
-    bokeh_app = Application(FunctionHandler(modify_doc))
-    server = Server({"/": bokeh_app}, io_loop=io_loop, port=port)
-    server.start()
-    print(f"Opening Yomix on http://localhost:{port}/\n")
-    io_loop.add_callback(server.show, "/")
-    io_loop.start()
+    global _io_loop, _thread, _server, _first_start_done
+
+    if _first_start_done is None:
+        _first_start_done = True
+        nest_asyncio.apply()
+
+    if _io_loop is not None:
+        print("Stopping previously opened Yomix server.")
+        _server.stop()  # stops accepting new connections
+        _io_loop.run_sync(_server._http.close_all_connections)
+        for socket in _server._http._sockets.values():
+            socket.close()  # forcefully release the port
+        _server = None
+        _io_loop.add_callback(_io_loop.stop)
+        _thread.join(timeout=5)
+        _io_loop = None
+        _thread.join()
+
+    def run_loop():
+        global _io_loop, _server
+        modify_doc = gen_modify_doc_xd(xd, subsampling, title)
+        _io_loop = IOLoop(make_current=True)
+        bokeh_app = Application(FunctionHandler(modify_doc))
+        _server = Server(
+            {"/": bokeh_app},
+            io_loop=_io_loop,
+            # allow_websocket_origin=["localhost:8888", f"localhost:{port}"],
+            port=port,
+        )
+        _server.start()
+        print(f"Opening Yomix server on http://localhost:{port}/\n")
+        _io_loop.add_callback(_server.show, "/")
+        _io_loop.start()
+
+    _thread = threading.Thread(target=run_loop, daemon=True)
+    _thread.start()
 
 
 def gen_modify_doc_xd(xd, subsampling, title):
