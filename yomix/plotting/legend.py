@@ -396,8 +396,6 @@ def setup_legend(
     """,
         ),
     )
-    # TODO remove comments, clean code
-    # TODO tests
     hidden_text_label_search.js_on_change(
         "value",
         bokeh.models.CustomJS(
@@ -412,20 +410,14 @@ def setup_legend(
         const smd = source_modif.data;
         const data = source.data;
         const labels = data[htlc_bis.value];
-        console.log(this.value, "this.value 1");
-        console.log(smd)
         if (smd["ctrl"][0] == 1) {
-            console.log("CTRL CLICK");
             if (this.value.slice(-24, this.value.length) != "[-.-.-.-.-ctrl-.-.-.-.-]"
             && this.value.length > 0 )
             {
                 const val = this.value;
                 this.value = val + "[-.-.-.-.-ctrl-.-.-.-.-]";
-                console.log("val", val);
-                console.log(this.value, "this.value 2");
                 var new_selected_points = [];
                 const indices = source.selected.indices;
-                console.log(indices, "BEFORE");
                 for (let i = 0; i < indices.length; i++) {
                     if (labels[indices[i]] == val) {
                         // if i-th element is already selected and
@@ -434,12 +426,10 @@ def setup_legend(
                         new_selected_points.push(indices[i]);
                     }
                 }
-                console.log(new_selected_points, "AFTER");
                 source.selected.indices = new_selected_points;
                 source.change.emit();
             }
         }else{
-            console.log("NO CTRL CLICK");
             const sliced_val = this.value.slice(-25, this.value.length);
             if (sliced_val != "[-.-.-.-.-shift-.-.-.-.-]"){
                 if (smd["shift"][0] == 1) {
