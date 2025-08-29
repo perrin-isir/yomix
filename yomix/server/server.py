@@ -2,15 +2,18 @@
 Main application server and layout orchestrator for Yomix.
 
 This module is the central hub and is responsible for:
-1.  Reading and preprocessing the input `anndata` object, including optional
-    subsampling and data normalization.
-2.  Assembling the entire user interface by initializing and arranging all the
-    plotting components and interactive tools from the various `yomix.plotting`
-    and `yomix.tools` modules.
-3.  Managing the Bokeh server lifecycle, including starting the server,
-    handling different data embeddings, and gracefully shutting down previous
-    instances. This allows Yomix to be run both as a standalone script and
-    within interactive environments like Jupyter notebooks.
+
+1. Reading and preprocessing the input `anndata` object, including optional
+   subsampling and data normalization.
+
+2. Assembling the entire user interface by initializing and arranging all the
+   plotting components and interactive tools from the various `yomix.plotting`
+   and `yomix.tools` modules.
+
+3. Managing the Bokeh server lifecycle, including starting the server,
+   handling different data embeddings, and gracefully shutting down previous
+   instances. This allows Yomix to be run both as a standalone script and
+   within interactive environments like Jupyter notebooks.
 """
 
 import yomix.plotting

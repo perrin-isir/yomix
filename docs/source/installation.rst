@@ -33,7 +33,7 @@ To use it on your own files:
 Where `yourfile.h5ad` is your own dataset in `.h5ad` format.
 
 Improve reactiveness with subsampling
-------------------------------------
+-------------------------------------
 
 When there are many samples in the dataset, you can use the `--subsampling` option to improve reactiveness. This option will randomly subsample the dataset to a maximum number of `N` samples. For example:
 

@@ -9,7 +9,6 @@ from bokeh.models import Button, CustomJS
 
 def csv_load_button(source):
     """
-
     Create a button to load selected points from a CSV file.
 
     Returns a Bokeh button widget that allows the user to upload a CSV file
@@ -23,8 +22,8 @@ def csv_load_button(source):
     Returns:
         button (bokeh.models.Button)
             - ``"Load selection"``: On click, it prompts
-            for a  CSV file and updates ``source.selected.indices`` with the
-            matched entries.
+              for a  CSV file and updates ``source.selected.indices`` with the
+              matched entries.
 
     """
 
@@ -105,7 +104,7 @@ def download_selected_button(source, original_keys):
     Returns:
         button (bokeh.models.Button) :
             - ``"Save selected"``. On click, it downloads
-            the currently selected points as a tab-separated CSV file.
+              the currently selected points as a tab-separated CSV file.
 
     """
 

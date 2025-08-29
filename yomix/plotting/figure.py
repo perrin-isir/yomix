@@ -1,19 +1,20 @@
 """
-
 Creates the main interactive scatter plot.
 
 This module is responsible for generating the central visualization component of
 Yomix. Its key functions include:
+
 - Creating a Bokeh figure and rendering the 2D or 3D data embedding from an
   AnnData object.
+
 - Implementing the complex client-side JavaScript callbacks that enable
   real-time 3D rotation (yaw, pitch, roll) and depth perception.
+
 - Setting up standard Bokeh tools like HoverTool, LassoSelectTool, and sliders
   for user interaction.
+
 - Managing the data sources and handling updates based on user interactions.
-
 """
-
 import numpy as np
 import bokeh.models
 import bokeh.io

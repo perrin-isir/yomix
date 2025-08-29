@@ -76,13 +76,13 @@ def color_by_feature_value(
             Dropdown widget used when categorical fields have many unique values.
 
     Returns:
-        tuple
+        tuple:
             A tuple containing the Bokeh widgets created by this function:
+
             - `offset_text_feature_color` (bokeh.models.TextInput): The text input
-            for entering feature names.
+              for entering feature names.
             - `offset_label` (bokeh.models.TextInput): A hidden text input that
-            stores the group labels for generating violin/heatmap plots.
- 
+              stores the group labels for generating violin/heatmap plots.
     """
 
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source
@@ -355,7 +355,7 @@ def plot_var(
     Returns:
         None 
             This function modifies the `violins_bokeh_plot` and `heat_map` figures
-        in place.
+            in place.
 
     """
 
