@@ -1,7 +1,33 @@
+"""
+Handles data import and export functionality and provides utility functions for saving and loading selections of
+data points. 
+"""
+
+
 from bokeh.models import Button, CustomJS
 
 
 def csv_load_button(source):
+    """
+
+    Create a button to load selected points from a CSV file.
+
+    Returns a Bokeh button widget that allows the user to upload a CSV file
+    containing feature/sample names.
+
+    Args:
+        source : bokeh.models.ColumnDataSource
+            Data source with at least a ``"name"`` field, against which CSV
+            entries will be matched.
+
+    Returns:
+        button (bokeh.models.Button)
+            - ``"Load selection"``: On click, it prompts
+            for a  CSV file and updates ``source.selected.indices`` with the
+            matched entries.
+
+    """
+
     # source = ColumnDataSource(data=dict(x=[], y=[]))  # Example fields
 
     button = Button(label="Load selection", button_type="success", width=112)
@@ -63,6 +89,26 @@ def csv_load_button(source):
 
 
 def download_selected_button(source, original_keys):
+    """
+
+    Create a button to download selected points as a CSV file.
+
+    This function generates a Bokeh Button that, when clicked, save the currently
+    selected data points to a CSV file.
+    
+    Args:
+        source : bokeh.models.ColumnDataSource
+            Data source containing the selected points to be downloaded.
+        original_keys : list of str
+            Column names to include in the downloaded CSV file.
+
+    Returns:
+        button (bokeh.models.Button) :
+            - ``"Save selected"``. On click, it downloads
+            the currently selected points as a tab-separated CSV file.
+
+    """
+
     button = Button(label="Save selected", button_type="success", width=112)
     button.js_on_click(
         CustomJS(

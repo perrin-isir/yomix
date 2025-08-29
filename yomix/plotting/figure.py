@@ -1,3 +1,19 @@
+"""
+
+Creates the main interactive scatter plot.
+
+This module is responsible for generating the central visualization component of
+Yomix. Its key functions include:
+- Creating a Bokeh figure and rendering the 2D or 3D data embedding from an
+  AnnData object.
+- Implementing the complex client-side JavaScript callbacks that enable
+  real-time 3D rotation (yaw, pitch, roll) and depth perception.
+- Setting up standard Bokeh tools like HoverTool, LassoSelectTool, and sliders
+  for user interaction.
+- Managing the data sources and handling updates based on user interactions.
+
+"""
+
 import numpy as np
 import bokeh.models
 import bokeh.io
@@ -29,11 +45,74 @@ MAX_UNIQUE_VALUES = 40
 
 
 def check_obs_field(udict, field):
+    """
+    Check if a categorical field has a manageable number of unique values.
+
+    Args:
+        udict
+            A dictionary mapping `.obs` keys to their unique values.
+        field
+            The string key of the field to check.
+
+    Returns:
+        bool
+            `True` if the number of unique values is less than or equal to
+            `MAX_UNIQUE_VALUES`, `False` otherwise.
+    """
+
     unique_items_nr = len(udict[field])
     return unique_items_nr <= MAX_UNIQUE_VALUES
 
 
 def main_figure(adata, embedding_key, width=900, height=600, title=""):
+    """
+    Create the main interactive figure and all associated widgets.
+
+    Args:
+        adata
+            The annotated data matrix of shape `n_obs` × `n_vars`.
+        embedding_key
+            The string key from `adata.obsm` specifying which embedding to plot.
+        width
+            The initial width of the plot in pixels.
+        height
+            The initial height of the plot in pixels.
+        title
+            The title for the plot.
+
+    Returns:
+        tuple
+            A large tuple containing all the created Bokeh models, which are then
+            assembled into the final layout by the `server.py` module. The
+            elements are:
+            - `original_keys` (list): All keys from `adata.obs`.
+            - `unique_dict` (dict): Maps categorical keys to unique values.
+            - `obs_string` (list): Categorical keys with <= 40 unique values.
+            - `obs_string_many` (list): Categorical keys with > 40 unique values.
+            - `obs_numerical` (list): Numerical keys from `adata.obs`.
+            - `points_bokeh_plot` (bokeh.plotting.figure): The main scatter plot.
+            - `violins_bokeh_plot` (bokeh.plotting.figure): Figure for violin plots.
+            - `heat_map` (bokeh.plotting.figure): Figure for heatmaps.
+            - `bt_slider_point_size` (bokeh.models.Slider): Widget for point size.
+            - `bt_hidden_slider_yaw` (bokeh.models.Slider): Hidden slider for animation.
+            - `bt_slider_range` (bokeh.models.RangeSlider): For numerical filtering.
+            - `bt_toggle_anim` (bokeh.models.Toggle): Toggles rotation animation.
+            - `bt_slider_yaw` (bokeh.models.Slider): Controls yaw rotation.
+            - `bt_slider_pitch` (bokeh.models.Slider): Controls pitch rotation.
+            - `bt_slider_roll` (bokeh.models.Slider): Controls roll rotation.
+            - `resize_width_input` (bokeh.models.TextInput): For main plot width.
+            - `resize_height_input` (bokeh.models.TextInput): For main plot height.
+            - `resize_width_input_bis` (bokeh.models.TextInput): For secondary plot width.
+            - `resize_height_input_bis` (bokeh.models.TextInput): For secondary plot height.
+            - `source_rotmatrix_etc` (bokeh.models.ColumnDataSource): Holds rotation state.
+            - `div_sample_names` (bokeh.models.Div): Displays hovered sample names.
+            - `sample_search_input` (bokeh.models.TextInput): For sample search.
+            - `sl_component1` (bokeh.models.RadioButtonGroup): For x-axis dimension.
+            - `sl_component2` (bokeh.models.RadioButtonGroup): For y-axis dimension.
+            - `sl_component3` (bokeh.models.RadioButtonGroup): For z-axis dimension.
+            
+    """
+
 
     everything = [
         x for x in list(adata.obs.select_dtypes(include=["category", "object"]).keys())

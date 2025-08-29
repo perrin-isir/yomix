@@ -1,5 +1,3 @@
-
-
 YOMIX Documentation
 ====================
 
@@ -13,10 +11,17 @@ Contents:
 
    installation
    faq
-  
+
 .. toctree::
    :maxdepth: 2
    :caption: API Reference
 
    yomix.plotting
    yomix.tools
+   yomix
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   modules

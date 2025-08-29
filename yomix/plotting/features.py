@@ -1,3 +1,15 @@
+"""
+Handles feature-based data visualization and analysis.
+
+It is responsible for:
+
+1.  Coloring data points on the main scatter plot based on the values of one or
+    more user-selected features. This allows for the visualization of expression
+    patterns directly on the embedding.
+2.  Generating secondary plots, specifically violin plots and heatmaps, to
+    visualize the distribution of feature values across different user-defined
+    subsets or existing categorical labels.
+"""
 from scipy.stats import gaussian_kde
 from bokeh.models import ColumnDataSource, LinearColorMapper, ColorBar, InlineStyleSheet
 from bokeh.transform import linear_cmap
@@ -24,6 +36,55 @@ def color_by_feature_value(
     bt_slider_range,
     select_field,
 ):
+    """
+    Set up interactive coloring of scatter plots by feature values.
+
+    This function enables users to color a scatter plot by gene or feature
+    expression values stored in ``adata``. It adds text input fields for
+    entering features and groups, builds dynamic color bars, and connects
+    updates to violin and heatmap plots for group-wise visualization.
+
+    Args:
+        points_bokeh_plot (bokeh.plotting.Figure):
+            Scatter plot figure containing glyphs with name ``"scatterplot"``.
+        violins_bokeh_plot (bokeh.plotting.Figure):
+            Bokeh figure for displaying violin plots of feature values.
+        heat_map (bokeh.plotting.Figure):
+            Bokeh figure for displaying heatmaps of feature values.
+        adata (anndata.AnnData):
+            Annotated data matrix with ``.X`` (expression values) and
+            ``.var_names`` (feature names).
+        select_color_by (bokeh.models.Select):
+            Dropdown menu for choosing a coloring field.
+        hidden_text_label_column (bokeh.models.TextInput):
+            Hidden widget used internally to store selected label columns.
+        resize_width_input (bokeh.models.TextInput):
+            Hidden widget used for adjusting plot width dynamically.
+        hidden_legend_width (bokeh.models.TextInput):
+            Hidden widget storing computed legend width.
+        hidden_checkbox_A (bokeh.models.CheckboxGroup):
+            Widget representing "Subset A" sample indices.
+        hidden_checkbox_B (bokeh.models.CheckboxGroup):
+            Widget representing "Subset B" sample indices.
+        resize_w_input (bokeh.models.TextInput):
+            Hidden widget for controlling plot width.
+        resize_h_input (bokeh.models.TextInput):
+            Hidden widget for controlling plot height.
+        bt_slider_range (bokeh.models.RangeSlider):
+            Slider for filtering displayed values by feature intensity.
+        select_field (bokeh.models.Select):
+            Dropdown widget used when categorical fields have many unique values.
+
+    Returns:
+        tuple
+            A tuple containing the Bokeh widgets created by this function:
+            - `offset_text_feature_color` (bokeh.models.TextInput): The text input
+            for entering feature names.
+            - `offset_label` (bokeh.models.TextInput): A hidden text input that
+            stores the group labels for generating violin/heatmap plots.
+ 
+    """
+
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source
 
     feature_dict = {}
@@ -254,6 +315,49 @@ def plot_var(
     selected_labels=None,  # This is where the selected labels will be passed
     equal_size=False,
 ):
+    
+    """
+
+    Plot feature distributions per group using violin and heatmap views.
+
+    Creates violin plots and heatmaps showing feature values for subsets of
+    observations (e.g., subsets A, B, rest, or user-defined groups). Uses
+    kernel density estimation for smooth violin shapes and normalizes
+    median expression values to a color scale.
+
+    Args:
+        adata (anndata.AnnData):
+            Annotated data matrix with ``.X`` (expression values),
+            ``.obs`` (observation metadata), and ``.var`` (feature metadata).
+        points_bokeh_plot (bokeh.plotting.Figure):
+            Scatter plot figure (not directly modified, but kept for context).
+        violins_bokeh_plot (bokeh.plotting.Figure):
+            Figure where violin plots are drawn.
+        heat_map (bokeh.plotting.Figure):
+            Figure where heatmap-style feature plots are drawn.
+        resize_w (bokeh.models.TextInput):
+            Widget for resizing plot width.
+        resize_h (bokeh.models.TextInput):
+            Widget for resizing plot height.
+        hidden_checkbox_A (bokeh.models.CheckboxGroup):
+            Widget containing indices for "Subset A".
+        hidden_checkbox_B (bokeh.models.CheckboxGroup):
+            Widget containing indices for "Subset B".
+        features (list of str):
+            List of feature names (from ``adata.var_names``) to plot.
+        selected_labels (list of str, optional):
+            Labels for grouping observations. Groups can include subsets
+            ("[  Subset A  ]", "[  Subset B  ]", "[  Rest  ]") or metadata
+            categories. Defaults to None.
+        equal_size (bool, optional):
+            If True, enforces equal width for all violins. Defaults to False.
+
+    Returns:
+        None 
+            This function modifies the `violins_bokeh_plot` and `heat_map` figures
+        in place.
+
+    """
 
     def get_kde(data, grid_points=100):
         kde = gaussian_kde(data)

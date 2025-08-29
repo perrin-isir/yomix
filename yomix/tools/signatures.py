@@ -1,3 +1,16 @@
+"""
+...
+The computation itself, handled by the
+internal `compute_signature` function, uses a two-step process:
+1. Features are first ranked by the Wasserstein distance between their
+   distributions in the two groups being compared. The top 100 features
+   from this ranking are retained for further analysis.
+2. This list is then refined using the Matthews Correlation Coefficient (MCC)
+   to select the 20 most robust and discriminative features for the final
+   signature.
+   
+"""
+
 import numpy as np
 import bokeh.models
 import bokeh.layouts
@@ -13,6 +26,45 @@ def signature_buttons(
     hidden_checkbox_B,
     label_signature,
 ):
+    """
+
+    Create Bokeh widgets for computing and displaying feature signatures.
+
+    This function generates the UI elements e.g., buttons, help tooltips, and
+    a multi-select widget that allow users to compute differential feature
+    signatures between interactively defined cell subsets. It provides options
+    to compare "Subset A vs. Rest" and "Subset A vs. Subset B".
+
+    Args:
+        adata
+            The annotated data matrix of shape `n_obs` × `n_vars`.
+        offset_text_feature_color : bokeh.models.TextInput
+            Bokeh widget updated with the signed list of selected features
+            (prefixed by "+" or "-").
+        offset_label : bokeh.models.TextInput
+            Bokeh widget updated with the chosen group labels.
+        hidden_checkbox_A : bokeh.models.CheckboxGroup
+            Widget defining the indices of subset A.
+        hidden_checkbox_B : bokeh.models.CheckboxGroup
+            Widget defining the indices of subset B.
+        label_signature : bokeh.models.MultiSelect
+            Bokeh widget listing available group labels.
+
+    Returns:
+        tuple
+            A tuple containing the Bokeh widgets created by this function:
+            - `bt_sign1` (bokeh.models.Button): Button to compute "A vs. Rest".
+            - `bt_sign2` (bokeh.models.Button): Button to compute "A vs. B".
+            - `help_button1` (bokeh.models.HelpButton): Help tooltip for `bt_sign1`.
+            - `help_button2` (bokeh.models.HelpButton): Help tooltip for `bt_sign2`.
+            - `multiselect_signature` (bokeh.models.MultiSelect): Widget to display
+            the ranked features of the computed signature.
+            - `div_signature_list` (bokeh.models.Div): A Div element to display the
+            signature title and a summary of top features.
+            - `signature_nr` (list): A list containing a single integer used to
+            number the computed signatures sequentially.
+
+    """
 
     def wasserstein_distance(mu1, sigma1, mu2, sigma2):
         mean_diff = mu1 - mu2

@@ -1,3 +1,15 @@
+"""
+Implements the "oriented signature" analysis tool.
+
+This module provides a unique feature that allows users to explore data along
+a user-defined trajectory or gradient. It adds an interactive arrow tool to the
+main plot, enabling the user to draw a vector directly on the embedding. The
+module can then compute an "oriented signature" by identifying the features
+whose values are most strongly correlated either positively or negatively
+with the direction of the arrow. This is particularly useful for analyzing
+continuous biological processes, such as cell differentiation or activation.
+"""
+
 from pathlib import Path
 import pandas as pd
 import bokeh.models
@@ -22,6 +34,58 @@ def arrow_function(
     sl_component3,
     label_sign,
 ):
+    
+    """
+    Create and manage the arrow tool for oriented signature analysis
+
+    Adds an "Arrow Tool" to a Bokeh plot that lets the user draw an arrow
+    (start and end points). The arrow direction is then used to compute
+    an *oriented signature*: a set of features most correlated with the
+    arrow direction in the embedding space.
+
+    Args:
+        points_bokeh_plot : bokeh.plotting.Figure
+            Bokeh scatter plot of observations (embedding of cells).
+        adata : :class:`~anndata.AnnData`
+            Annotated data matrix.
+        embedding_key : str
+            Key in ``adata.obsm`` storing the embedding coordinates.
+        bt_slider_roll : bokeh.models.Slider
+            The Bokeh Slider widget for roll rotation.
+        bt_slider_pitch : bokeh.models.Slider
+            The Bokeh Slider widget for pitch rotation.
+        bt_slider_yaw : bokeh.models.Slider
+            The Bokeh Slider widget for yaw rotation.
+        source_rotmatrix_etc : bokeh.models.ColumnDataSource
+            Data source providing rotation matrix values for 3D embeddings.
+        bt_toggle_anim : bokeh.models.Toggle
+            Toggle controlling animation state.
+        hidden_checkbox_A : bokeh.models.CheckboxGroup
+            Widget defining the indices of subset A.
+        div_signature_list : bokeh.models.Div
+            Div displaying computed signature details.
+        multiselect_signature : bokeh.models.MultiSelect
+            MultiSelect widget listing features of the computed oriented signature.
+        sign_nr
+            A list containing an integer to number the signatures sequentially.
+        sl_component1
+            A Bokeh RadioButtonGroup for selecting the x-axis component.
+        sl_component2
+            A Bokeh RadioButtonGroup for selecting the y-axis component.
+        sl_component3
+            A Bokeh RadioButtonGroup for selecting the z-axis component.
+        label_sign : bokeh.models.MultiSelect
+            MultiSelect widget used to assign labels to signatures.
+
+    Returns:
+        tuple
+            A tuple containing the Bokeh widgets created by this function:
+            - `"Compute oriented signature (A)"`` (bokeh.models.Button): that triggers
+            oriented signature computation based on the drawn arrow.
+            - `help_button_oriented` (bokeh.models.HelpButton): Tooltip button describing requirements 
+            for computing oriented signatures.
+
+    """
 
     arrow_clicks = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
 

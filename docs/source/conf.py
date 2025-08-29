@@ -33,7 +33,7 @@ html_static_path = ['_static']
 import sys
 from os.path import abspath
 
-sys.path.insert(0, abspath(".."))
+sys.path.insert(0, abspath('..'))
 
 # -- General configuration ------------------------------------------------
 
@@ -43,7 +43,7 @@ sys.path.insert(0, abspath(".."))
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
-    "sphinx-mathjax-offline",
+    "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",  # before sphinx_autodoc_typehints
     "sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",  # summary table
