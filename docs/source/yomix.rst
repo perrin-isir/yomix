@@ -8,7 +8,6 @@ Subpackages
    :maxdepth: 4
 
    yomix.plotting
-   yomix.server
    yomix.tools
 
 Module contents
