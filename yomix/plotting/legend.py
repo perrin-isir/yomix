@@ -24,7 +24,7 @@ def setup_legend(
     unique_dict,
 ):
     """
-    
+
     Set up interactive legend and color mapping for a scatter plot.
 
     Creates Bokeh widgets and callbacks that control coloring of points
@@ -65,7 +65,7 @@ def setup_legend(
             category from fields with many unique values.
             - `label_signature` (bokeh.models.MultiSelect): A widget for selecting
             groups in signature plots (initialized here).
-            
+
     """
 
     source = pb_plot.select(dict(name="scatterplot"))[0].data_source

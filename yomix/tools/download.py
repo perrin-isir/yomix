@@ -1,8 +1,8 @@
 """
-Handles data import and export functionality and provides utility functions for saving and loading selections of
-data points. 
+Handles data import and export functionality and provides
+utility functions for saving and loading selections of
+data points.
 """
-
 
 from bokeh.models import Button, CustomJS
 
@@ -94,7 +94,7 @@ def download_selected_button(source, original_keys):
 
     This function generates a Bokeh Button that, when clicked, save the currently
     selected data points to a CSV file.
-    
+
     Args:
         source : bokeh.models.ColumnDataSource
             Data source containing the selected points to be downloaded.

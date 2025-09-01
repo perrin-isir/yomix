@@ -34,7 +34,6 @@ def arrow_function(
     sl_component3,
     label_sign,
 ):
-    
     """
     Create and manage the arrow tool for oriented signature analysis
 
@@ -82,10 +81,10 @@ def arrow_function(
             A tuple containing the Bokeh widgets created by this function:
             - `"Compute oriented signature (A)"`` (bokeh.models.Button): that triggers
             oriented signature computation based on the drawn arrow.
-            - `help_button_oriented` (bokeh.models.HelpButton): Tooltip button describing requirements 
+            - `help_button_oriented` (bokeh.models.HelpButton): Tooltip button describing requirements
             for computing oriented signatures.
 
-    """
+    """  # noqa
 
     arrow_clicks = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
 

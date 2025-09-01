@@ -40,12 +40,11 @@ _first_start_done = None
 
 
 def gen_modify_doc(filearg, subsampling, title):
-
     """
     Load an AnnData object from a file and prepare it for visualization.
 
-    Reads an `.h5ad` file into an AnnData object and then passes it to `gen_modify_doc_xd` to generate the
-    main Bokeh document function.
+    Reads an `.h5ad` file into an AnnData object and then passes it to
+    `gen_modify_doc_xd` to generate the main Bokeh document function.
 
     Args
         filearg : pathlib.Path
@@ -128,7 +127,6 @@ def start_server(xd, subsampling=None, title="", port=5006):
 
 
 def gen_modify_doc_xd(xd, subsampling, title):
-
     """
     Preprocess an AnnData object and build a document factory.
 

@@ -13,7 +13,7 @@ import bokeh.models
 
 def gene_query_button(offset_text_feature_color):
     """
-    
+
     Create a button to search for features in the HGNC database.
 
     This function generates a Bokeh Button when clicked, extracts the feature
@@ -30,7 +30,7 @@ def gene_query_button(offset_text_feature_color):
     Returns:
         bt_open_link (bokeh.models.Button) :
             -``"Search these features in HGNC"``: When clicked, the button
-            opens HGNC search pages for the features listed in 
+            opens HGNC search pages for the features listed in
             `offset_text_feature_color`.
     """
 

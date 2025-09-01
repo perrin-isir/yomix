@@ -1,5 +1,5 @@
 """
-The computation itself, handled by the internal `compute_signature` function, 
+The computation itself, handled by the internal `compute_signature` function,
 uses a two-step process:
 
 1. Features are first ranked by the Wasserstein distance between their
@@ -37,7 +37,7 @@ def signature_buttons(
 
     Args:
         adata
-            The annotated data matrix of shape `n_obs` × `n_vars`.
+            The annotated data matrix of shape `n_obs` x `n_vars`.
         offset_text_feature_color : bokeh.models.TextInput
             Bokeh widget updated with the signed list of selected features
             (prefixed by "+" or "-").
