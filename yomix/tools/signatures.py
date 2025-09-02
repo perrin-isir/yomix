@@ -13,7 +13,6 @@ uses a two-step process:
 
 import numpy as np
 import bokeh.models
-import bokeh.layouts
 import sys
 from scipy.stats import rankdata
 
@@ -27,44 +26,36 @@ def signature_buttons(
     label_signature,
 ):
     """
-
-    Create Bokeh widgets for computing and displaying feature signatures.
-
-    This function generates the UI elements e.g., buttons, help tooltips, and
+    Create the UI elements e.g., buttons, help tooltips, and
     a multi-select widget that allow users to compute differential feature
     signatures between interactively defined cell subsets. It provides options
     to compare "Subset A vs. Rest" and "Subset A vs. Subset B".
 
     Args:
-        adata
-            The annotated data matrix of shape `n_obs` x `n_vars`.
-        offset_text_feature_color : bokeh.models.TextInput
-            Bokeh widget updated with the signed list of selected features
-            (prefixed by "+" or "-").
+        adata (AnnData):
+            Annotated data matrix of shape `n_obs` x `n_vars`.
+        offset_text_feature_color (bokeh.models.TextInput):
+            Text input for entering feature names to color samples in the scatter plot.
         offset_label : bokeh.models.TextInput
-            Bokeh widget updated with the chosen group labels.
-        hidden_checkbox_A : bokeh.models.CheckboxGroup
-            Widget defining the indices of subset A.
-        hidden_checkbox_B : bokeh.models.CheckboxGroup
-            Widget defining the indices of subset B.
+            Hidden text input that stores the group labels for generating
+            violin/heatmap plots
+        hidden_checkbox_A (bokeh.models.CheckboxGroup):
+            Widget storing "Subset A" sample indices.
+        hidden_checkbox_B (bokeh.models.CheckboxGroup):
+            Widget storing "Subset B" sample indices.
         label_signature : bokeh.models.MultiSelect
-            Bokeh widget listing available group labels.
+            Widget listing available group labels including Subset A and Subset B or Rest.
 
     Returns:
-        tuple
-            A tuple containing the Bokeh widgets created by this function:
-            - `bt_sign1` (bokeh.models.Button): Button to compute "A vs. Rest".
-            - `bt_sign2` (bokeh.models.Button): Button to compute "A vs. B".
-            - `help_button1` (bokeh.models.HelpButton): Help tooltip for `bt_sign1`.
-            - `help_button2` (bokeh.models.HelpButton): Help tooltip for `bt_sign2`.
-            - `multiselect_signature` (bokeh.models.MultiSelect): Widget to display
-            the ranked features of the computed signature.
-            - `div_signature_list` (bokeh.models.Div): A Div element to display the
-            signature title and a summary of top features.
-            - `signature_nr` (list): A list containing a single integer used to
-            number the computed signatures sequentially.
-
-    """
+        Tuple containing the Bokeh components created by this function:
+            - **bt_sign1** (*bokeh.models.Button*): Button to compute "A vs. Rest".
+            - **bt_sign2** (*bokeh.models.Button*): Button to compute "A vs. B".
+            - **help_button1** (*bokeh.models.HelpButton*): Help tooltip for `bt_sign1`.
+            - **help_button2** (*bokeh.models.HelpButton*): Help tooltip for `bt_sign2`.
+            - **multiselect_signature** (*bokeh.models.MultiSelect*): Widget to display the ranked features of the computed signature.
+            - **div_signature_list** (*bokeh.models.Div*): Div element to display the signature title and a summary of top features.
+            - **signature_nr** (*list*): List containing a single integer used to number the computed signatures sequentially.
+    """  # noqa: E501
 
     def wasserstein_distance(mu1, sigma1, mu2, sigma2):
         mean_diff = mu1 - mu2

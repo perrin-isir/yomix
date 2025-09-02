@@ -1,5 +1,5 @@
-yomix.plotting package
-======================
+yomix.plotting
+==============
 
 Submodules
 ----------

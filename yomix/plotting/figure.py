@@ -84,11 +84,11 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
     Returns:
         Tuple containing all the created Bokeh components
-            - **original_keys** (*list*): List of all keys from `adata.obs`.
-            - **unique_dict** (*dict*): Maps categorical keys from `adata.obs` to unique values .
+            - **original_keys** (*list*): List of all keys from ``adata.obs``.
+            - **unique_dict** (*dict*): Maps categorical keys from ``adata.obs`` to unique values .
             - **obs_string** (*list*): List of categorical keys with <= 40 unique values from `adata.obs`.
-            - **obs_string_many** (*list*): Categorical keys with > 40 unique values from `adata.obs`.
-            - **obs_numerical** (*list*): List of numerical observation fields from `adata.obs`.
+            - **obs_string_many** (*list*): Categorical keys with > 40 unique values from ``adata.obs``.
+            - **obs_numerical** (*list*): List of numerical observation fields from ``adata.obs``.
             - **points_bokeh_plot** (*bokeh.plotting.figure*): The main scatter plot figure.
             - **violins_bokeh_plot** (*bokeh.plotting.figure*): Violin plot figure.
             - **heat_map** (*bokeh.plotting.figure*): Heat map figure.

@@ -55,7 +55,7 @@ def setup_legend(
             - **hidden_text_label_column** (*bokeh.models.TextInput*): A hidden widget that triggers the color update via JavaScript.
             - **hidden_legend_width** (*bokeh.models.TextInput*): A hidden widget that stores the current width of the legend.
             - **select_field** (*bokeh.models.Select*):  Dropdown menu in the legend for selecting a group from a field with many unique values.
-            - **label_signature** (*bokeh.models.MultiSelect*): A widget for selecting groups in signature plots (initialized here).
+            - **label_signature** (*bokeh.models.MultiSelect*): Widget for selecting groups in violin plots / heat map (initialized here).
     """  # noqa: E501
 
     source = pb_plot.select(dict(name="scatterplot"))[0].data_source

@@ -13,54 +13,41 @@ import bokeh.models
 
 def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
     """
-    Create and configure Bokeh widgets for subset management.
-
-    This function generates the UI elements (e.g., buttons and toggles)
-    required for defining, highlighting, and re-selecting "Subset A" and
-    "Subset B". It generates toggle switches and buttons for setting,
-    highlighting, and selecting subsets of cells directly within a scatterplot
-    visualization.
+    Generate toggle switches and buttons for setting, highlighting, and selecting
+    subsets of samples directly within from the scatterplot.
 
     Args:
         points_bokeh_plot (bokeh.plotting.Figure):
-            The main Bokeh scatter plot figure object where selections are made,
-            with a data source named ``scatterplot``.
+            The main Bokeh scatter plot figure.
 
         source_rotmatrix_etc (bokeh.models.ColumnDataSource):
-            A Bokeh ColumnDataSource that holds view parameters like the current
-            point size coefficient, which is needed to correctly update the
-            visual highlighting of points in JavaScript.
+            Data source for tracking points' positions after rotations in the scatterplot.
 
         bt_slider_range (bokeh.models.RangeSlider):
-            The Bokeh RangeSlider widget used for filtering numerical data. It is
+            Slider for filtering samples based on a selected feature's value. It is
             passed here so its value can be reset when the user clears a selection.
 
     Returns:
-        tuple:
-            A tuple containing all the created Bokeh widgets so they can be added
+        Tuple containing all the created Bokeh widgets so they can be added
             to the main application layout.
 
-            The returned widgets are:
-
-            - ``bt_A`` (:class:`bokeh.models.Button`): Button to assign the current
-              selection to Subset A.
-            - ``toggle_A`` (:class:`bokeh.models.Toggle`): Toggle to turn the visual
+            - **bt_A** (*bokeh.models.Button*): Button to assign the current selection to Subset A.
+            - **toggle_A** (*bokeh.models.Toggle*): Toggle to turn the visual
               highlighting of Subset A on or off.
-            - ``hidden_checkbox_A`` (:class:`bokeh.models.CheckboxGroup`): Hidden widget storing Subset A samples indices.
-            - ``bt_B`` (:class:`bokeh.models.Button`): Button to assign the current
+            - **hidden_checkbox_A** (*bokeh.models.CheckboxGroup*): Hidden widget storing Subset A samples indices.
+            - **bt_B** (*bokeh.models.Button*): Button to assign the current
               selection to Subset B.
-            - ``toggle_B`` (:class:`bokeh.models.Toggle`): Toggle to turn the visual
+            - **toggle_B** (*bokeh.models.Toggle*): Toggle to turn the visual
               highlighting of Subset B on or off.
-            - ``hidden_checkbox_B`` (:class:`bokeh.models.CheckboxGroup`): Hidden widget storing Subset B samples indices..
-            - ``bt_AplusB`` (:class:`bokeh.models.Button`): Button to select the
+            - **hidden_checkbox_B** (*bokeh.models.CheckboxGroup*): Hidden widget storing Subset B samples indices..
+            - **bt_AplusB** (*bokeh.models.Button*): Button to select the
               union of Subset A and Subset B.
-            - ``bt_nothing`` (:class:`bokeh.models.Button`): Button to clear the
+            - **bt_nothing** (*bokeh.models.Button*): Button to clear the
               current selection.
-            - ``bt_selectA`` (:class:`bokeh.models.Button`): Button to select all
+            - **bt_selectA** (*bokeh.models.Button*): Button to select all
               samples from Subset A.
-            - ``bt_selectB`` (:class:`bokeh.models.Button`): Button to select all
+            - **bt_selectB** (*bokeh.models.Button*): Button to select all
               samples from Subset B.
-
     """  # noqa
 
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source

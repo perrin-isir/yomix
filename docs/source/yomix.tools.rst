@@ -1,5 +1,5 @@
-yomix.tools package
-===================
+yomix.tools
+===========
 
 Submodules
 ----------

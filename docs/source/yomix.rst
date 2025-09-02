@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   yomix.server
    yomix.plotting
    yomix.tools
 

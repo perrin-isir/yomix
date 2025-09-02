@@ -41,9 +41,7 @@ _first_start_done = None
 
 def gen_modify_doc(filearg, subsampling, title):
     """
-    Load an AnnData object from a file and prepare it for visualization.
-
-    Reads an `.h5ad` file into an AnnData object and then passes it to
+    Read an `.h5ad` file into an AnnData object and pass it to
     `gen_modify_doc_xd` to generate the main Bokeh document function.
 
     Args
@@ -67,19 +65,18 @@ def gen_modify_doc(filearg, subsampling, title):
 def start_server(xd, subsampling=None, title="", port=5006):
     """
     Start a Yomix interactive Bokeh server.
-
-    Runs the application in a background thread, serving the given
+    Run the application in a background thread, serving the given
     AnnData object through a Bokeh web interface. If a server is already
     running, it is first stopped and replaced.
 
     Args:
-        xd : :class:`~anndata.AnnData`
-            Annotated data matrix.
-        subsampling : int or None, optional (default: None)
+        xd (AnnData):
+             Annotated data matrix of shape `n_obs` x `n_vars`.
+        subsampling (int):
             Number of observations to randomly subsample before launching.
-        title : str, optional (default: "")
+        title (str):
             Title string for the Bokeh document.
-        port : int, optional (default: 5006)
+        port (int):
             Port on which to serve the Bokeh application.
 
     Returns:
@@ -134,12 +131,12 @@ def gen_modify_doc_xd(xd, subsampling, title):
     categorical labels. Returns an interactive visualization layout.
 
     Args:
-        xd : :class:`~anndata.AnnData`
-            Annotated data matrix.
-        subsampling : int or None
+        xd (AnnData):
+            Annotated data matrix of shape `n_obs` x `n_vars`.
+        subsampling (int):
             If not None, randomly subsample this many observations.
-        title : str
-            Title string for the Bokeh document.
+        title (str):
+            Title for the Bokeh document.
 
     Returns:
         modify_doc : callable

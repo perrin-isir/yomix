@@ -22,17 +22,15 @@ def gene_query_button(offset_text_feature_color):
     HGNC website. It may include `+` and `-` operators, as well as Ensembl IDs.
 
     Args:
-        offset_text_feature_color : bokeh.models.TextInput
+        offset_text_feature_color (bokeh.models.TextInput):
             Bokeh text input widget containing a string of selected features
             (genes or Ensembl IDs). Features should be separated by
             `"  +  "` or `"  -  "`.
 
     Returns:
-        bt_open_link (bokeh.models.Button) :
-            -``"Search these features in HGNC"``: When clicked, the button
-            opens HGNC search pages for the features listed in
-            `offset_text_feature_color`.
-    """
+        **bokeh.models.Button** :
+            Button that opens HGNC search pages for the features listed in `offset_text_feature_color`.
+    """  # noqa: E501
 
     bt_open_link = bokeh.models.Button(
         label="← Search these features in HGNC", width=235, height=60

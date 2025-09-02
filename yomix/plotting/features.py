@@ -77,8 +77,8 @@ def color_by_feature_value(
     Returns:
         Tuple containing the Bokeh widgets created by this function:
 
-            - `offset_text_feature_color` (bokeh.models.TextInput): The text input
-              for entering feature names.
+            - `offset_text_feature_color` (bokeh.models.TextInput): Text input
+              for entering feature names to color samples in the scatter plot.
             - `offset_label` (bokeh.models.TextInput): A hidden text input that
               stores the group labels for generating violin/heatmap plots.
     """
