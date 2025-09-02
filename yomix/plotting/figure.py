@@ -88,8 +88,8 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             - **unique_dict** (*dict*): Maps categorical keys from `adata.obs` to unique values .
             - **obs_string** (*list*): List of categorical keys with <= 40 unique values from `adata.obs`.
             - **obs_string_many** (*list*): Categorical keys with > 40 unique values from `adata.obs`.
-            - **obs_numerical** (*list*): Numerical keys from `adata.obs`.
-            - **points_bokeh_plot** (*bokeh.plotting.figure*): The main scatter plot.
+            - **obs_numerical** (*list*): List of numerical observation fields from `adata.obs`.
+            - **points_bokeh_plot** (*bokeh.plotting.figure*): The main scatter plot figure.
             - **violins_bokeh_plot** (*bokeh.plotting.figure*): Violin plot figure.
             - **heat_map** (*bokeh.plotting.figure*): Heat map figure.
             - **bt_slider_point_size** (*bokeh.models.Slider*): Widget for point size.
@@ -103,14 +103,14 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             - **resize_height_input** (*bokeh.models.TextInput*): Input for main plot height.
             - **resize_width_input_bis** (*bokeh.models.TextInput*): Input for violin/heatmap plot width.
             - **resize_height_input_bis** (*bokeh.models.TextInput*): Input for violin/heatmap plot height.
-            - **source_rotmatrix_etc** (*bokeh.models.ColumnDataSource*): Holds rotation state.
+            - **source_rotmatrix_etc** (*bokeh.models.ColumnDataSource*): Holds rotation state. # TODO
             - **div_sample_names** (*bokeh.models.Div*): Displays hovered sample names.
             - **sample_search_input** (*bokeh.models.TextInput*): Text input to search specific sample via its ID.
             - **sl_component1** (*bokeh.models.RadioButtonGroup*, *None* if embedding <= 3 dimensions): Button to select which dimension should be used for the x-axis.
             - **sl_component2** (*bokeh.models.RadioButtonGroup*, *None* if embedding <= 3 dimensions): Button to select which dimension should be used for the y-axis.
             - **sl_component3** (*bokeh.models.RadioButtonGroup*, *None* if embedding <= 3 dimensions): Button to select which dimension should be used for the z-axis.
 
-    """  # noqa
+    """  # noqa: E501
 
     everything = [
         x for x in list(adata.obs.select_dtypes(include=["category", "object"]).keys())
