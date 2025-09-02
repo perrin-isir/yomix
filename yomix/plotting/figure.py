@@ -103,7 +103,7 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             - **resize_height_input** (*bokeh.models.TextInput*): Input for main plot height.
             - **resize_width_input_bis** (*bokeh.models.TextInput*): Input for violin/heatmap plot width.
             - **resize_height_input_bis** (*bokeh.models.TextInput*): Input for violin/heatmap plot height.
-            - **source_rotmatrix_etc** (*bokeh.models.ColumnDataSource*): Holds rotation state. # TODO
+            - **source_rotmatrix_etc** (*bokeh.models.ColumnDataSource*): Data source for computing points' positions after rotations in the scatterplot
             - **div_sample_names** (*bokeh.models.Div*): Displays hovered sample names.
             - **sample_search_input** (*bokeh.models.TextInput*): Text input to search specific sample via its ID.
             - **sl_component1** (*bokeh.models.RadioButtonGroup*, *None* if embedding <= 3 dimensions): Button to select which dimension should be used for the x-axis.
