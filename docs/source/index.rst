@@ -1,9 +1,4 @@
-YOMIX Documentation
-====================
 
-Welcome to the YOMIX documentation!
-
-Contents:
 
 .. toctree::
    :maxdepth: 2

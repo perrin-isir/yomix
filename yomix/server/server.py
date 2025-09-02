@@ -3,7 +3,7 @@ Main application server and layout orchestrator for Yomix.
 
 This module is the central hub and is responsible for:
 
-1. Reading and preprocessing the input `anndata` object, including optional
+1. Reading and preprocessing the input ``Anndata`` object, including optional
    subsampling and data normalization.
 
 2. Assembling the entire user interface by initializing and arranging all the
@@ -44,12 +44,12 @@ def gen_modify_doc(filearg, subsampling, title):
     Read an `.h5ad` file into an AnnData object and pass it to
     `gen_modify_doc_xd` to generate the main Bokeh document function.
 
-    Args
-        filearg : pathlib.Path
+    Args:
+        filearg (pathlib.Path):
             Path to the `.h5ad` file containing the AnnData object.
-        subsampling : int or None
+        subsampling (int or None):
             If not None, randomly subsample this many observations.
-        title : str
+        title (str):
             Title string for the Bokeh document.
 
     Returns:
@@ -139,7 +139,7 @@ def gen_modify_doc_xd(xd, subsampling, title):
             Title for the Bokeh document.
 
     Returns:
-        modify_doc : callable
+        **modify_doc** (*callable*)
             Function that accepts a Bokeh `Document` and populates it with
             interactive plots, controls, and analysis widgets.
     """

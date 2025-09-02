@@ -1,8 +1,5 @@
-yomix package
-=============
-
-Subpackages
------------
+YOMIX Documentation
+===================
 
 .. toctree::
    :maxdepth: 4

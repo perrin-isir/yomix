@@ -135,3 +135,8 @@ html_theme_options = {}
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "yomixdoc"
+
+html_logo = "https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_logo.png"
+
+html_title = "Yomix Documentation"
+project = ""

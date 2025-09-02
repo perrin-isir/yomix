@@ -23,9 +23,7 @@ def gene_query_button(offset_text_feature_color):
 
     Args:
         offset_text_feature_color (bokeh.models.TextInput):
-            Bokeh text input widget containing a string of selected features
-            (genes or Ensembl IDs). Features should be separated by
-            `"  +  "` or `"  -  "`.
+            Text input for entering feature names to color samples in the scatter plot.
 
     Returns:
         **bokeh.models.Button** :

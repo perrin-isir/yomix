@@ -1,9 +1,6 @@
 yomix.tools
 ===========
 
-Submodules
-----------
-
 yomix.tools.arrow module
 ------------------------
 
