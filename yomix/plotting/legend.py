@@ -26,7 +26,6 @@ def setup_legend(
     """
 
     Set up interactive legend and color mapping for a scatter plot.
-
     Creates Bokeh widgets and callbacks that control coloring of points
     by categorical or numerical observation fields, and dynamically
     builds legends or color bars depending on the field type.
@@ -40,30 +39,23 @@ def setup_legend(
             List of categorical `.obs` keys with > 40 unique values.
         obs_numerical (list of str):
             List of numerical observation fields.
-        source_rotmatrix_etc (bokeh.models.ColumnDataSource): # TODO
-            Data source storing layout and rotation matrix information,
-            used for synchronizing legend widths.
-        resize_width_input (bokeh.models.TextInput): # TODO
-            Hidden text input widget for adjusting plot width when legends are added.
+        source_rotmatrix_etc (bokeh.models.ColumnDataSource):
+             Data source for computing points' positions after rotations in the scatterplot.
+        resize_width_input (bokeh.models.TextInput):
+            Input for setting main plot's width.
         bt_slider_range (bokeh.models.RangeSlider):
-            Slider for filtering samples based on a selected feature's value..
+            Slider for filtering samples based on a selected feature's value.
         unique_dict (dict):
             Dictionary mapping field names to lists of unique values.
 
     Returns:
-        tuple
-            A tuple containing the Bokeh widgets created by this function:
-            - `select_color_by` (bokeh.models.Select): Dropdown menu for choosing a coloring field, its values will be added in the legend.
-            - `help_button` (bokeh.models.HelpButton): A help tooltip for the
-            select widget.
-            - `hidden_text_label_column` (bokeh.models.TextInput): A hidden widget
-            that triggers the color update via JavaScript.
-            - `hidden_legend_width` (bokeh.models.TextInput): A hidden widget that
-            stores the current width of the legend.
-            - `select_field` (bokeh.models.Select):  Dropdown menu in the legend for selecting a group from a field with many unique values.
-            - `label_signature` (bokeh.models.MultiSelect): A widget for selecting
-            groups in signature plots (initialized here).
-
+        Tuple containing all the created Bokeh components
+            - **select_color_by** (*bokeh.models.Select*): Dropdown menu for choosing a coloring field, its values will be added in the legend.
+            - **help_button** (*bokeh.models.HelpButton*): A help tooltip for the select widget.
+            - **hidden_text_label_column** (*bokeh.models.TextInput*): A hidden widget that triggers the color update via JavaScript.
+            - **hidden_legend_width** (*bokeh.models.TextInput*): A hidden widget that stores the current width of the legend.
+            - **select_field** (*bokeh.models.Select*):  Dropdown menu in the legend for selecting a group from a field with many unique values.
+            - **label_signature** (*bokeh.models.MultiSelect*): A widget for selecting groups in signature plots (initialized here).
     """  # noqa: E501
 
     source = pb_plot.select(dict(name="scatterplot"))[0].data_source
