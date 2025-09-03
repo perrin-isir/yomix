@@ -17,52 +17,36 @@ In a Python virtual environment, do the following:
 2. Try the tool with the example dataset:
 
    .. code:: bash
-
+      
       yomix --example
 
 
 Install from Source
 -------------------
 
-If you prefer to install `yomix` from source, follow these steps:
 
-1. Clone the repository:
+.. code:: bash
+   
+   git clone https://github.com/perrin-isir/yomix.git
 
-   .. code:: bash
+We recommend using `micromamba <https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html#>`__ to create a Python environment, but you can use any Python package manager instead.
+   
+   
+.. code:: bash
 
-      git clone https://github.com/perrin-isir/yomix.git
+   cd yomix
 
-   We recommend using `micromamba` to create a Python environment, but you can use any Python package manager instead.
+   micromamba create --name yomixenv --file environment.yaml
 
-2. Navigate to the `yomix` directory:
+   micromamba activate yomixenv
 
-   .. code:: bash
+   pip install -e .
 
-      cd yomix
+Then try the tool with:
 
-3. Create the environment using `micromamba`:
+.. code:: bash
 
-   .. code:: bash
-
-      micromamba create --name yomixenv --file environment.yaml
-
-4. Activate the environment:
-
-   .. code:: bash
-
-      micromamba activate yomixenv
-
-5. Install the package in editable mode:
-
-   .. code:: bash
-
-      pip install -e .
-
-6. Try the tool with an example file:
-
-   .. code:: bash
-
-      yomix yomix/example/pbmc.h5ad
+   yomix yomix/example/pbmc.h5ad
 
 To use it on your own files:
 ----------------------------
@@ -79,14 +63,8 @@ Improve reactiveness with subsampling
 
 When there are many samples in the dataset, you can use the `--subsampling` option to improve reactiveness. This option will randomly subsample the dataset to a maximum number of `N` samples. For example:
 
-   .. code:: bash
+.. code:: bash
 
-      yomix --subsampling 5000 yourfile.h5ad
+   yomix --subsampling 5000 yourfile.h5ad
 
 This will subsample the dataset to a maximum of 5000 samples.
-
-Notes
------
-
-- The input file must be an `.h5ad` file containing an AnnData object with at least one `.obsm` field of dimension 2 or more (e.g., PCA, UMAP embeddings).
-

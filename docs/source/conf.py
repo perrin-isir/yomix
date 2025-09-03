@@ -32,7 +32,14 @@ html_static_path = ['_static']
 
 import sys
 from os.path import abspath
+from sphinx.builders.html import StandaloneHTMLBuilder
 
+StandaloneHTMLBuilder.supported_image_types = [
+    "image/svg+xml",
+    "image/gif",
+    "image/png",
+    "image/jpeg",
+]
 sys.path.insert(0, abspath(".."))
 
 # -- General configuration ------------------------------------------------
