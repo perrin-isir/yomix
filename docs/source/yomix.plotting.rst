@@ -1,14 +1,19 @@
-yomix.plotting
-==============
+Plotting
+========
 
-.. toctree::
-   :maxdepth: 2
-
-   yomix.plotting.features
-   yomix.plotting.figure
-   yomix.plotting.legend 
-  
+.. automodule:: yomix.plotting.features
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 
+.. automodule:: yomix.plotting.figure
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-  
+
+.. automodule:: yomix.plotting.legend
+   :members:
+   :undoc-members:
+   :show-inheritance:

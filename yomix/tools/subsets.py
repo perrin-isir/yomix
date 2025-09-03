@@ -1,7 +1,55 @@
+"""
+Provides tools for defining and managing data subsets.
+
+This module contains the `subset_buttons` function, which creates the necessary
+Bokeh widgets to allow users to interactively select and define two distinct
+groups of data points, labeled "Subset A" and "Subset B". It handles both the
+assignment of points to these subsets and their visual highlighting on the main
+scatter plot.
+"""
+
 import bokeh.models
 
 
 def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
+    """
+    Generate toggle switches and buttons for setting, highlighting, and selecting
+    subsets of samples directly within from the scatterplot.
+
+    Args:
+        points_bokeh_plot (bokeh.plotting.Figure):
+            The main Bokeh scatter plot figure.
+
+        source_rotmatrix_etc (bokeh.models.ColumnDataSource):
+            Data source for tracking points' positions after rotations in the scatterplot.
+
+        bt_slider_range (bokeh.models.RangeSlider):
+            Slider for filtering samples based on a selected feature's value. It is
+            passed here so its value can be reset when the user clears a selection.
+
+    Returns:
+        Tuple containing all the created Bokeh widgets so they can be added
+            to the main application layout.
+
+            - **bt_A** (*bokeh.models.Button*): Button to assign the current selection to Subset A.
+            - **toggle_A** (*bokeh.models.Toggle*): Toggle to turn the visual
+              highlighting of Subset A on or off.
+            - **hidden_checkbox_A** (*bokeh.models.CheckboxGroup*): Hidden widget storing Subset A samples indices.
+            - **bt_B** (*bokeh.models.Button*): Button to assign the current
+              selection to Subset B.
+            - **toggle_B** (*bokeh.models.Toggle*): Toggle to turn the visual
+              highlighting of Subset B on or off.
+            - **hidden_checkbox_B** (*bokeh.models.CheckboxGroup*): Hidden widget storing Subset B samples indices..
+            - **bt_AplusB** (*bokeh.models.Button*): Button to select the
+              union of Subset A and Subset B.
+            - **bt_nothing** (*bokeh.models.Button*): Button to clear the
+              current selection.
+            - **bt_selectA** (*bokeh.models.Button*): Button to select all
+              samples from Subset A.
+            - **bt_selectB** (*bokeh.models.Button*): Button to select all
+              samples from Subset B.
+    """  # noqa
+
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source
     button_width = 112
     # big_button_width = 235
@@ -211,7 +259,7 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
     bt_A.js_on_click(callback_js_A)
     bt_B.js_on_click(callback_js_B)
 
-    bt_selectA = bokeh.models.Button(label="A", width=button_width//4)
+    bt_selectA = bokeh.models.Button(label="A", width=button_width // 4)
     bt_selectA.js_on_click(
         bokeh.models.CustomJS(
             args=dict(source=source),
@@ -231,7 +279,7 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
         )
     )
 
-    bt_selectB = bokeh.models.Button(label="B", width=button_width//4)
+    bt_selectB = bokeh.models.Button(label="B", width=button_width // 4)
     bt_selectB.js_on_click(
         bokeh.models.CustomJS(
             args=dict(source=source),
@@ -296,5 +344,5 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
         bt_AplusB,
         bt_nothing,
         bt_selectA,
-        bt_selectB
+        bt_selectB,
     )

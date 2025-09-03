@@ -1,10 +1,30 @@
-yomix.tools 
-=============
+Tools
+=====
 
-.. toctree::
-   :maxdepth: 2
+.. automodule:: yomix.tools.arrow
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-   yomix.tools.arrow
-   yomix.tools.gene_query
-   yomix.tools.signatures
-   yomix.tools.subsets
+.. automodule:: yomix.tools.download
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodule:: yomix.tools.gene_query
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodule:: yomix.tools.signatures
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodule:: yomix.tools.subsets
+   :members:
+   :undoc-members:
+   :show-inheritance:

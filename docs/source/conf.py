@@ -32,7 +32,14 @@ html_static_path = ['_static']
 
 import sys
 from os.path import abspath
+from sphinx.builders.html import StandaloneHTMLBuilder
 
+StandaloneHTMLBuilder.supported_image_types = [
+    "image/svg+xml",
+    "image/gif",
+    "image/png",
+    "image/jpeg",
+]
 sys.path.insert(0, abspath(".."))
 
 # -- General configuration ------------------------------------------------
@@ -43,7 +50,7 @@ sys.path.insert(0, abspath(".."))
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
-    "sphinx-mathjax-offline",
+    "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",  # before sphinx_autodoc_typehints
     "sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",  # summary table
@@ -135,3 +142,8 @@ html_theme_options = {}
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "yomixdoc"
+
+html_logo = "https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_logo.png"
+
+html_title = "Documentation"
+project = ""

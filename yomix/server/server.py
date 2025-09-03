@@ -1,3 +1,21 @@
+"""
+Main application server and layout orchestrator for Yomix.
+
+This module is the central hub and is responsible for:
+
+1. Reading and preprocessing the input ``Anndata`` object, including optional
+   subsampling and data normalization.
+
+2. Assembling the entire user interface by initializing and arranging all the
+   plotting components and interactive tools from the various `yomix.plotting`
+   and `yomix.tools` modules.
+
+3. Managing the Bokeh server lifecycle, including starting the server,
+   handling different data embeddings, and gracefully shutting down previous
+   instances. This allows Yomix to be run both as a standalone script and
+   within interactive environments like Jupyter notebooks.
+"""
+
 import yomix.plotting
 import yomix.tools
 import bokeh.layouts
@@ -22,12 +40,50 @@ _first_start_done = None
 
 
 def gen_modify_doc(filearg, subsampling, title):
+    """
+    Read an `.h5ad` file into an AnnData object and pass it to
+    `gen_modify_doc_xd` to generate the main Bokeh document function.
+
+    Args:
+        filearg (pathlib.Path):
+            Path to the `.h5ad` file containing the AnnData object.
+        subsampling (int or None):
+            If not None, randomly subsample this many observations.
+        title (str):
+            Title string for the Bokeh document.
+
+    Returns:
+        modify_doc (callable) :
+            Function that accepts a Bokeh `Document` and populates it
+            with the visualization layout.
+    """
     xd = anndata.read_h5ad(filearg.absolute())
     print("Data loaded.")
     return gen_modify_doc_xd(xd, subsampling, title)
 
 
 def start_server(xd, subsampling=None, title="", port=5006):
+    """
+    Start a Yomix interactive Bokeh server.
+    Run the application in a background thread, serving the given
+    AnnData object through a Bokeh web interface. If a server is already
+    running, it is first stopped and replaced.
+
+    Args:
+        xd (AnnData):
+             Annotated data matrix of shape `n_obs` x `n_vars`.
+        subsampling (int):
+            Number of observations to randomly subsample before launching.
+        title (str):
+            Title string for the Bokeh document.
+        port (int):
+            Port on which to serve the Bokeh application.
+
+    Returns:
+        None
+
+    """
+
     global _io_loop, _thread, _server, _first_start_done
 
     if _first_start_done is None:
@@ -68,6 +124,25 @@ def start_server(xd, subsampling=None, title="", port=5006):
 
 
 def gen_modify_doc_xd(xd, subsampling, title):
+    """
+    Preprocess an AnnData object and build a document factory.
+
+    Normalizes the data matrix, computes summary statistics, and sets up
+    categorical labels. Returns an interactive visualization layout.
+
+    Args:
+        xd (AnnData):
+            Annotated data matrix of shape `n_obs` x `n_vars`.
+        subsampling (int):
+            If not None, randomly subsample this many observations.
+        title (str):
+            Title for the Bokeh document.
+
+    Returns:
+        **modify_doc** (*callable*)
+            Function that accepts a Bokeh `Document` and populates it with
+            interactive plots, controls, and analysis widgets.
+    """
 
     def _to_dense(x):
         if issparse(x):
