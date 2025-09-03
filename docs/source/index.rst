@@ -10,8 +10,8 @@ user-defined direction within subset A.
 
 .. image:: https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_gif.gif
 
-Content
--------
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2

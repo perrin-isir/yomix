@@ -4,9 +4,11 @@ Frequently Asked Questions
 Here are the answers to some common questions about YOMIX.
 
 How to create embeddings ?
+--------------------------
+TODO 
 
 How to convert my rfile to anndata ?
-
+------------------------------------
 You can use Seurat objects by converting them to .h5ad format in R:
 
 Load required libraries::
