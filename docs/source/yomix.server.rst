@@ -1,8 +1,5 @@
-yomix.server
-============
-
-Module contents
----------------
+Server
+======
 
 .. automodule:: yomix.server.server
    :members:

@@ -1,5 +1,5 @@
-Installation Guide
-==================
+Getting started
+===============
 
 This section explains how to install and use the `yomix` tool.
 
@@ -20,28 +20,6 @@ In a Python virtual environment, do the following:
 
       yomix --example
 
-To use it on your own files:
-----------------------------
-
-1. Ensure your input file is an AnnData object saved in `.h5ad` format (see `AnnData - Annotated Data <https://anndata.readthedocs.io/en/latest/>`) with at least one `.obsm` field of dimension 2 or more.
-2. Run the following command:
-
-   .. code:: bash
-
-      yomix yourfile.h5ad
-
-Where `yourfile.h5ad` is your own dataset in `.h5ad` format.
-
-Improve reactiveness with subsampling
--------------------------------------
-
-When there are many samples in the dataset, you can use the `--subsampling` option to improve reactiveness. This option will randomly subsample the dataset to a maximum number of `N` samples. For example:
-
-   .. code:: bash
-
-      yomix --subsampling 5000 yourfile.h5ad
-
-This will subsample the dataset to a maximum of 5000 samples.
 
 Install from Source
 -------------------
@@ -86,7 +64,26 @@ If you prefer to install `yomix` from source, follow these steps:
 
       yomix yomix/example/pbmc.h5ad
 
-The input file must be an AnnData object saved in `.h5ad` format with at least one `.obsm` field of dimension 2 or more.
+To use it on your own files:
+----------------------------
+
+1. Ensure your input file is an AnnData object saved in `.h5ad` format (see `anndata - Annotated data <https://anndata.readthedocs.io/en/latest/index.html#>`__ ) with at least one `.obsm` field of dimension 2 or more.
+2. Run the following command:
+
+   .. code:: bash
+
+      yomix yourfile.h5ad
+
+Improve reactiveness with subsampling
+-------------------------------------
+
+When there are many samples in the dataset, you can use the `--subsampling` option to improve reactiveness. This option will randomly subsample the dataset to a maximum number of `N` samples. For example:
+
+   .. code:: bash
+
+      yomix --subsampling 5000 yourfile.h5ad
+
+This will subsample the dataset to a maximum of 5000 samples.
 
 Notes
 -----

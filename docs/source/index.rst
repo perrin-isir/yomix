@@ -5,10 +5,15 @@
    :caption: User Guide
 
    installation
+   signatures
    faq
 
 .. toctree::
    :maxdepth: 2
-   :caption: API Reference:
+   :caption: API Reference
 
-   yomix
+   yomix.server
+   yomix.plotting
+   yomix.tools
+
+

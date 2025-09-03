@@ -138,5 +138,5 @@ htmlhelp_basename = "yomixdoc"
 
 html_logo = "https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_logo.png"
 
-html_title = "Yomix Documentation"
+html_title = "Documentation"
 project = ""
