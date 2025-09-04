@@ -32,14 +32,7 @@ html_static_path = ['_static']
 
 import sys
 from os.path import abspath
-from sphinx.builders.html import StandaloneHTMLBuilder
 
-StandaloneHTMLBuilder.supported_image_types = [
-    "image/svg+xml",
-    "image/gif",
-    "image/png",
-    "image/jpeg",
-]
 sys.path.insert(0, abspath(".."))
 
 # -- General configuration ------------------------------------------------
@@ -81,8 +74,8 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "yomix"
-copyright = "2024 "
+project = "Yomix"
+copyright = "2025"
 author = "Nicolas Perrin-Gilbert"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -146,4 +139,3 @@ htmlhelp_basename = "yomixdoc"
 html_logo = "https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_logo.png"
 
 html_title = "Documentation"
-project = ""
