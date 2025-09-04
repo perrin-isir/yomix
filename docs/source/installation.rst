@@ -8,8 +8,6 @@ Install via pip
 
 In a Python virtual environment, do the following:
 
-Install `yomix` using pip:
-
 .. code:: bash
 
    pip install yomix
