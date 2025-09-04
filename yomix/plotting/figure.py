@@ -18,8 +18,6 @@ Yomix. Its key functions include:
 
 import numpy as np
 import bokeh.models
-import bokeh.io
-import bokeh.layouts
 import re
 from bokeh.models import (
     HoverTool,
