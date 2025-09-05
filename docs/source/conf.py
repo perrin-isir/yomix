@@ -75,7 +75,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Yomix"
-copyright = "2025"
+copyright = "2024"
 author = "Nicolas Perrin-Gilbert"
 
 # The version info for the project you're documenting, acts as replacement for

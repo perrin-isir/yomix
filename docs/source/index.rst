@@ -1,6 +1,7 @@
 YOMIX
 =====
 Yomix is an interactive tool to explore low dimensional embeddings of omics data.
+It is data agnostic : it can be used on Bulk and single-cell RNA-seq, DNA methylation data etc...
 
 .. image:: https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_gif.gif
 
@@ -11,7 +12,6 @@ It can identify feature signatures that best distinguish subset A from the rest 
 differentiate subset A from subset B, or find features whose expression levels are most strongly correlated with a 
 user-defined direction within subset A.
 
-Yomix is data agnostic : it can be used on Bulk and single-cell RNA-seq, DNA methylation, ATAC-seq etc...
 
 
 Contents
