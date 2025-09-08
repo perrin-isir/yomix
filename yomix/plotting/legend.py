@@ -419,7 +419,7 @@ def setup_legend(
 
     legend_dict = {}
 
-    modifiers_data = {"shift": [0]}
+    modifiers_data = {"shift": [0], "ctrl": [0]}
 
     source_modifiers = bokeh.models.ColumnDataSource(data=modifiers_data)
 
@@ -432,16 +432,12 @@ def setup_legend(
             ),
             code="""
         const smd = source_modif.data;
-        if (cb_obj.modifiers.shift) {
-            smd["shift"][0] = 1;
-        } else {
-            smd["shift"][0] = 0;
-        }
+        smd["shift"][0] = Number(cb_obj.modifiers["shift"]);
+        smd["ctrl"][0]  = Number(cb_obj.modifiers["ctrl"]);
         source_modif.change.emit();
     """,
         ),
     )
-
     hidden_text_label_search.js_on_change(
         "value",
         bokeh.models.CustomJS(
@@ -456,34 +452,52 @@ def setup_legend(
         const smd = source_modif.data;
         const data = source.data;
         const labels = data[htlc_bis.value];
-        if (smd["shift"][0] == 1) {
-            if (this.value.slice(-25, this.value.length) != "[-.-.-.-.-shift-.-.-.-.-]")
+        if (smd["ctrl"][0] == 1) {
+            if (this.value.slice(-24, this.value.length) != "[-.-.-.-.-ctrl-.-.-.-.-]"
+            && this.value.length > 0 )
             {
                 const val = this.value;
-                this.value = val + "[-.-.-.-.-shift-.-.-.-.-]";
+                this.value = val + "[-.-.-.-.-ctrl-.-.-.-.-]";
+                var new_selected_points = [];
                 const indices = source.selected.indices;
                 for (let i = 0; i < indices.length; i++) {
                     if (labels[indices[i]] == val) {
-                        indices.splice(i, 1);
+                        // if i-th element is already selected and
+                        // has the same label as val,
+                        // add it in the list
+                        new_selected_points.push(indices[i]);
                     }
                 }
-                for (let i = 0; i < labels.length; i++) {
-                    if (labels[i] == val) {
-                        indices.push(i);
-                    }
-                }
+                source.selected.indices = new_selected_points;
                 source.change.emit();
             }
-        } else {
-            if (this.value.slice(-25, this.value.length) != "[-.-.-.-.-shift-.-.-.-.-]")
-            {
-                source.selected.indices = [];
-                for (let i = 0; i < labels.length; i++) {
-                    if (labels[i] == this.value) {
-                        source.selected.indices.push(i);
+        }else{
+            const sliced_val = this.value.slice(-25, this.value.length);
+            if (sliced_val != "[-.-.-.-.-shift-.-.-.-.-]"){
+                if (smd["shift"][0] == 1) {
+                    const val = this.value;
+                    this.value = val + "[-.-.-.-.-shift-.-.-.-.-]";
+                    const indices = source.selected.indices;
+                    for (let i = 0; i < indices.length; i++) {
+                        if (labels[indices[i]] == val) {
+                            indices.splice(i, 1);
+                        }
                     }
+                    for (let i = 0; i < labels.length; i++) {
+                        if (labels[i] == val) {
+                            indices.push(i);
+                        }
+                    }
+                    source.change.emit();
+                } else {
+                    source.selected.indices = [];
+                    for (let i = 0; i < labels.length; i++) {
+                        if (labels[i] == this.value) {
+                            source.selected.indices.push(i);
+                        }
+                    }
+                        source.change.emit();
                 }
-                source.change.emit();
             }
         }
     """,
