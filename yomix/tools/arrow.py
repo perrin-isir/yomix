@@ -1,6 +1,4 @@
 """
-Implements the "oriented signature" analysis tool.
-
 This module provides a unique feature that allows users to explore data along
 a user-defined trajectory or gradient. It adds an interactive arrow tool to the
 main plot, enabling the user to draw a vector directly on the embedding. The

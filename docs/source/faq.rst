@@ -5,7 +5,10 @@ Here are the answers to some common questions about YOMIX.
 
 How to create embeddings ?
 --------------------------
-TODO 
+Scanpy provides many functions, such as `UMAP <https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.umap.html>`__, 
+`PCA <https://scanpy.readthedocs.io/en/stable/generated/scanpy.pp.pca.html>`__,
+`t-SNE <https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.tsne.html>`__, to compute embeddings. 
+See the `Scanpy documentation <https://scanpy.readthedocs.io/en/stable/api/index.html>`__ for more details.
 
 How to convert my rfile to anndata ?
 ------------------------------------

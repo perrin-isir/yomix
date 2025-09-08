@@ -8,17 +8,15 @@ Install via pip
 
 In a Python virtual environment, do the following:
 
-1. Install `yomix` using pip:
+.. code:: bash
 
-   .. code:: bash
+   pip install yomix
 
-      pip install yomix
+Try the tool with the example dataset:
 
-2. Try the tool with the example dataset:
-
-   .. code:: bash
-      
-      yomix --example
+.. code:: bash
+   
+   yomix --example
 
 
 Install from Source
@@ -51,12 +49,24 @@ Then try the tool with:
 To use it on your own files:
 ----------------------------
 
-1. Ensure your input file is an AnnData object saved in `.h5ad` format (see `anndata - Annotated data <https://anndata.readthedocs.io/en/latest/index.html#>`__ ) with at least one `.obsm` field of dimension 2 or more.
-2. Run the following command:
+.. code:: bash
 
-   .. code:: bash
+   yomix yourfile.h5ad
 
-      yomix yourfile.h5ad
+where ``yourfile.h5ad`` is an AnnData object saved in `.h5ad` format (see `anndata - Annotated data <https://anndata.readthedocs.io/en/latest/index.html#>`__) with at least one `.obsm` field of dimension 2 or more.
+
+Launch YOMIX from a jupyter notebook
+------------------------------------
+
+Run those commands in a cell of your notebook:
+   
+.. code-block:: python
+
+   import anndata
+   from yomix.server import start_server
+
+   xd = anndata.read_h5ad("yomix/example/pbmc.h5ad")
+   start_server(xd)
 
 Improve reactiveness with subsampling
 -------------------------------------
