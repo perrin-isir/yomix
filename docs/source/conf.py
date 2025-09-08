@@ -33,7 +33,7 @@ html_static_path = ['_static']
 import sys
 from os.path import abspath
 
-sys.path.insert(0, abspath(".."))
+sys.path.insert(0, abspath("../.."))
 
 # -- General configuration ------------------------------------------------
 
