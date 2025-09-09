@@ -1,9 +1,9 @@
-"""
-Manages the creation and interactivity of legends for the main plot.
+# """
+# Manages the creation and interactivity of legends for the main plot.
 
-This module handles the logic for displaying legends that correspond to how the
-data points are colored based on metadata from `adata.obs`
-"""
+# This module handles the logic for displaying legends that correspond to how the
+# data points are colored based on metadata from `adata.obs`
+# """
 
 import bokeh.models
 import numpy as np

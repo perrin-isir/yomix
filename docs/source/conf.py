@@ -47,6 +47,7 @@ extensions = [
     "sphinx.ext.napoleon",  # before sphinx_autodoc_typehints
     "sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",  # summary table
+    "sphinx.ext.intersphinx",
 ]
 
 # List of modules to be mocked up
@@ -139,3 +140,5 @@ htmlhelp_basename = "yomixdoc"
 html_logo = "https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_logo.png"
 
 html_title = "Documentation"
+
+intersphinx_mapping = {"bokeh": ("https://docs.bokeh.org/en/latest/", None)}

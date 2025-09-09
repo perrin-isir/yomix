@@ -1,15 +1,15 @@
-"""
-Handles feature-based data visualization and analysis.
+# """
+# Handles feature-based data visualization and analysis.
 
-It is responsible for:
+# It is responsible for:
 
-1.  Coloring data points on the main scatter plot based on the values of one or
-    more user-selected features. This allows for the visualization of expression
-    patterns directly on the embedding.
-2.  Generating violin plots and heatmaps, to visualize the distribution of feature
-    values across different user-defined
-    subsets or existing categorical labels.
-"""
+# 1.  Coloring data points on the main scatter plot based on the values of one or
+#     more user-selected features. This allows for the visualization of expression
+#     patterns directly on the embedding.
+# 2.  Generating violin plots and heatmaps, to visualize the distribution of feature
+#     values across different user-defined
+#     subsets or existing categorical labels.
+# """
 
 from scipy.stats import gaussian_kde
 from bokeh.models import ColumnDataSource, LinearColorMapper, ColorBar, InlineStyleSheet

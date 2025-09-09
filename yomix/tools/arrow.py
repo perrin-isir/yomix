@@ -283,7 +283,6 @@ def arrow_function(
         sign_nr,
         hidden_num_in,
     ):
-        # print(arr_layout.x_start, arr_layout.y_end, arr_layout.y_start)
         if 0 < len(obs_indices_A) and (
             arr_layout.x_end != arr_layout.x_start
             or arr_layout.y_end != arr_layout.y_start
