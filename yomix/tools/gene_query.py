@@ -26,7 +26,7 @@ def gene_query_button(offset_text_feature_color):
             Text input for entering feature names to color samples in the scatter plot.
 
     Returns:
-        **bokeh.models.Button** :
+        btn_open_link (:class:`bokeh.models.Button`) :
             Button that opens HGNC search pages for the features listed in `offset_text_feature_color`.
     """  # noqa: E501
 

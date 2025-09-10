@@ -75,8 +75,8 @@ def arrow_function(
 
     Returns:
         Tuple containing the Bokeh widgets created by this function:
-            - **bt_sign_oriented** (*bokeh.models.Button*): Button that triggers oriented signature computation based on the drawn arrow.
-            - **help_button_oriented** (*bokeh.models.HelpButton*): Tooltip button describing requirements for computing oriented signatures.
+            - **bt_sign_oriented** (:class:`bokeh.models.Button`): Button that triggers oriented signature computation based on the drawn arrow.
+            - **help_button_oriented** (:class:`bokeh.models.HelpButton`): Tooltip button describing requirements for computing oriented signatures.
     """  # noqa
 
     arrow_clicks = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))

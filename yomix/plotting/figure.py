@@ -88,26 +88,26 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
             - **obs_string** (*list*): List of categorical keys with <= 40 unique values from `adata.obs`.
             - **obs_string_many** (*list*): Categorical keys with > 40 unique values from ``adata.obs``.
             - **obs_numerical** (*list*): List of numerical observation fields from ``adata.obs``.
-            - **points_bokeh_plot** (*bokeh.plotting.figure*): The main scatter plot figure.
-            - **violins_bokeh_plot** (*bokeh.plotting.figure*): Violin plot figure.
-            - **heat_map** (*bokeh.plotting.figure*): Heat map figure.
-            - **bt_slider_point_size** (*bokeh.models.Slider*): Widget for point size.
-            - **bt_hidden_slider_yaw** (*bokeh.models.Slider*): Hidden slider for animation.
-            - **bt_slider_range** (*bokeh.models.RangeSlider*): Slider for filtering samples based on a selected feature's value.
-            - **bt_toggle_anim** (*bokeh.models.Toggle*): Toggles rotation animation.
-            - **bt_slider_yaw** (*bokeh.models.Slider*): Slider button that controls yaw rotation.
-            - **bt_slider_pitch** (*bokeh.models.Slider*): Slider button that controls pitch rotation.
-            - **bt_slider_roll** (*bokeh.models.Slider*): Slider button that controls roll rotation.
-            - **resize_width_input** (*bokeh.models.TextInput*): Input for setting main plot's width.
-            - **resize_height_input** (*bokeh.models.TextInput*): Input for setting main plot's height.
-            - **resize_width_input_bis** (*bokeh.models.TextInput*): Input for setting violin/heatmap plot's width.
-            - **resize_height_input_bis** (*bokeh.models.TextInput*): Input for setting violin/heatmap plot's height.
-            - **source_rotmatrix_etc** (*bokeh.models.ColumnDataSource*): Data source for computing points' positions after rotations in the scatterplot.
-            - **div_sample_names** (*bokeh.models.Div*): Displays hovered sample names.
-            - **sample_search_input** (*bokeh.models.TextInput*): Text input to search specific sample via its ID.
-            - **sl_component1** (*bokeh.models.RadioButtonGroup*, *None* if embedding <= 3 dimensions): Button to select which dimension should be used for the x-axis.
-            - **sl_component2** (*bokeh.models.RadioButtonGroup*, *None* if embedding <= 3 dimensions): Button to select which dimension should be used for the y-axis.
-            - **sl_component3** (*bokeh.models.RadioButtonGroup*, *None* if embedding <= 3 dimensions): Button to select which dimension should be used for the z-axis.
+            - **points_bokeh_plot** (:class:`bokeh.plotting.figure`): The main scatter plot figure.
+            - **violins_bokeh_plot** (:class:`bokeh.plotting.figure`): Violin plot figure.
+            - **heat_map** (:class:`bokeh.plotting.figure`): Heat map figure.
+            - **bt_slider_point_size** (:class:`bokeh.models.Slider`): Widget for point size.
+            - **bt_hidden_slider_yaw** (:class:`bokeh.models.Slider`): Hidden slider for animation.
+            - **bt_slider_range** (:class:`bokeh.models.RangeSlider`): Slider for filtering samples based on a selected feature's value.
+            - **bt_toggle_anim** (:class:`bokeh.models.Toggle`): Toggles rotation animation.
+            - **bt_slider_yaw** (:class:`bokeh.models.Slider`): Slider button that controls yaw rotation.
+            - **bt_slider_pitch** (:class:`bokeh.models.Slider`): Slider button that controls pitch rotation.
+            - **bt_slider_roll** (:class:`bokeh.models.Slider`): Slider button that controls roll rotation.
+            - **resize_width_input** (:class:`bokeh.models.TextInput`): Input for setting main plot's width.
+            - **resize_height_input** (:class:`bokeh.models.TextInput`): Input for setting main plot's height.
+            - **resize_width_input_bis** (:class:`bokeh.models.TextInput`): Input for setting violin/heatmap plot's width.
+            - **resize_height_input_bis** (:class:`bokeh.models.TextInput`): Input for setting violin/heatmap plot's height.
+            - **source_rotmatrix_etc** (:class:`bokeh.models.ColumnDataSource`): Data source for computing points' positions after rotations in the scatterplot.
+            - **div_sample_names** (:class:`bokeh.models.Div`): Displays hovered sample names.
+            - **sample_search_input** (:class:`bokeh.models.TextInput`): Text input to search specific sample via its ID.
+            - **sl_component1** (:class:`bokeh.models.RadioButtonGroup`, *None* if embedding <= 3 dimensions): Button to select which dimension should be used for the x-axis.
+            - **sl_component2** (:class:`bokeh.models.RadioButtonGroup`, *None* if embedding <= 3 dimensions): Button to select which dimension should be used for the y-axis.
+            - **sl_component3** (:class:`bokeh.models.RadioButtonGroup`, *None* if embedding <= 3 dimensions): Button to select which dimension should be used for the z-axis.
 
     """  # noqa: E501
 
