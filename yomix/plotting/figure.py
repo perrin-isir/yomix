@@ -66,10 +66,11 @@ def check_obs_field(udict, field):
 
 def main_figure(adata, embedding_key, width=900, height=600, title=""):
     """
+
     Create the main interactive figure and all associated widgets.
 
     Args:
-        adata (AnnData):
+        adata (anndata.AnnData):
             Annotated data matrix of shape `n_obs` x `n_vars`.
         embedding_key (str):
             The string key from `adata.obsm` specifying which embedding to plot.

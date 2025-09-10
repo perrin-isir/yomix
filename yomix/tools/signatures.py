@@ -32,11 +32,11 @@ def signature_buttons(
     to compare "Subset A vs. Rest" and "Subset A vs. Subset B".
 
     Args:
-        adata (AnnData):
+        adata (anndata.AnnData):
             Annotated data matrix of shape `n_obs` x `n_vars`.
         offset_text_feature_color (bokeh.models.TextInput):
             Text input for entering feature names to color samples in the scatter plot.
-        offset_label : bokeh.models.TextInput
+        offset_label (bokeh.models.TextInput):
             Hidden text input that stores the group labels for generating
             violin/heatmap plots
         hidden_checkbox_A (bokeh.models.CheckboxGroup):

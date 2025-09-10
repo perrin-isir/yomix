@@ -31,7 +31,7 @@ def setup_legend(
     builds legends or color bars depending on the field type.
 
     Args:
-        pb_plot (bokeh.plotting.Figure):
+        pb_plot (bokeh.plotting.figure):
             The main scatter plot figure.
         obs_string (list of str):
             List of categorical `.obs` keys with <= 40 unique values.

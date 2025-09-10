@@ -70,7 +70,7 @@ def start_server(xd, subsampling=None, title="", port=5006):
     running, it is first stopped and replaced.
 
     Args:
-        xd (AnnData):
+        xd (anndata.AnnData):
              Annotated data matrix of shape `n_obs` x `n_vars`.
         subsampling (int):
             Number of observations to randomly subsample before launching.
@@ -131,7 +131,7 @@ def gen_modify_doc_xd(xd, subsampling, title):
     categorical labels. Returns an interactive visualization layout.
 
     Args:
-        xd (AnnData):
+        xd (anndata.AnnData):
             Annotated data matrix of shape `n_obs` x `n_vars`.
         subsampling (int):
             If not None, randomly subsample this many observations.

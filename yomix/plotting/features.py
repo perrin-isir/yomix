@@ -43,11 +43,11 @@ def color_by_feature_value(
     groups.
 
     Args:
-        points_bokeh_plot (bokeh.plotting.Figure):
+        points_bokeh_plot (bokeh.plotting.figure):
             The main Scatter plot figure.
-        violins_bokeh_plot (bokeh.plotting.Figure):
+        violins_bokeh_plot (bokeh.plotting.figure):
             Violion plot figure.
-        heat_map (bokeh.plotting.Figure):
+        heat_map (bokeh.plotting.figure):
             heat map figure.
         adata (anndata.AnnData):
             Annotated data matrix of shape `n_obs` x `n_vars`.
@@ -316,11 +316,11 @@ def plot_var(
     or user-defined groups).
 
     Args:
-        adata (AnnData):
-            Annotated data matrix of shape `n_obs` x `n_vars`.
-        violins_bokeh_plot (bokeh.plotting.Figure):
+        adata (anndata.AnnData):
+            Annotated data matrix of shape *n_obs* x *n_vars*.
+        violins_bokeh_plot (bokeh.plotting.figure):
             Violin plot figure.
-        heat_map (bokeh.plotting.Figure):
+        heat_map (bokeh.plotting.figure):
             Heatmap figure.
         resize_w (bokeh.models.TextInput):
             Widget for resizing plot width.

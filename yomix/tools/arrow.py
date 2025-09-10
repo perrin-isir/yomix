@@ -40,7 +40,7 @@ def arrow_function(
     arrow direction in the embedding space.
 
     Args:
-        points_bokeh_plot (bokeh.plotting.Figure):
+        points_bokeh_plot (bokeh.plotting.figure):
             Bokeh scatter plot of observations.
         adata (anndata.AnnData):
             Annotated data matrix of shape `n_obs` x `n_vars`.
@@ -70,7 +70,7 @@ def arrow_function(
             Button to select which dimension should be used for the y-axis.
         sl_component3 (bokeh.models.RadioButtonGroup):
             Button to select which dimension should be used for the z-axis.
-        label_sign : bokeh.models.MultiSelect
+        label_sign (bokeh.models.MultiSelect):
             Widget for selecting groups in violin plots / heat map.
 
     Returns:
