@@ -145,4 +145,5 @@ html_title = "Documentation"
 intersphinx_mapping = {
     "anndata": ("https://anndata.readthedocs.io/en/stable/", None),
     "bokeh": ("https://docs.bokeh.org/en/latest/", None),
+    "python": ("https://docs.python.org/3", None),
 }
