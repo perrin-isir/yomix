@@ -47,6 +47,7 @@ extensions = [
     "sphinx.ext.napoleon",  # before sphinx_autodoc_typehints
     "sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",  # summary table
+    "sphinx.ext.intersphinx",
 ]
 
 # List of modules to be mocked up
@@ -60,7 +61,7 @@ autodoc_inherit_docstrings = True  # if no docstring, inherit from base class
 set_type_checking_flag = True  # 'expensive' imports (sphinx_autodoc_typehints)
 nbsphinx_allow_errors = True  # continue through Jupyter errors
 add_module_names = False  # remove namespaces from class/method signatures
-
+autodoc_typehints = "description"
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
@@ -139,3 +140,10 @@ htmlhelp_basename = "yomixdoc"
 html_logo = "https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_logo.png"
 
 html_title = "Documentation"
+
+
+intersphinx_mapping = {
+    "anndata": ("https://anndata.readthedocs.io/en/stable/", None),
+    "bokeh": ("https://docs.bokeh.org/en/latest/", None),
+    "python": ("https://docs.python.org/3", None),
+}

@@ -1,9 +1,9 @@
-"""
-Manages the creation and interactivity of legends for the main plot.
+# """
+# Manages the creation and interactivity of legends for the main plot.
 
-This module handles the logic for displaying legends that correspond to how the
-data points are colored based on metadata from `adata.obs`
-"""
+# This module handles the logic for displaying legends that correspond to how the
+# data points are colored based on metadata from `adata.obs`
+# """
 
 import bokeh.models
 import numpy as np
@@ -31,7 +31,7 @@ def setup_legend(
     builds legends or color bars depending on the field type.
 
     Args:
-        pb_plot (bokeh.plotting.Figure):
+        pb_plot (bokeh.plotting.figure):
             The main scatter plot figure.
         obs_string (list of str):
             List of categorical `.obs` keys with <= 40 unique values.
@@ -50,12 +50,12 @@ def setup_legend(
 
     Returns:
         Tuple containing all the created Bokeh components
-            - **select_color_by** (*bokeh.models.Select*): Dropdown menu for choosing a coloring field, its values will be added in the legend.
-            - **help_button** (*bokeh.models.HelpButton*): A help tooltip for the select widget.
-            - **hidden_text_label_column** (*bokeh.models.TextInput*): A hidden widget that triggers the color update via JavaScript.
-            - **hidden_legend_width** (*bokeh.models.TextInput*): A hidden widget that stores the current width of the legend.
-            - **select_field** (*bokeh.models.Select*):  Dropdown menu in the legend for selecting a group from a field with many unique values.
-            - **label_signature** (*bokeh.models.MultiSelect*): Widget for selecting groups in violin plots / heat map (initialized here).
+            - **select_color_by** (:class:`bokeh.models.Select`): Dropdown menu for choosing a coloring field, its values will be added in the legend.
+            - **help_button** (:class:`bokeh.models.HelpButton`): A help tooltip for the select widget.
+            - **hidden_text_label_column** (:class:`bokeh.models.TextInput`): A hidden widget that triggers the color update via JavaScript.
+            - **hidden_legend_width** (:class:`bokeh.models.TextInput`): A hidden widget that stores the current width of the legend.
+            - **select_field** (:class:`bokeh.models.Select`):  Dropdown menu in the legend for selecting a group from a field with many unique values.
+            - **label_signature** (:class:`bokeh.models.MultiSelect`): Widget for selecting groups in violin plots / heat map (initialized here).
     """  # noqa: E501
 
     source = pb_plot.select(dict(name="scatterplot"))[0].data_source

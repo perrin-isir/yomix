@@ -31,22 +31,22 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
         Tuple containing all the created Bokeh widgets so they can be added
             to the main application layout.
 
-            - **bt_A** (*bokeh.models.Button*): Button to assign the current selection to Subset A.
-            - **toggle_A** (*bokeh.models.Toggle*): Toggle to turn the visual
+            - **bt_A** (:class:`bokeh.models.Button`): Button to assign the current selection to Subset A.
+            - **toggle_A** (:class:`bokeh.models.Toggle`): Toggle to turn the visual
               highlighting of Subset A on or off.
-            - **hidden_checkbox_A** (*bokeh.models.CheckboxGroup*): Hidden widget storing Subset A samples indices.
-            - **bt_B** (*bokeh.models.Button*): Button to assign the current
+            - **hidden_checkbox_A** (:class:`bokeh.models.CheckboxGroup`): Hidden widget storing Subset A samples indices.
+            - **bt_B** (:class:`bokeh.models.Button`): Button to assign the current
               selection to Subset B.
-            - **toggle_B** (*bokeh.models.Toggle*): Toggle to turn the visual
+            - **toggle_B** (:class:`bokeh.models.Toggle`): Toggle to turn the visual
               highlighting of Subset B on or off.
-            - **hidden_checkbox_B** (*bokeh.models.CheckboxGroup*): Hidden widget storing Subset B samples indices..
-            - **bt_AplusB** (*bokeh.models.Button*): Button to select the
+            - **hidden_checkbox_B** (:class:`bokeh.models.CheckboxGroup`): Hidden widget storing Subset B samples indices..
+            - **bt_AplusB** (:class:`bokeh.models.Button`): Button to select the
               union of Subset A and Subset B.
-            - **bt_nothing** (*bokeh.models.Button*): Button to clear the
+            - **bt_nothing** (:class:`bokeh.models.Button`): Button to clear the
               current selection.
-            - **bt_selectA** (*bokeh.models.Button*): Button to select all
+            - **bt_selectA** (:class:`bokeh.models.Button`): Button to select all
               samples from Subset A.
-            - **bt_selectB** (*bokeh.models.Button*): Button to select all
+            - **bt_selectB** (:class:`bokeh.models.Button`): Button to select all
               samples from Subset B.
     """  # noqa
 

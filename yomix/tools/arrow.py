@@ -40,7 +40,7 @@ def arrow_function(
     arrow direction in the embedding space.
 
     Args:
-        points_bokeh_plot (bokeh.plotting.Figure):
+        points_bokeh_plot (bokeh.plotting.figure):
             Bokeh scatter plot of observations.
         adata (anndata.AnnData):
             Annotated data matrix of shape `n_obs` x `n_vars`.
@@ -70,13 +70,13 @@ def arrow_function(
             Button to select which dimension should be used for the y-axis.
         sl_component3 (bokeh.models.RadioButtonGroup):
             Button to select which dimension should be used for the z-axis.
-        label_sign : bokeh.models.MultiSelect
+        label_sign (bokeh.models.MultiSelect):
             Widget for selecting groups in violin plots / heat map.
 
     Returns:
         Tuple containing the Bokeh widgets created by this function:
-            - **bt_sign_oriented** (*bokeh.models.Button*): Button that triggers oriented signature computation based on the drawn arrow.
-            - **help_button_oriented** (*bokeh.models.HelpButton*): Tooltip button describing requirements for computing oriented signatures.
+            - **bt_sign_oriented** (:class:`bokeh.models.Button`): Button that triggers oriented signature computation based on the drawn arrow.
+            - **help_button_oriented** (:class:`bokeh.models.HelpButton`): Tooltip button describing requirements for computing oriented signatures.
     """  # noqa
 
     arrow_clicks = bokeh.models.ColumnDataSource(data=dict(x=[], y=[]))
@@ -283,7 +283,6 @@ def arrow_function(
         sign_nr,
         hidden_num_in,
     ):
-        # print(arr_layout.x_start, arr_layout.y_end, arr_layout.y_start)
         if 0 < len(obs_indices_A) and (
             arr_layout.x_end != arr_layout.x_start
             or arr_layout.y_end != arr_layout.y_start

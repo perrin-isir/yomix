@@ -1,15 +1,15 @@
-"""
-Handles feature-based data visualization and analysis.
+# """
+# Handles feature-based data visualization and analysis.
 
-It is responsible for:
+# It is responsible for:
 
-1.  Coloring data points on the main scatter plot based on the values of one or
-    more user-selected features. This allows for the visualization of expression
-    patterns directly on the embedding.
-2.  Generating violin plots and heatmaps, to visualize the distribution of feature
-    values across different user-defined
-    subsets or existing categorical labels.
-"""
+# 1.  Coloring data points on the main scatter plot based on the values of one or
+#     more user-selected features. This allows for the visualization of expression
+#     patterns directly on the embedding.
+# 2.  Generating violin plots and heatmaps, to visualize the distribution of feature
+#     values across different user-defined
+#     subsets or existing categorical labels.
+# """
 
 from scipy.stats import gaussian_kde
 from bokeh.models import ColumnDataSource, LinearColorMapper, ColorBar, InlineStyleSheet
@@ -43,11 +43,11 @@ def color_by_feature_value(
     groups.
 
     Args:
-        points_bokeh_plot (bokeh.plotting.Figure):
+        points_bokeh_plot (bokeh.plotting.figure):
             The main Scatter plot figure.
-        violins_bokeh_plot (bokeh.plotting.Figure):
+        violins_bokeh_plot (bokeh.plotting.figure):
             Violion plot figure.
-        heat_map (bokeh.plotting.Figure):
+        heat_map (bokeh.plotting.figure):
             heat map figure.
         adata (anndata.AnnData):
             Annotated data matrix of shape `n_obs` x `n_vars`.
@@ -77,9 +77,9 @@ def color_by_feature_value(
     Returns:
         Tuple containing the Bokeh widgets created by this function:
 
-            - `offset_text_feature_color` (bokeh.models.TextInput): Text input
+            - `offset_text_feature_color` (:class:`bokeh.models.TextInput`): Text input
               for entering feature names to color samples in the scatter plot.
-            - `offset_label` (bokeh.models.TextInput): A hidden text input that
+            - `offset_label` (:class:`bokeh.models.TextInput`): A hidden text input that
               stores the group labels for generating violin/heatmap plots.
     """
 
@@ -316,11 +316,11 @@ def plot_var(
     or user-defined groups).
 
     Args:
-        adata (AnnData):
-            Annotated data matrix of shape `n_obs` x `n_vars`.
-        violins_bokeh_plot (bokeh.plotting.Figure):
+        adata (anndata.AnnData):
+            Annotated data matrix of shape *n_obs* x *n_vars*.
+        violins_bokeh_plot (bokeh.plotting.figure):
             Violin plot figure.
-        heat_map (bokeh.plotting.Figure):
+        heat_map (bokeh.plotting.figure):
             Heatmap figure.
         resize_w (bokeh.models.TextInput):
             Widget for resizing plot width.

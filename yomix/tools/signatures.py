@@ -32,11 +32,11 @@ def signature_buttons(
     to compare "Subset A vs. Rest" and "Subset A vs. Subset B".
 
     Args:
-        adata (AnnData):
+        adata (anndata.AnnData):
             Annotated data matrix of shape `n_obs` x `n_vars`.
         offset_text_feature_color (bokeh.models.TextInput):
             Text input for entering feature names to color samples in the scatter plot.
-        offset_label : bokeh.models.TextInput
+        offset_label (bokeh.models.TextInput):
             Hidden text input that stores the group labels for generating
             violin/heatmap plots
         hidden_checkbox_A (bokeh.models.CheckboxGroup):
@@ -48,13 +48,13 @@ def signature_buttons(
 
     Returns:
         Tuple containing the Bokeh components created by this function:
-            - **bt_sign1** (*bokeh.models.Button*): Button to compute "A vs. Rest".
-            - **bt_sign2** (*bokeh.models.Button*): Button to compute "A vs. B".
-            - **help_button1** (*bokeh.models.HelpButton*): Help tooltip for `bt_sign1`.
-            - **help_button2** (*bokeh.models.HelpButton*): Help tooltip for `bt_sign2`.
-            - **multiselect_signature** (*bokeh.models.MultiSelect*): Widget to display the ranked features of the computed signature.
-            - **div_signature_list** (*bokeh.models.Div*): Div element to display the signature title and a summary of top features.
-            - **signature_nr** (*list*): List containing a single integer used to number the computed signatures sequentially.
+            - **bt_sign1** (:class:`bokeh.models.Button`): Button to compute "A vs. Rest".
+            - **bt_sign2** (:class:`bokeh.models.Button`): Button to compute "A vs. B".
+            - **help_button1** (:class:`bokeh.models.HelpButton`): Help tooltip for `bt_sign1`.
+            - **help_button2** (:class:`bokeh.models.HelpButton`): Help tooltip for `bt_sign2`.
+            - **multiselect_signature** (:class:`bokeh.models.MultiSelect`): Widget to display the ranked features of the computed signature.
+            - **div_signature_list** (:class:`bokeh.models.Div`): Div element to display the signature title and a summary of top features.
+            - **signature_nr** (:class:`list`): List containing a single integer used to number the computed signatures sequentially.
     """  # noqa: E501
 
     def wasserstein_distance(mu1, sigma1, mu2, sigma2):

@@ -17,7 +17,7 @@ def csv_load_button(source):
             entries will be matched.
 
     Returns:
-        button (bokeh.models.Button)
+        button (:class:`bokeh.models.Button`)
             - ``"Load selection"``: On click, it prompts
               for a  CSV file and updates ``source.selected.indices`` with the
               matched entries.
@@ -95,7 +95,7 @@ def download_selected_button(source, original_keys):
             Column names to include in the downloaded CSV file.
 
     Returns:
-        button (bokeh.models.Button) :
+        button (:class:`bokeh.models.Button`) :
             - ``"Save selected"``. On click, it downloads
               the currently selected points as a CSV file.
 
