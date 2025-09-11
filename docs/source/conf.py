@@ -29,9 +29,10 @@ html_static_path = ['_static']
 """
 
 # Licensed under the BSD 3-Clause License.
-
+import inspect
 import sys
 from os.path import abspath
+import importlib
 
 sys.path.insert(0, abspath("../.."))
 
@@ -48,6 +49,7 @@ extensions = [
     "sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",  # summary table
     "sphinx.ext.intersphinx",
+    "sphinx.ext.linkcode",
 ]
 
 # List of modules to be mocked up
@@ -147,3 +149,20 @@ intersphinx_mapping = {
     "bokeh": ("https://docs.bokeh.org/en/latest/", None),
     "python": ("https://docs.python.org/3", None),
 }
+
+
+def linkcode_resolve(domain, info):
+    if domain != "py":
+        return None
+    if not info["module"]:
+        return None
+
+    mod = importlib.import_module(info["module"])
+    obj = getattr(mod, info["fullname"])
+    lines = inspect.getsourcelines(obj)
+
+    start, end = lines[1], lines[1] + len(lines[0]) - 1
+    filename = info["module"].replace(".", "/")
+    return (
+        f"https://github.com/perrin-isir/yomix/blob/main/{filename}.py#L{start}-L{end}"
+    )
