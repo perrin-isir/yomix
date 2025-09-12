@@ -1,0 +1,519 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Plotting" href="yomix.plotting.html" />
+        <link rel="prefetch" href="https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_logo.png" as="image" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2025.07.19 -->
+        <title>Tools - Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=25af2a20" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="https://raw.githubusercontent.com/perrin-isir/yomix/main/yomix/assets/yomix_logo.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="signatures.html">How are signatures computed ?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="yomix.server.html">Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="yomix.plotting.html">Plotting</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Tools</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-yomix.tools.arrow">
+<span id="tools"></span><h1>Tools<a class="headerlink" href="#module-yomix.tools.arrow" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="yomix.tools.arrow.arrow_function">
+<span class="sig-name descname"><span class="pre">arrow_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points_bokeh_plot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bt_slider_roll</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bt_slider_pitch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bt_slider_yaw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_rotmatrix_etc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bt_toggle_anim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_checkbox_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">div_signature_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiselect_signature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign_nr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl_component1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl_component2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl_component3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_sign</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/perrin-isir/yomix/blob/main/yomix/tools/arrow.py#L17-L346"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yomix.tools.arrow.arrow_function" title="Link to this definition">¶</a></dt>
+<dd><p>Create and manage the arrow tool for oriented signature analysis
+Add the “Arrow Tool” to the Bokeh scatter plot that lets the user draw an arrow
+(start and end points). The arrow direction is then used to compute
+an <em>oriented signature</em>: a set of features most correlated with the
+arrow direction in the embedding space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points_bokeh_plot</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/plotting/figure.html#bokeh.plotting.figure" title="(in Bokeh v3.8.0)"><em>bokeh.plotting.figure</em></a>) – Bokeh scatter plot of observations.</p></li>
+<li><p><strong>adata</strong> (<a class="reference external" href="https://anndata.readthedocs.io/en/stable/generated/anndata.AnnData.html#anndata.AnnData" title="(in anndata v0.12.2)"><em>anndata.AnnData</em></a>) – Annotated data matrix of shape <cite>n_obs</cite> x <cite>n_vars</cite>.</p></li>
+<li><p><strong>embedding_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Key in <code class="docutils literal notranslate"><span class="pre">adata.obsm</span></code> storing the embedding coordinates.</p></li>
+<li><p><strong>bt_slider_yaw</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/sliders.html#bokeh.models.Slider" title="(in Bokeh v3.8.0)"><em>bokeh.models.Slider</em></a>) – Slider button that controls yaw rotation.</p></li>
+<li><p><strong>bt_slider_pitch</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/sliders.html#bokeh.models.Slider" title="(in Bokeh v3.8.0)"><em>bokeh.models.Slider</em></a>) – Slider button that controls pitch rotation.</p></li>
+<li><p><strong>bt_slider_roll</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/sliders.html#bokeh.models.Slider" title="(in Bokeh v3.8.0)"><em>bokeh.models.Slider</em></a>) – Slider button that controls roll rotation.</p></li>
+<li><p><strong>source_rotmatrix_etc</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/sources.html#bokeh.models.ColumnDataSource" title="(in Bokeh v3.8.0)"><em>bokeh.models.ColumnDataSource</em></a>) – Data source for computing points’ positions after rotations in the scatterplot.</p></li>
+<li><p><strong>bt_toggle_anim</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Toggle" title="(in Bokeh v3.8.0)"><em>bokeh.models.Toggle</em></a>) – Toggle controlling animation state.</p></li>
+<li><p><strong>hidden_checkbox_A</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/groups.html#bokeh.models.CheckboxGroup" title="(in Bokeh v3.8.0)"><em>bokeh.models.CheckboxGroup</em></a>) – Widget storing “Subset A” sample indices.</p></li>
+<li><p><strong>div_signature_list</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/markups.html#bokeh.models.Div" title="(in Bokeh v3.8.0)"><em>bokeh.models.Div</em></a>) – Div displaying most correlated features from the computed signature.</p></li>
+<li><p><strong>multiselect_signature</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/inputs.html#bokeh.models.MultiSelect" title="(in Bokeh v3.8.0)"><em>bokeh.models.MultiSelect</em></a>) – MultiSelect widget listing most correlated features from the computed signature.</p></li>
+<li><p><strong>sign_nr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – A list containing an single integer to count the number of signatures that were computed.</p></li>
+<li><p><strong>sl_component1</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/groups.html#bokeh.models.RadioButtonGroup" title="(in Bokeh v3.8.0)"><em>bokeh.models.RadioButtonGroup</em></a>) – Button to select which dimension should be used for the x-axis.</p></li>
+<li><p><strong>sl_component2</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/groups.html#bokeh.models.RadioButtonGroup" title="(in Bokeh v3.8.0)"><em>bokeh.models.RadioButtonGroup</em></a>) – Button to select which dimension should be used for the y-axis.</p></li>
+<li><p><strong>sl_component3</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/groups.html#bokeh.models.RadioButtonGroup" title="(in Bokeh v3.8.0)"><em>bokeh.models.RadioButtonGroup</em></a>) – Button to select which dimension should be used for the z-axis.</p></li>
+<li><p><strong>label_sign</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/inputs.html#bokeh.models.MultiSelect" title="(in Bokeh v3.8.0)"><em>bokeh.models.MultiSelect</em></a>) – Widget for selecting groups in violin plots / heat map.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>bt_sign_oriented</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>): Button that triggers oriented signature computation based on the drawn arrow.</p></li>
+<li><p><strong>help_button_oriented</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.HelpButton" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.HelpButton</span></code></a>): Tooltip button describing requirements for computing oriented signatures.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing the Bokeh widgets created by this function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function" id="module-yomix.tools.download">
+<dt class="sig sig-object py" id="yomix.tools.download.csv_load_button">
+<span class="sig-name descname"><span class="pre">csv_load_button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/perrin-isir/yomix/blob/main/yomix/tools/download.py#L10-L84"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yomix.tools.download.csv_load_button" title="Link to this definition">¶</a></dt>
+<dd><p>Create a button to load previously selected points from a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/sources.html#bokeh.models.ColumnDataSource" title="(in Bokeh v3.8.0)"><em>bokeh.models.ColumnDataSource</em></a>) – Data source with at least a <code class="docutils literal notranslate"><span class="pre">&quot;name&quot;</span></code> field, against which CSV
+entries will be matched.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>button (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>)</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Load</span> <span class="pre">selection&quot;</span></code>: On click, it prompts
+for a  CSV file and updates <code class="docutils literal notranslate"><span class="pre">source.selected.indices</span></code> with the
+matched entries.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="yomix.tools.download.download_selected_button">
+<span class="sig-name descname"><span class="pre">download_selected_button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_keys</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/perrin-isir/yomix/blob/main/yomix/tools/download.py#L87-L137"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yomix.tools.download.download_selected_button" title="Link to this definition">¶</a></dt>
+<dd><p>Create a button to download selected points as a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – bokeh.models.ColumnDataSource
+Data source containing the selected points to be downloaded.</p></li>
+<li><p><strong>original_keys</strong> – list of str
+Column names to include in the downloaded CSV file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Save</span> <span class="pre">selected&quot;</span></code>. On click, it downloads
+the currently selected points as a CSV file.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>button (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function" id="module-yomix.tools.gene_query">
+<dt class="sig sig-object py" id="yomix.tools.gene_query.gene_query_button">
+<span class="sig-name descname"><span class="pre">gene_query_button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset_text_feature_color</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/perrin-isir/yomix/blob/main/yomix/tools/gene_query.py#L14-L57"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yomix.tools.gene_query.gene_query_button" title="Link to this definition">¶</a></dt>
+<dd><p>Create a button to search for genes in the HGNC database.</p>
+<p>This function generates a Bokeh Button when clicked, extracts the feature
+names from the feature input text box, and for each feature, opens a
+new browser tab to the corresponding search results page on the
+HGNC website. It may include <cite>+</cite> and <cite>-</cite> operators, as well as Ensembl IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>offset_text_feature_color</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/inputs.html#bokeh.models.TextInput" title="(in Bokeh v3.8.0)"><em>bokeh.models.TextInput</em></a>) – Text input for entering feature names to color samples in the scatter plot.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Button that opens HGNC search pages for the features listed in <cite>offset_text_feature_color</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>btn_open_link (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function" id="module-yomix.tools.signatures">
+<dt class="sig sig-object py" id="yomix.tools.signatures.signature_buttons">
+<span class="sig-name descname"><span class="pre">signature_buttons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset_text_feature_color</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_checkbox_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_checkbox_B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_signature</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/perrin-isir/yomix/blob/main/yomix/tools/signatures.py#L20-L413"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yomix.tools.signatures.signature_buttons" title="Link to this definition">¶</a></dt>
+<dd><p>Create the UI elements e.g., buttons, help tooltips, and
+a multi-select widget that allow users to compute differential feature
+signatures between interactively defined cell subsets. It provides options
+to compare “Subset A vs. Rest” and “Subset A vs. Subset B”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adata</strong> (<a class="reference external" href="https://anndata.readthedocs.io/en/stable/generated/anndata.AnnData.html#anndata.AnnData" title="(in anndata v0.12.2)"><em>anndata.AnnData</em></a>) – Annotated data matrix of shape <cite>n_obs</cite> x <cite>n_vars</cite>.</p></li>
+<li><p><strong>offset_text_feature_color</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/inputs.html#bokeh.models.TextInput" title="(in Bokeh v3.8.0)"><em>bokeh.models.TextInput</em></a>) – Text input for entering feature names to color samples in the scatter plot.</p></li>
+<li><p><strong>offset_label</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/inputs.html#bokeh.models.TextInput" title="(in Bokeh v3.8.0)"><em>bokeh.models.TextInput</em></a>) – Hidden text input that stores the group labels for generating
+violin/heatmap plots</p></li>
+<li><p><strong>hidden_checkbox_A</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/groups.html#bokeh.models.CheckboxGroup" title="(in Bokeh v3.8.0)"><em>bokeh.models.CheckboxGroup</em></a>) – Widget storing “Subset A” sample indices.</p></li>
+<li><p><strong>hidden_checkbox_B</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/groups.html#bokeh.models.CheckboxGroup" title="(in Bokeh v3.8.0)"><em>bokeh.models.CheckboxGroup</em></a>) – Widget storing “Subset B” sample indices.</p></li>
+<li><p><strong>label_signature</strong> – bokeh.models.MultiSelect
+Widget listing available group labels including Subset A and Subset B or Rest.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>bt_sign1</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>): Button to compute “A vs. Rest”.</p></li>
+<li><p><strong>bt_sign2</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>): Button to compute “A vs. B”.</p></li>
+<li><p><strong>help_button1</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.HelpButton" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.HelpButton</span></code></a>): Help tooltip for <cite>bt_sign1</cite>.</p></li>
+<li><p><strong>help_button2</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.HelpButton" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.HelpButton</span></code></a>): Help tooltip for <cite>bt_sign2</cite>.</p></li>
+<li><p><strong>multiselect_signature</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/inputs.html#bokeh.models.MultiSelect" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.MultiSelect</span></code></a>): Widget to display the ranked features of the computed signature.</p></li>
+<li><p><strong>div_signature_list</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/markups.html#bokeh.models.Div" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Div</span></code></a>): Div element to display the signature title and a summary of top features.</p></li>
+<li><p><strong>signature_nr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>): List containing a single integer used to number the computed signatures sequentially.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing the Bokeh components created by this function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function" id="module-yomix.tools.subsets">
+<dt class="sig sig-object py" id="yomix.tools.subsets.subset_buttons">
+<span class="sig-name descname"><span class="pre">subset_buttons</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points_bokeh_plot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_rotmatrix_etc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bt_slider_range</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/perrin-isir/yomix/blob/main/yomix/tools/subsets.py#L14-L348"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yomix.tools.subsets.subset_buttons" title="Link to this definition">¶</a></dt>
+<dd><p>Generate toggle switches and buttons for setting, highlighting, and selecting
+subsets of samples directly within from the scatterplot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points_bokeh_plot</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/plotting/figure.html#bokeh.plotting.figure" title="(in Bokeh v3.8.0)"><em>bokeh.plotting.figure</em></a>) – The main Bokeh scatter plot figure.</p></li>
+<li><p><strong>source_rotmatrix_etc</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/sources.html#bokeh.models.ColumnDataSource" title="(in Bokeh v3.8.0)"><em>bokeh.models.ColumnDataSource</em></a>) – Data source for tracking points’ positions after rotations in the scatterplot.</p></li>
+<li><p><strong>bt_slider_range</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/sliders.html#bokeh.models.RangeSlider" title="(in Bokeh v3.8.0)"><em>bokeh.models.RangeSlider</em></a>) – Slider for filtering samples based on a selected feature’s value. It is
+passed here so its value can be reset when the user clears a selection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Tuple containing all the created Bokeh widgets so they can be added</dt><dd><p>to the main application layout.</p>
+<ul class="simple">
+<li><p><strong>bt_A</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>): Button to assign the current selection to Subset A.</p></li>
+<li><p><strong>toggle_A</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Toggle" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Toggle</span></code></a>): Toggle to turn the visual
+highlighting of Subset A on or off.</p></li>
+<li><p><strong>hidden_checkbox_A</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/groups.html#bokeh.models.CheckboxGroup" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.CheckboxGroup</span></code></a>): Hidden widget storing Subset A samples indices.</p></li>
+<li><p><strong>bt_B</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>): Button to assign the current
+selection to Subset B.</p></li>
+<li><p><strong>toggle_B</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Toggle" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Toggle</span></code></a>): Toggle to turn the visual
+highlighting of Subset B on or off.</p></li>
+<li><p><strong>hidden_checkbox_B</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/groups.html#bokeh.models.CheckboxGroup" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.CheckboxGroup</span></code></a>): Hidden widget storing Subset B samples indices..</p></li>
+<li><p><strong>bt_AplusB</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>): Button to select the
+union of Subset A and Subset B.</p></li>
+<li><p><strong>bt_nothing</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>): Button to clear the
+current selection.</p></li>
+<li><p><strong>bt_selectA</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>): Button to select all
+samples from Subset A.</p></li>
+<li><p><strong>bt_selectB</strong> (<a class="reference external" href="https://docs.bokeh.org/en/latest/docs/reference/models/widgets/buttons.html#bokeh.models.Button" title="(in Bokeh v3.8.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bokeh.models.Button</span></code></a>): Button to select all
+samples from Subset B.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="yomix.plotting.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Plotting</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Tools</a><ul>
+<li><a class="reference internal" href="#yomix.tools.arrow.arrow_function"><code class="docutils literal notranslate"><span class="pre">arrow_function()</span></code></a></li>
+<li><a class="reference internal" href="#yomix.tools.download.csv_load_button"><code class="docutils literal notranslate"><span class="pre">csv_load_button()</span></code></a></li>
+<li><a class="reference internal" href="#yomix.tools.download.download_selected_button"><code class="docutils literal notranslate"><span class="pre">download_selected_button()</span></code></a></li>
+<li><a class="reference internal" href="#yomix.tools.gene_query.gene_query_button"><code class="docutils literal notranslate"><span class="pre">gene_query_button()</span></code></a></li>
+<li><a class="reference internal" href="#yomix.tools.signatures.signature_buttons"><code class="docutils literal notranslate"><span class="pre">signature_buttons()</span></code></a></li>
+<li><a class="reference internal" href="#yomix.tools.subsets.subset_buttons"><code class="docutils literal notranslate"><span class="pre">subset_buttons()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>
