@@ -1,12 +1,12 @@
-"""
-Provides a utility to query external databases for selected features.
+# """
+# Provides a utility to query external databases for selected features.
 
-This module contains a function to create a button that, when clicked,
-searches for the currently selected feature names on the HUGO Gene
-Nomenclature Committee (HGNC) website. This provides a quick way for
-users to get more information about features of interest directly from
-the interface.
-"""
+# This module contains a function to create a button that, when clicked,
+# searches for the currently selected feature names on the HUGO Gene
+# Nomenclature Committee (HGNC) website. This provides a quick way for
+# users to get more information about features of interest directly from
+# the interface.
+# """
 
 import bokeh.models
 
@@ -14,7 +14,7 @@ import bokeh.models
 def gene_query_button(offset_text_feature_color):
     """
 
-    Create a button to search for features in the HGNC database.
+    Create a button to search for genes in the HGNC database.
 
     This function generates a Bokeh Button when clicked, extracts the feature
     names from the feature input text box, and for each feature, opens a

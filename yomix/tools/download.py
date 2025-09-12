@@ -1,15 +1,15 @@
-"""
-Handles data import and export functionality and provides
-utility functions for saving and loading selections of
-data points.
-"""
+# """
+# Handles data import and export functionality and provides
+# utility functions for saving and loading selections of
+# data points.
+# """
 
 from bokeh.models import Button, CustomJS
 
 
 def csv_load_button(source):
     """
-    Create a button to load selected points from a CSV file.
+    Create a button to load previously selected points from a CSV file.
 
     Args:
         source (bokeh.models.ColumnDataSource):

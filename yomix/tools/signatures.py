@@ -1,15 +1,15 @@
-"""
-The computation itself, handled by the internal `compute_signature` function,
-uses a two-step process:
+# """
+# The computation itself, handled by the internal `compute_signature` function,
+# uses a two-step process:
 
-1. Features are first ranked by the Wasserstein distance between their
-   distributions in the two groups being compared. The top 100 features
-   from this ranking are retained for further analysis.
+# 1. Features are first ranked by the Wasserstein distance between their
+#    distributions in the two groups being compared. The top 100 features
+#    from this ranking are retained for further analysis.
 
-2. This list is then refined using the Matthews Correlation Coefficient (MCC)
-   to select the 20 most robust and discriminative features for the final
-   signature.
-"""
+# 2. This list is then refined using the Matthews Correlation Coefficient (MCC)
+#    to select the 20 most robust and discriminative features for the final
+#    signature.
+# """
 
 import numpy as np
 import bokeh.models

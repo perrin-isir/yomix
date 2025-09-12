@@ -1,12 +1,12 @@
-"""
-This module provides a unique feature that allows users to explore data along
-a user-defined trajectory or gradient. It adds an interactive arrow tool to the
-main plot, enabling the user to draw a vector directly on the embedding. The
-module can then compute an "oriented signature" by identifying the features
-whose values are most strongly correlated either positively or negatively
-with the direction of the arrow. This is particularly useful for analyzing
-continuous biological processes, such as cell differentiation or activation.
-"""
+# """
+# This module provides a unique feature that allows users to explore data along
+# a user-defined trajectory or gradient. It adds an interactive arrow tool to the
+# main plot, enabling the user to draw a vector directly on the embedding. The
+# module can then compute an "oriented signature" by identifying the features
+# whose values are most strongly correlated either positively or negatively
+# with the direction of the arrow. This is particularly useful for analyzing
+# continuous biological processes, such as cell differentiation or activation.
+# """
 
 from pathlib import Path
 import pandas as pd
