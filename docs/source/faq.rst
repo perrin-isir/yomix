@@ -10,8 +10,8 @@ Scanpy provides many functions, such as `UMAP <https://scanpy.readthedocs.io/en/
 `t-SNE <https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.tsne.html>`__, to compute embeddings. 
 See the `Scanpy documentation <https://scanpy.readthedocs.io/en/stable/api/index.html>`__ for more details.
 
-How to convert my rfile to anndata ?
-------------------------------------
+How to convert my R file to ``Anndata`` ?
+-----------------------------------------
 You can use Seurat objects by converting them to .h5ad format in R:
 
 Load required libraries::
