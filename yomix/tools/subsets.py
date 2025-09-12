@@ -1,12 +1,12 @@
-"""
-Provides tools for defining and managing data subsets.
+# """
+# Provides tools for defining and managing data subsets.
 
-This module contains the `subset_buttons` function, which creates the necessary
-Bokeh widgets to allow users to interactively select and define two distinct
-groups of data points, labeled "Subset A" and "Subset B". It handles both the
-assignment of points to these subsets and their visual highlighting on the main
-scatter plot.
-"""
+# This module contains the `subset_buttons` function, which creates the necessary
+# Bokeh widgets to allow users to interactively select and define two distinct
+# groups of data points, labeled "Subset A" and "Subset B". It handles both the
+# assignment of points to these subsets and their visual highlighting on the main
+# scatter plot.
+# """
 
 import bokeh.models
 
@@ -17,7 +17,7 @@ def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
     subsets of samples directly within from the scatterplot.
 
     Args:
-        points_bokeh_plot (bokeh.plotting.Figure):
+        points_bokeh_plot (bokeh.plotting.figure):
             The main Bokeh scatter plot figure.
 
         source_rotmatrix_etc (bokeh.models.ColumnDataSource):

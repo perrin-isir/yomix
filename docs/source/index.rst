@@ -22,6 +22,7 @@ Contents
    :caption: User Guide
 
    installation
+   tutorial
    signatures
    faq
 

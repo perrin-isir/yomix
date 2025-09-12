@@ -1,13 +1,13 @@
 """
 Main application server and layout orchestrator for Yomix.
 
-This module is the central hub and is responsible for:
+Considered as the central hub, it is responsible for:
 
 1. Reading and preprocessing the input ``Anndata`` object, including optional
    subsampling and data normalization.
 
 2. Assembling the entire user interface by initializing and arranging all the
-   plotting components and interactive tools from the various `yomix.plotting`
+   plotting components and interactive tools from the `yomix.plotting`
    and `yomix.tools` modules.
 
 3. Managing the Bokeh server lifecycle, including starting the server,
