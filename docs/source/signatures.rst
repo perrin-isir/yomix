@@ -1,4 +1,4 @@
-How are signatures computed ?
+How are signatures computed?
 =============================
 
 Here are the detailed steps to get the best features to distinguish two subsets (Either A vs B or A vs Rest):
