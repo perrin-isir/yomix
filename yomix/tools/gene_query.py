@@ -11,7 +11,9 @@
 import bokeh.models
 
 
-def gene_query_button(offset_text_feature_color):
+def gene_query_button(
+    offset_text_feature_color: bokeh.models.TextInput,
+) -> bokeh.models.Button:
     """
 
     Create a button to search for genes in the HGNC database.

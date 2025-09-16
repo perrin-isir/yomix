@@ -12,26 +12,27 @@ from pathlib import Path
 import pandas as pd
 import bokeh.models
 import numpy as np
+import anndata
 
 
 def arrow_function(
-    points_bokeh_plot,
-    adata,
-    embedding_key,
-    bt_slider_roll,
-    bt_slider_pitch,
-    bt_slider_yaw,
-    source_rotmatrix_etc,
-    bt_toggle_anim,
-    hidden_checkbox_A,
-    div_signature_list,
-    multiselect_signature,
-    sign_nr,
-    sl_component1,
-    sl_component2,
-    sl_component3,
-    label_sign,
-):
+    points_bokeh_plot: bokeh.plotting.figure,
+    adata: anndata.AnnData,
+    embedding_key: str,
+    bt_slider_roll: bokeh.models.Slider,
+    bt_slider_pitch: bokeh.models.Slider,
+    bt_slider_yaw: bokeh.models.Slider,
+    source_rotmatrix_etc: bokeh.models.ColumnDataSource,
+    bt_toggle_anim: bokeh.models.Toggle,
+    hidden_checkbox_A: bokeh.models.CheckboxGroup,
+    div_signature_list: bokeh.models.Div,
+    multiselect_signature: bokeh.models.MultiSelect,
+    sign_nr: list,
+    sl_component1: bokeh.models.RadioButtonGroup,
+    sl_component2: bokeh.models.RadioButtonGroup,
+    sl_component3: bokeh.models.RadioButtonGroup,
+    label_sign: bokeh.models.MultiSelect,
+) -> tuple[bokeh.models.Button, bokeh.models.HelpButton]:
     """
     Create and manage the arrow tool for oriented signature analysis
     Add the "Arrow Tool" to the Bokeh scatter plot that lets the user draw an arrow

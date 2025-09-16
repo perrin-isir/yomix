@@ -1,7 +1,6 @@
 Getting started
 ===============
 
-This section explains how to install and use the `yomix` tool.
 
 Install via pip
 ---------------

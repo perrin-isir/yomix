@@ -33,6 +33,8 @@ import bokeh.plotting as bkp
 import matplotlib
 import matplotlib.pyplot as plt
 from pathlib import Path
+import anndata
+from typing import Tuple, List, Dict, Optional
 
 MAX_UNIQUE_VALUES = 40
 
@@ -44,7 +46,7 @@ MAX_UNIQUE_VALUES = 40
 #     )
 
 
-def check_obs_field(udict, field):
+def check_obs_field(udict: Dict[str, List], field: str) -> bool:
     """
     Check if a categorical field has a manageable number of unique values.
 
@@ -64,7 +66,39 @@ def check_obs_field(udict, field):
     return unique_items_nr <= MAX_UNIQUE_VALUES
 
 
-def main_figure(adata, embedding_key, width=900, height=600, title=""):
+def main_figure(
+    adata: anndata.AnnData,
+    embedding_key: str,
+    width: int = 900,
+    height: int = 600,
+    title: str = "",
+) -> Tuple[
+    List,  # original_keys
+    Dict,  # unique_dict
+    List,  # obs_string
+    List,  # obs_string_many
+    List,  # obs_numerical
+    bokeh.plotting.figure,  # points_bokeh_plot
+    bokeh.plotting.figure,  # violin_plot
+    bokeh.plotting.figure,  # heatmap_plot
+    bokeh.models.Slider,  # bt_slider_point_size
+    bokeh.models.Slider,  # bt_hidden_slider_yaw
+    bokeh.models.RangeSlider,  # bt_slider_range
+    bokeh.models.Toggle,  # bt_toggle_anim
+    bokeh.models.Slider,  # bt_slider_yaw
+    bokeh.models.Slider,  # bt_slider_pitch
+    bokeh.models.Slider,  # bt_slider_roll
+    bokeh.models.TextInput,  # resize_width_input
+    bokeh.models.TextInput,  # resize_height_input
+    bokeh.models.TextInput,  # resize_width_input_bis
+    bokeh.models.TextInput,  # resize_height_input_bis
+    bokeh.models.ColumnDataSource,  # source_rotmatrix_etc
+    bokeh.models.Div,  # div_sample_names
+    bokeh.models.TextInput,  # sample_search_input
+    Optional[bokeh.models.RadioButtonGroup],  # sl_component1
+    Optional[bokeh.models.RadioButtonGroup],  # sl_component2
+    Optional[bokeh.models.RadioButtonGroup],  # sl_component3
+]:
     """
 
     Create the main interactive figure and all associated widgets.

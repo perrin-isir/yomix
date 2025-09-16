@@ -19,24 +19,26 @@ import bokeh.models
 import bokeh.palettes
 import re
 import numpy as np
+import anndata
+from typing import Tuple, List
 
 
 def color_by_feature_value(
-    points_bokeh_plot,
-    violins_bokeh_plot,
-    heat_map,
-    adata,
-    select_color_by,
-    hidden_text_label_column,
-    resize_width_input,
-    hidden_legend_width,
-    hidden_checkbox_A,
-    hidden_checkbox_B,
-    resize_w_input,
-    resize_h_input,
-    bt_slider_range,
-    select_field,
-):
+    points_bokeh_plot: bokeh.plotting.figure,
+    violins_bokeh_plot: bokeh.plotting.figure,
+    heat_map: bokeh.plotting.figure,
+    adata: anndata.AnnData,
+    select_color_by: bokeh.models.Select,
+    hidden_text_label_column: bokeh.models.TextInput,
+    resize_width_input: bokeh.models.TextInput,
+    hidden_legend_width: bokeh.models.TextInput,
+    hidden_checkbox_A: bokeh.models.CheckboxGroup,
+    hidden_checkbox_B: bokeh.models.CheckboxGroup,
+    resize_w_input: bokeh.models.TextInput,
+    resize_h_input: bokeh.models.TextInput,
+    bt_slider_range: bokeh.models.RangeSlider,
+    select_field: bokeh.models.Select,
+) -> Tuple[bokeh.models.TextInput, bokeh.models.TextInput]:
     """
     Set up widgets and callbacks for coloring points by feature value. Update the plot
     coloring and refresh violin and heatmap plots based on user's selected features and
@@ -300,16 +302,16 @@ def color_by_feature_value(
 
 
 def plot_var(
-    adata,
-    violins_bokeh_plot,
-    heat_map,
-    resize_w,
-    resize_h,
-    hidden_checkbox_A,
-    hidden_checkbox_B,
-    features,
-    selected_labels=None,  # This is where the selected labels will be passed
-):
+    adata: anndata.AnnData,
+    violins_bokeh_plot: bokeh.plotting.figure,
+    heat_map: bokeh.plotting.figure,
+    resize_w: bokeh.models.TextInput,
+    resize_h: bokeh.models.TextInput,
+    hidden_checkbox_A: bokeh.models.CheckboxGroup,
+    hidden_checkbox_B: bokeh.models.CheckboxGroup,
+    features: List[str],
+    selected_labels: List[str] = None,
+) -> None:
     """
     Create or update violin plots and heatmaps showing feature(s)
     distributions for subsets of observations (e.g., subsets A, B, rest,

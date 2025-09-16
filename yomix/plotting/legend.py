@@ -11,18 +11,26 @@ from pathlib import Path
 from PIL import ImageFont
 import re
 from bokeh.models import InlineStyleSheet
+from typing import Tuple, List
 
 
 def setup_legend(
-    pb_plot,
-    obs_string,
-    obs_string_many,
-    obs_numerical,
-    source_rotmatrix_etc,
-    resize_width_input,
-    bt_slider_range,
-    unique_dict,
-):
+    pb_plot: bokeh.plotting.figure,
+    obs_string: List[str],
+    obs_string_many: List[str],
+    obs_numerical: List[str],
+    source_rotmatrix_etc: bokeh.models.ColumnDataSource,
+    resize_width_input: bokeh.models.TextInput,
+    bt_slider_range: bokeh.models.RangeSlider,
+    unique_dict: dict,
+) -> Tuple[
+    bokeh.models.Select,
+    bokeh.models.HelpButton,
+    bokeh.models.TextInput,
+    bokeh.models.TextInput,
+    bokeh.models.Select,
+    bokeh.models.MultiSelect,
+]:
     """
 
     Set up interactive legend and color mapping for a scatter plot.

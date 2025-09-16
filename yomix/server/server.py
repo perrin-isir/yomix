@@ -32,6 +32,8 @@ from bokeh.application import Application
 from bokeh.server.server import Server
 import nest_asyncio
 import threading
+import pathlib
+from typing import Optional
 
 _io_loop = None
 _thread = None
@@ -39,7 +41,11 @@ _server = None
 _first_start_done = None
 
 
-def gen_modify_doc(filearg, subsampling, title):
+def gen_modify_doc(
+    filearg: pathlib.Path,
+    subsampling: Optional[int],
+    title: Optional[str] = "",
+) -> callable:
     """
     Read an `.h5ad` file into an AnnData object and pass it to
     `gen_modify_doc_xd` to generate the main Bokeh document function.
@@ -62,7 +68,12 @@ def gen_modify_doc(filearg, subsampling, title):
     return gen_modify_doc_xd(xd, subsampling, title)
 
 
-def start_server(xd, subsampling=None, title="", port=5006):
+def start_server(
+    xd: anndata.AnnData,
+    subsampling: Optional[int] = None,
+    title: Optional[str] = "",
+    port: Optional[int] = 5006,
+) -> None:
     """
     Start a Yomix interactive Bokeh server.
     Run the application in a background thread, serving the given
@@ -123,7 +134,11 @@ def start_server(xd, subsampling=None, title="", port=5006):
     _thread.start()
 
 
-def gen_modify_doc_xd(xd, subsampling, title):
+def gen_modify_doc_xd(
+    xd: anndata.AnnData,
+    subsampling: int,
+    title: str,
+) -> callable:
     """
     Preprocess an AnnData object and build a document factory.
 

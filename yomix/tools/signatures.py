@@ -15,16 +15,25 @@ import numpy as np
 import bokeh.models
 import sys
 from scipy.stats import rankdata
+import anndata
 
 
 def signature_buttons(
-    adata,
-    offset_text_feature_color,
-    offset_label,
-    hidden_checkbox_A,
-    hidden_checkbox_B,
-    label_signature,
-):
+    adata: anndata.AnnData,
+    offset_text_feature_color: bokeh.models.TextInput,
+    offset_label: bokeh.models.TextInput,
+    hidden_checkbox_A: bokeh.models.CheckboxGroup,
+    hidden_checkbox_B: bokeh.models.CheckboxGroup,
+    label_signature: bokeh.models.MultiSelect,
+) -> tuple[
+    bokeh.models.Button,
+    bokeh.models.Button,
+    bokeh.models.HelpButton,
+    bokeh.models.HelpButton,
+    bokeh.models.MultiSelect,
+    bokeh.models.Div,
+    list,
+]:
     """
     Create the UI elements e.g., buttons, help tooltips, and
     a multi-select widget that allow users to compute differential feature
