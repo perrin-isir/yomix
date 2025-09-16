@@ -1,5 +1,5 @@
 """
-Main application server and layout orchestrator for Yomix.
+Main application server and layout orchestrator for *Yomix*.
 
 Considered as the central hub, it is responsible for:
 

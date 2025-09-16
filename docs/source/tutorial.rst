@@ -4,7 +4,7 @@ Tutorial
 Selecting data
 --------------
 
-There are two different tools to select data on yomix, with many options:
+There are two different tools to select data on *Yomix*, with many options:
 
 - **Lasso tool**: Allows free-form selection of data points by drawing a shape around them. You can either use modifier keys for advanced selection:
     - *Ctrl + click*: Intersection with current selection
