@@ -11,41 +11,48 @@ from pathlib import Path
 from PIL import ImageFont
 import re
 from bokeh.models import InlineStyleSheet
+from typing import Tuple, List
 
 
 def setup_legend(
-    pb_plot,
-    obs_string,
-    obs_string_many,
-    obs_numerical,
-    source_rotmatrix_etc,
-    resize_width_input,
-    bt_slider_range,
-    unique_dict,
-):
+    pb_plot: bokeh.plotting.figure,
+    obs_string: List[str],
+    obs_string_many: List[str],
+    obs_numerical: List[str],
+    source_rotmatrix_etc: bokeh.models.ColumnDataSource,
+    resize_width_input: bokeh.models.TextInput,
+    bt_slider_range: bokeh.models.RangeSlider,
+    unique_dict: dict,
+) -> Tuple[
+    bokeh.models.Select,
+    bokeh.models.HelpButton,
+    bokeh.models.TextInput,
+    bokeh.models.TextInput,
+    bokeh.models.Select,
+    bokeh.models.MultiSelect,
+]:
     """
-
     Set up interactive legend and color mapping for a scatter plot.
     Creates Bokeh widgets and callbacks that control coloring of points
     by categorical or numerical observation fields, and dynamically
     builds legends or color bars depending on the field type.
 
-    Args:
-        pb_plot (bokeh.plotting.figure):
+    Parameters:
+        pb_plot
             The main scatter plot figure.
-        obs_string (list of str):
+        obs_string
             List of categorical `.obs` keys with <= 40 unique values.
-        obs_string_many (list of str):
+        obs_string_many
             List of categorical `.obs` keys with > 40 unique values.
-        obs_numerical (list of str):
+        obs_numerical
             List of numerical observation fields.
-        source_rotmatrix_etc (bokeh.models.ColumnDataSource):
+        source_rotmatrix_etc: bokeh.models.ColumnDataSource
              Data source for computing points' positions after rotations in the scatterplot.
-        resize_width_input (bokeh.models.TextInput):
+        resize_width_input: bokeh.models.TextInput
             Input for setting main plot's width.
-        bt_slider_range (bokeh.models.RangeSlider):
+        bt_slider_range: bokeh.models.RangeSlider
             Slider for filtering samples based on a selected feature's value.
-        unique_dict (dict):
+        unique_dict: dict
             Dictionary mapping field names to lists of unique values.
 
     Returns:
@@ -155,20 +162,61 @@ def setup_legend(
     label_signature.visible = False
 
     def redefine_custom_legend(
-        bokeh_plot,
-        htls,
-        htlc,
-        htlcbis,
-        hlw,
-        s_field,
-        obs_col,
-        legend_dict,
-        rwi,
-        obs_s,
-        obs_s_many,
-        obs_n,
-        bt_slider_range,
-    ):
+        bokeh_plot: bokeh.plotting.figure,
+        htls: bokeh.models.TextInput,
+        htlc: bokeh.models.TextInput,
+        htlcbis: bokeh.models.TextInput,
+        hlw: bokeh.models.TextInput,
+        s_field: bokeh.models.Select,
+        obs_col: str,
+        legend_dict: dict,
+        rwi: bokeh.models.TextInput,
+        obs_s: list[str],
+        obs_s_many: list[str],
+        obs_n: list[str],
+        bt_slider_range: bokeh.models.RangeSlider,
+    ) -> None:
+        """
+        Update the legend and color mapping for the scatter plot based on the selected
+        observation column.
+
+        This function dynamically builds and updates the legend, color bar, and related
+        widgets depending on whether the selected field is categorical (with few or
+        many unique values) or numerical. It also manages the visibility and
+        configuration of widgets for group selection and filtering.
+
+        Parameters:
+            bokeh_plot : bokeh.plotting.figure
+                The main scatter plot figure.
+            htls : bokeh.models.TextInput
+                Text input widget for label search.
+            htlc : bokeh.models.TextInput
+                Text input widget for the current label column.
+            htlcbis : bokeh.models.TextInput
+                Text input widget for the secondary label column.
+            hlw : bokeh.models.TextInput
+                Text input widget for legend width.
+            s_field : bokeh.models.Select
+                Dropdown menu for selecting a group from a field with many unique
+                values.
+            obs_col : str
+                The observation column selected for coloring.
+            legend_dict : dict
+                Dictionary mapping field names to their legend objects and widths.
+            rwi : bokeh.models.TextInput
+                Text input widget for plot width.
+            obs_s : list[str]
+                List of categorical observation fields with <= 40 unique values.
+            obs_s_many : list[str]
+                List of categorical observation fields with > 40 unique values.
+            obs_n : list[str]
+                List of numerical observation fields.
+            bt_slider_range : bokeh.models.RangeSlider
+                Slider for filtering samples based on a selected feature's value.
+
+        Returns:
+            None
+        """
         label_signature.visible = False
         if obs_col in obs_s:
             s_field.visible = False

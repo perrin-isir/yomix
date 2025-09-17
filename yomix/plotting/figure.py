@@ -33,6 +33,8 @@ import bokeh.plotting as bkp
 import matplotlib
 import matplotlib.pyplot as plt
 from pathlib import Path
+import anndata
+from typing import Tuple, List, Dict, Optional
 
 MAX_UNIQUE_VALUES = 40
 
@@ -44,7 +46,7 @@ MAX_UNIQUE_VALUES = 40
 #     )
 
 
-def check_obs_field(udict, field):
+def check_obs_field(udict: Dict[str, List], field: str) -> bool:
     """
     Check if a categorical field has a manageable number of unique values.
 
@@ -55,16 +57,47 @@ def check_obs_field(udict, field):
             Field to check, should be a key of *udict*.
 
     Returns:
-        *bool*
-            `True` if the number of unique values is less than or equal to
-            `MAX_UNIQUE_VALUES`, `False` otherwise.
+        `True` if the number of unique values is less than or equal to
+        `MAX_UNIQUE_VALUES`, `False` otherwise.
     """
 
     unique_items_nr = len(udict[field])
     return unique_items_nr <= MAX_UNIQUE_VALUES
 
 
-def main_figure(adata, embedding_key, width=900, height=600, title=""):
+def main_figure(
+    adata: anndata.AnnData,
+    embedding_key: str,
+    width: int = 900,
+    height: int = 600,
+    title: str = "",
+) -> Tuple[
+    List,  # original_keys
+    Dict,  # unique_dict
+    List,  # obs_string
+    List,  # obs_string_many
+    List,  # obs_numerical
+    bokeh.plotting.figure,  # points_bokeh_plot
+    bokeh.plotting.figure,  # violin_plot
+    bokeh.plotting.figure,  # heatmap_plot
+    bokeh.models.Slider,  # bt_slider_point_size
+    bokeh.models.Slider,  # bt_hidden_slider_yaw
+    bokeh.models.RangeSlider,  # bt_slider_range
+    bokeh.models.Toggle,  # bt_toggle_anim
+    bokeh.models.Slider,  # bt_slider_yaw
+    bokeh.models.Slider,  # bt_slider_pitch
+    bokeh.models.Slider,  # bt_slider_roll
+    bokeh.models.TextInput,  # resize_width_input
+    bokeh.models.TextInput,  # resize_height_input
+    bokeh.models.TextInput,  # resize_width_input_bis
+    bokeh.models.TextInput,  # resize_height_input_bis
+    bokeh.models.ColumnDataSource,  # source_rotmatrix_etc
+    bokeh.models.Div,  # div_sample_names
+    bokeh.models.TextInput,  # sample_search_input
+    Optional[bokeh.models.RadioButtonGroup],  # sl_component1
+    Optional[bokeh.models.RadioButtonGroup],  # sl_component2
+    Optional[bokeh.models.RadioButtonGroup],  # sl_component3
+]:
     """
 
     Create the main interactive figure and all associated widgets.
@@ -83,11 +116,11 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
 
     Returns:
         Tuple containing all the created Bokeh components
-            - **original_keys** (*list*): List of all keys from ``adata.obs``.
-            - **unique_dict** (*dict*): Maps categorical keys from ``adata.obs`` to unique values .
-            - **obs_string** (*list*): List of categorical keys with <= 40 unique values from `adata.obs`.
-            - **obs_string_many** (*list*): Categorical keys with > 40 unique values from ``adata.obs``.
-            - **obs_numerical** (*list*): List of numerical observation fields from ``adata.obs``.
+            - **original_keys** (:class:`list`): List of all keys from ``adata.obs``.
+            - **unique_dict** (:class:`dict`): Maps categorical keys from ``adata.obs`` to unique values .
+            - **obs_string** (:class:`list`): List of categorical keys with <= 40 unique values from `adata.obs`.
+            - **obs_string_many** (:class:`list`): Categorical keys with > 40 unique values from ``adata.obs``.
+            - **obs_numerical** (:class:`list`): List of numerical observation fields from ``adata.obs``.
             - **points_bokeh_plot** (:class:`bokeh.plotting.figure`): The main scatter plot figure.
             - **violins_bokeh_plot** (:class:`bokeh.plotting.figure`): Violin plot figure.
             - **heat_map** (:class:`bokeh.plotting.figure`): Heat map figure.
@@ -1507,7 +1540,20 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         ),
     )
 
-    def modif_slider_range(attr, old, new):
+    def modif_slider_range(attr: str, old: int, new: int) -> None:
+        """
+        Updates the height property in the CSS stylesheet of the `bt_slider_range`
+        widget based on the new slider value.
+
+        Args:
+            attr (str): The name of the changed attribute.
+            old (int): The previous value of the slider.
+            new (int): The new value of the slider.
+
+        Returns:
+            None
+        """
+        print(attr, type(attr))
         current_style = bt_slider_range.stylesheets[0].css
         pattern = r"\{height: \d+px;\}"
         new_style = re.sub(
@@ -1541,12 +1587,25 @@ def main_figure(adata, embedding_key, width=900, height=600, title=""):
         ),
     )
 
-    def copy_figure(original, title):
+    def copy_figure(original: bkp.figure, title: str) -> bkp.figure:
         new_fig = bkp.figure(
             title=title,
             x_axis_label=original.xaxis.axis_label,
             y_axis_label=original.yaxis.axis_label,
         )
+        """
+        Create a Bokeh figure with a new title the same dimensions, background,
+        border, and axis labels as the original.
+
+        Args:
+            original (bokeh.plotting.figure):
+                The original Bokeh figure to copy.
+            title (str):
+                Title for the new figure.
+
+        Returns:
+            bokeh.plotting.figure:
+        """
 
         new_fig.width = original.width
         new_fig.height = original.height

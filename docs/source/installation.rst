@@ -1,12 +1,11 @@
 Getting started
 ===============
 
-This section explains how to install and use the `yomix` tool.
 
 Install via pip
 ---------------
 
-In a Python virtual environment, do the following:
+In a Python virtual environment, do:
 
 .. code:: bash
 
@@ -27,7 +26,7 @@ Install from Source
    
    git clone https://github.com/perrin-isir/yomix.git
 
-We recommend using `micromamba <https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html#>`__ to create a Python environment, but you can use any Python package manager instead.
+We recommend using `micromamba <https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html#>`__ to create a Python environment, but any python package manager can be used instead.
    
    
 .. code:: bash

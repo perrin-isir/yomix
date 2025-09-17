@@ -1,7 +1,7 @@
 Frequently Asked Questions
 ==========================
 
-Here are the answers to some common questions about YOMIX.
+Here are the answers to some common questions about *Yomix*.
 
 How to create embeddings ?
 --------------------------

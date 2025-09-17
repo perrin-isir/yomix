@@ -5,9 +5,12 @@
 # """
 
 from bokeh.models import Button, CustomJS
+import bokeh.models
 
 
-def csv_load_button(source):
+def csv_load_button(
+    source: bokeh.models.ColumnDataSource,
+) -> bokeh.models.Button:
     """
     Create a button to load previously selected points from a CSV file.
 
@@ -17,10 +20,10 @@ def csv_load_button(source):
             entries will be matched.
 
     Returns:
-        button (:class:`bokeh.models.Button`)
-            - ``"Load selection"``: On click, it prompts
-              for a  CSV file and updates ``source.selected.indices`` with the
-              matched entries.
+        ``Load selection`` button (:class:`bokeh.models.Button`) :
+            On click, it prompts
+            for a  CSV file and updates ``source.selected.indices`` with the
+            matched entries.
 
     """
 
@@ -84,7 +87,10 @@ def csv_load_button(source):
     return button
 
 
-def download_selected_button(source, original_keys):
+def download_selected_button(
+    source: bokeh.models.ColumnDataSource,
+    original_keys: list[str],
+) -> bokeh.models.Button:
     """
     Create a button to download selected points as a CSV file.
 
@@ -95,9 +101,8 @@ def download_selected_button(source, original_keys):
             Column names to include in the downloaded CSV file.
 
     Returns:
-        button (:class:`bokeh.models.Button`) :
-            - ``"Save selected"``. On click, it downloads
-              the currently selected points as a CSV file.
+        ``Save selected`` button (:class:`bokeh.models.Button`) :
+            On click, it downloads the currently selected points as a CSV file.
 
     """
 

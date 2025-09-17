@@ -11,7 +11,22 @@
 import bokeh.models
 
 
-def subset_buttons(points_bokeh_plot, source_rotmatrix_etc, bt_slider_range):
+def subset_buttons(
+    points_bokeh_plot: bokeh.plotting.figure,
+    source_rotmatrix_etc: bokeh.models.ColumnDataSource,
+    bt_slider_range: bokeh.models.RangeSlider,
+) -> tuple[
+    bokeh.models.Button,
+    bokeh.models.Toggle,
+    bokeh.models.CheckboxGroup,
+    bokeh.models.Button,
+    bokeh.models.Toggle,
+    bokeh.models.CheckboxGroup,
+    bokeh.models.Button,
+    bokeh.models.Button,
+    bokeh.models.Button,
+    bokeh.models.Button,
+]:
     """
     Generate toggle switches and buttons for setting, highlighting, and selecting
     subsets of samples directly within from the scatterplot.

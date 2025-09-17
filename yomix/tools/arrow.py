@@ -12,26 +12,27 @@ from pathlib import Path
 import pandas as pd
 import bokeh.models
 import numpy as np
+import anndata
 
 
 def arrow_function(
-    points_bokeh_plot,
-    adata,
-    embedding_key,
-    bt_slider_roll,
-    bt_slider_pitch,
-    bt_slider_yaw,
-    source_rotmatrix_etc,
-    bt_toggle_anim,
-    hidden_checkbox_A,
-    div_signature_list,
-    multiselect_signature,
-    sign_nr,
-    sl_component1,
-    sl_component2,
-    sl_component3,
-    label_sign,
-):
+    points_bokeh_plot: bokeh.plotting.figure,
+    adata: anndata.AnnData,
+    embedding_key: str,
+    bt_slider_roll: bokeh.models.Slider,
+    bt_slider_pitch: bokeh.models.Slider,
+    bt_slider_yaw: bokeh.models.Slider,
+    source_rotmatrix_etc: bokeh.models.ColumnDataSource,
+    bt_toggle_anim: bokeh.models.Toggle,
+    hidden_checkbox_A: bokeh.models.CheckboxGroup,
+    div_signature_list: bokeh.models.Div,
+    multiselect_signature: bokeh.models.MultiSelect,
+    sign_nr: list,
+    sl_component1: bokeh.models.RadioButtonGroup,
+    sl_component2: bokeh.models.RadioButtonGroup,
+    sl_component3: bokeh.models.RadioButtonGroup,
+    label_sign: bokeh.models.MultiSelect,
+) -> tuple[bokeh.models.Button, bokeh.models.HelpButton]:
     """
     Create and manage the arrow tool for oriented signature analysis
     Add the "Arrow Tool" to the Bokeh scatter plot that lets the user draw an arrow
@@ -74,7 +75,7 @@ def arrow_function(
             Widget for selecting groups in violin plots / heat map.
 
     Returns:
-        Tuple containing the Bokeh widgets created by this function:
+        Tuple containing the Bokeh widgets created by this function
             - **bt_sign_oriented** (:class:`bokeh.models.Button`): Button that triggers oriented signature computation based on the drawn arrow.
             - **help_button_oriented** (:class:`bokeh.models.HelpButton`): Tooltip button describing requirements for computing oriented signatures.
     """  # noqa
@@ -209,8 +210,41 @@ def arrow_function(
     )
 
     def compute_oriented_signature(
-        adata, embedding_key, obs_indices_A, dir_x, dir_y, hidden_num_in
-    ):
+        adata: anndata.AnnData,
+        embedding_key: str,
+        obs_indices_A: list[int],
+        dir_x: float,
+        dir_y: float,
+        hidden_num_in: list[bokeh.models.NumericInput],
+    ) -> tuple[np.ndarray, dict, dict]:
+        """
+        Compute the oriented signature for a subset of observations along a
+        user-defined arrow direction.
+
+        Parameters:
+            adata : anndata.AnnData
+                Annotated data matrix.
+            embedding_key : str
+                Key in `adata.obsm` storing the embedding coordinates.
+            obs_indices_A : list of int
+                Indices of observations in subset A.
+            dir_x : float
+                X component of the arrow direction.
+            dir_y : float
+                Y component of the arrow direction.
+            hidden_num_in : list of bokeh.models.NumericInput
+                List of hidden numeric input widgets containing rotation matrix values.
+
+        Returns:
+            tuple
+                - sorted_features: np.ndarray
+                    Indices of the top correlated features.
+                - corr_dict: dict
+                    Dictionary mapping feature indices to correlation scores.
+                - up_or_down_dict: dict
+                    Dictionary mapping feature indices to "+" or "-" depending on
+                    correlation sign.
+        """
         rotmatrix = np.array([inpt.value for inpt in hidden_num_in[:9]]).reshape(3, 3)
         points_in_A = np.asarray(adata.obsm[embedding_key][obs_indices_A])
         if points_in_A.shape[1] > 2:
@@ -274,15 +308,42 @@ def arrow_function(
         return new_s
 
     def oriented_sign_A(
-        ad,
-        embedding_key,
-        arr_layout,
-        obs_indices_A,
-        dv,
-        ms_sign,
-        sign_nr,
-        hidden_num_in,
-    ):
+        ad: anndata.AnnData,
+        embedding_key: str,
+        arr_layout: bokeh.models.Arrow,
+        obs_indices_A: list[int],
+        dv: bokeh.models.Div,
+        ms_sign: bokeh.models.MultiSelect,
+        sign_nr: list[int],
+        hidden_num_in: list[bokeh.models.NumericInput],
+    ) -> None:
+        """
+        Compute and display the oriented signature for subset A based on the drawn
+        arrow.
+
+        Parameters:
+            ad : anndata.AnnData
+                Annotated data matrix.
+            embedding_key : str
+                Key in `ad.obsm` storing the embedding coordinates.
+            arr_layout : bokeh.models.Arrow
+                Arrow layout object representing the user-drawn arrow.
+            obs_indices_A : list of int
+                Indices of observations in subset A.
+            dv : bokeh.models.Div
+                Div widget to display the signature.
+            ms_sign : bokeh.models.MultiSelect
+                MultiSelect widget to list signature features.
+            sign_nr : list of int
+                List containing a single integer tracking the number of computed
+                signatures.
+            hidden_num_in : list of bokeh.models.NumericInput
+                List of hidden numeric input widgets containing rotation matrix values.
+
+        Returns:
+            None
+        """
+
         if 0 < len(obs_indices_A) and (
             arr_layout.x_end != arr_layout.x_start
             or arr_layout.y_end != arr_layout.y_start

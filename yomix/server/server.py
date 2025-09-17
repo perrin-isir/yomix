@@ -1,5 +1,5 @@
 """
-Main application server and layout orchestrator for Yomix.
+Main application server and layout orchestrator for *Yomix*.
 
 Considered as the central hub, it is responsible for:
 
@@ -32,6 +32,8 @@ from bokeh.application import Application
 from bokeh.server.server import Server
 import nest_asyncio
 import threading
+import pathlib
+from typing import Optional
 
 _io_loop = None
 _thread = None
@@ -39,7 +41,11 @@ _server = None
 _first_start_done = None
 
 
-def gen_modify_doc(filearg, subsampling, title):
+def gen_modify_doc(
+    filearg: pathlib.Path,
+    subsampling: Optional[int],
+    title: Optional[str] = "",
+) -> callable:
     """
     Read an `.h5ad` file into an AnnData object and pass it to
     `gen_modify_doc_xd` to generate the main Bokeh document function.
@@ -62,7 +68,12 @@ def gen_modify_doc(filearg, subsampling, title):
     return gen_modify_doc_xd(xd, subsampling, title)
 
 
-def start_server(xd, subsampling=None, title="", port=5006):
+def start_server(
+    xd: anndata.AnnData,
+    subsampling: Optional[int] = None,
+    title: Optional[str] = "",
+    port: Optional[int] = 5006,
+) -> None:
     """
     Start a Yomix interactive Bokeh server.
     Run the application in a background thread, serving the given
@@ -123,7 +134,11 @@ def start_server(xd, subsampling=None, title="", port=5006):
     _thread.start()
 
 
-def gen_modify_doc_xd(xd, subsampling, title):
+def gen_modify_doc_xd(
+    xd: anndata.AnnData,
+    subsampling: int,
+    title: str,
+) -> callable:
     """
     Preprocess an AnnData object and build a document factory.
 
@@ -139,7 +154,7 @@ def gen_modify_doc_xd(xd, subsampling, title):
             Title for the Bokeh document.
 
     Returns:
-        **modify_doc** (*callable*)
+        modify_doc (callable) :
             Function that accepts a Bokeh `Document` and populates it with
             interactive plots, controls, and analysis widgets.
     """
@@ -176,10 +191,10 @@ def gen_modify_doc_xd(xd, subsampling, title):
     xd.var = pd.concat([xd.var, pd.DataFrame(var_dict, index=xd.var.index)], axis=1)
     xd.uns["all_labels"] = all_labels_list
 
-    def var_mean_values(adata) -> np.ndarray:
+    def var_mean_values(adata: anndata.AnnData) -> np.ndarray:
         return np.squeeze(np.asarray(np.mean(adata.X, axis=0)))
 
-    def var_standard_deviations(adata) -> np.ndarray:
+    def var_standard_deviations(adata: anndata.AnnData) -> np.ndarray:
         return np.squeeze(np.asarray(np.std(adata.X, axis=0)))
 
     xd.var["mean_values_local_yomix"] = var_mean_values(xd)
