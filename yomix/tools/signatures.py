@@ -558,7 +558,6 @@ def signature_buttons(
         Returns:
             None
         """
-        print(feature_list)
         of_text = ""
         for i in range(len(feature_list)):
             of_text += feature_list[i] + "//yomix//"
