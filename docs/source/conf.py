@@ -44,9 +44,7 @@ sys.path.insert(0, abspath("../.."))
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
-    "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",  # before sphinx_autodoc_typehints
-    "sphinx_autodoc_typehints",
     "sphinx.ext.autosummary",  # summary table
     "sphinx.ext.intersphinx",
     "sphinx.ext.linkcode",
@@ -63,7 +61,8 @@ autodoc_inherit_docstrings = True  # if no docstring, inherit from base class
 set_type_checking_flag = True  # 'expensive' imports (sphinx_autodoc_typehints)
 nbsphinx_allow_errors = True  # continue through Jupyter errors
 add_module_names = False  # remove namespaces from class/method signatures
-autodoc_typehints = "description"
+napoleon_use_rtype = False
+autodoc_typehints = "none"
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 

@@ -56,7 +56,7 @@ def signature_buttons(
             Widget listing available group labels including Subset A and Subset B or Rest.
 
     Returns:
-        Tuple containing the Bokeh components created by this function:
+        Tuple containing the Bokeh components created by this function
             - **bt_sign1** (:class:`bokeh.models.Button`): Button to compute "A vs. Rest".
             - **bt_sign2** (:class:`bokeh.models.Button`): Button to compute "A vs. B".
             - **help_button1** (:class:`bokeh.models.HelpButton`): Help tooltip for `bt_sign1`.
@@ -66,7 +66,26 @@ def signature_buttons(
             - **signature_nr** (:class:`list`): List containing a single integer used to number the computed signatures sequentially.
     """  # noqa: E501
 
-    def wasserstein_distance(mu1, sigma1, mu2, sigma2):
+    def wasserstein_distance(
+        mu1: float, sigma1: float, mu2: float, sigma2: float
+    ) -> float:
+        """
+        Compute the Wasserstein distance between two Gaussian distributions.
+
+        Parameters:
+            mu1 : float
+                Mean of the first distribution.
+            sigma1 : float
+                Standard deviation of the first distribution.
+            mu2 : float
+                Mean of the second distribution.
+            sigma2 : float
+                Standard deviation of the second distribution.
+
+        Returns
+            float
+                The Wasserstein distance between the two distributions.
+        """
         mean_diff = mu1 - mu2
         std_diff = sigma1 - sigma2
         wasserstein = np.sqrt(mean_diff**2 + std_diff**2)
@@ -112,7 +131,39 @@ def signature_buttons(
             1.0 / (np.sqrt(2.0 * np.pi * var)) * np.exp(-((x - mu) ** 2) / (2.0 * var))
         )
 
-    def compute_signature(adata, means, stds, obs_indices_A, obs_indices_B=None):
+    def compute_signature(
+        adata: anndata.AnnData,
+        means: np.ndarray,
+        stds: np.ndarray,
+        obs_indices_A: list[int],
+        obs_indices_B: list[int] = None,
+    ) -> tuple[np.ndarray, dict, dict]:
+        """
+        Find the 20 best features to distinguish two subsets of data using Wasserstein
+        distance and MCC.
+
+        Parameters:
+            adata : anndata.AnnData
+                Annotated data matrix.
+            means : np.ndarray
+                Mean values for each feature.
+            stds : np.ndarray
+                Standard deviations for each feature.
+            obs_indices_A : list[int]
+                Indices of observations in group A.
+            obs_indices_B : list[int], optional
+                Indices of observations in group B. If None, compare A vs. rest.
+
+        Returns:
+            tuple
+                - new_selected_features: np.ndarray
+                    Indices of the top discriminative features.
+                - mcc_dict_abs: dict
+                    Dictionary mapping feature indices to absolute MCC scores.
+                - up_or_down_d: dict
+                    Dictionary mapping feature indices to "+" or "-" depending on
+                    correlation sign.
+        """
         # STEP 1: sort features using Wasserstein distances
 
         a2 = adata.X[obs_indices_A, :]
@@ -149,7 +200,23 @@ def signature_buttons(
         # Keep only 100 features:
         selected_features = sorted_features[:100]
 
-        def all_mcc(scores1, scores2):
+        def all_mcc(scores1: np.ndarray, scores2: np.ndarray) -> np.ndarray:
+            """
+            Compute Matthews Correlation Coefficient (MCC) scores for all
+            features between two groups.
+
+            Parameters
+            ----------
+            scores1 : np.ndarray
+                Array of feature values for group 1 (shape: n_features x n_samples1).
+            scores2 : np.ndarray
+                Array of feature values for group 2 (shape: n_features x n_samples2).
+
+            Returns
+            -------
+            np.ndarray
+                Array of MCC scores, the length of the array is the number of features.
+            """
             l1 = scores1.shape[1]
             l2 = scores2.shape[1]
 
@@ -165,8 +232,36 @@ def signature_buttons(
             ranks1 = ranks[:, :l1]
             ranks2 = ranks[:, l1:]
 
-            def matthews_c(a_, b_, c_, d_, l1_, l2_):
+            def matthews_c(
+                a_: np.ndarray,
+                b_: np.ndarray,
+                c_: np.ndarray,
+                d_: np.ndarray,
+                l1_: int,
+                l2_: int,
+            ) -> np.ndarray:
+                """
+                Compute the Matthews Correlation Coefficient given confusion matrices
+                values.
 
+                Parameters:
+                    a_ : np.ndarray
+                        True positives for each feature.
+                    b_ : np.ndarray
+                        False positives for each feature.
+                    c_ : np.ndarray
+                        False negatives for each feature.
+                    d_ : np.ndarray
+                        True negatives for each feature.
+                    l1_ : int
+                        Number of samples in group 1.
+                    l2_ : int
+                        Number of samples in group 2.
+
+                Returns:
+                    np.ndarray
+                        Array of MCC values for each feature.
+                """
                 max_value = np.maximum(l1_, l2_)
                 tp = a_ / max_value
                 fp = b_ / max_value
@@ -179,6 +274,19 @@ def signature_buttons(
                 return mcc
 
             def searchsorted2d(a_, b_):
+                """Vectorized search_sorted
+
+                Parameters:
+                    a_ : np.ndarray
+                        Array of sorted values (shape: n_features x n_samples1).
+                    b_ : np.ndarray
+                        Array of values to search for (shape: n_features x n_samples2).
+
+                Returns:
+                    np.ndarray
+                        Array of indices where elements of b_ should be inserted into
+                        a_ to maintain order.
+                """
                 m, n = a_.shape
                 max_num = np.maximum(a_.max(), b_.max()) + 1
                 r = max_num * np.arange(a_.shape[0])[:, None]
@@ -225,6 +333,7 @@ def signature_buttons(
         }
         return new_selected_features, mcc_dict_abs, up_or_down_d
 
+    # TODO remove redundancy (shrink_test is defined twice)
     def shrink_text(s_in, size):
         true_size = max(size, 3)
         if len(s_in) > true_size:
@@ -238,7 +347,40 @@ def signature_buttons(
             new_s = s_in
         return new_s
 
-    def sign_A_vs_rest(ad, obs_indices, dv, ms_sign, sign_nr, label_sign):
+    def sign_A_vs_rest(
+        ad: anndata.AnnData,
+        obs_indices: list[int],
+        dv: bokeh.models.Div,
+        ms_sign: bokeh.models.MultiSelect,
+        sign_nr: list[int],
+        label_sign: bokeh.models.MultiSelect,
+    ) -> None:
+        """
+        Compute a feature signature distinguishing two groups using Wasserstein
+        distance and MCC.
+
+        Parameters
+            adata : anndata.AnnData
+                Annotated data matrix.
+            means : np.ndarray
+                Mean values for each feature.
+            stds : np.ndarray
+                Standard deviations for each feature.
+            obs_indices_A : list[int]
+                Indices of observations in group A.
+            obs_indices_B : list[int], optional
+                Indices of observations in group B. If None, compare A vs. rest.
+
+        Returns
+            tuple
+                - new_selected_features: np.ndarray
+                    Indices of the top discriminative features.
+                - mcc_dict_abs: dict
+                    Dictionary mapping feature indices to absolute MCC scores.
+                - up_or_down_d: dict
+                    Dictionary mapping feature indices to "+" or "-" depending on
+                    correlation sign.
+        """
         if len(obs_indices) > 0 and len(obs_indices) < ad.n_obs:
             ms_sign.title = "..."
             label_sign.title = "..."
@@ -282,7 +424,37 @@ def signature_buttons(
             label_sign.title = "Groups"
             label_sign.value = ["[  Subset A  ]", "[  Rest  ]"]
 
-    def sign_A_vs_B(ad, obs_indices_A, obs_indices_B, dv, ms_sign, sign_nr, label_sign):
+    def sign_A_vs_B(
+        ad: anndata.AnnData,
+        obs_indices_A: list[int],
+        obs_indices_B: list[int],
+        dv: bokeh.models.Div,
+        ms_sign: bokeh.models.MultiSelect,
+        sign_nr: list[int],
+        label_sign: bokeh.models.MultiSelect,
+    ) -> None:
+        """
+        Compute and display the feature signature for "Subset A vs. Subset B".
+
+        Parameters:
+            ad : anndata.AnnData
+                Annotated data matrix.
+            obs_indices_A : list[int]
+                Indices of observations in subset A.
+            obs_indices_B : list[int]
+                Indices of observations in subset B.
+            dv : bokeh.models.Div
+                Div widget to display the signature summary.
+            ms_sign : bokeh.models.MultiSelect
+                MultiSelect widget to display the ranked features.
+            sign_nr : list[int]
+                List containing a single integer used to number the computed signatures.
+            label_sign : bokeh.models.MultiSelect
+                Widget for selecting group labels.
+
+        Returns:
+            None
+        """
         if (
             len(obs_indices_A) > 0
             and len(obs_indices_A) < ad.n_obs
@@ -346,7 +518,18 @@ def signature_buttons(
         width_policy="max",
     )
 
-    def multiselect_function(feature_list):
+    def multiselect_function(feature_list: list[str]) -> None:
+        """
+        Update the feature color input and groups widget based on
+        selected features.
+
+        Parameters:
+            feature_list : list[str]
+                List of selected feature names.
+
+        Returns:
+            None
+        """
         of_text = ""
         for i in range(len(feature_list)):
             if feature_list[i][0] == "+":
@@ -364,7 +547,18 @@ def signature_buttons(
         "value", lambda attr, old, new: multiselect_function(new)
     )
 
-    def label_function(feature_list):
+    def label_function(feature_list: list[str]) -> None:
+        """
+        Update the label input widget based on selected group labels.
+
+        Parameters:
+            feature_list : list[str]
+                List of selected group labels.
+
+        Returns:
+            None
+        """
+        print(feature_list)
         of_text = ""
         for i in range(len(feature_list)):
             of_text += feature_list[i] + "//yomix//"

@@ -154,7 +154,7 @@ def gen_modify_doc_xd(
             Title for the Bokeh document.
 
     Returns:
-        **modify_doc** (*callable*)
+        modify_doc (callable) :
             Function that accepts a Bokeh `Document` and populates it with
             interactive plots, controls, and analysis widgets.
     """
@@ -191,10 +191,10 @@ def gen_modify_doc_xd(
     xd.var = pd.concat([xd.var, pd.DataFrame(var_dict, index=xd.var.index)], axis=1)
     xd.uns["all_labels"] = all_labels_list
 
-    def var_mean_values(adata) -> np.ndarray:
+    def var_mean_values(adata: anndata.AnnData) -> np.ndarray:
         return np.squeeze(np.asarray(np.mean(adata.X, axis=0)))
 
-    def var_standard_deviations(adata) -> np.ndarray:
+    def var_standard_deviations(adata: anndata.AnnData) -> np.ndarray:
         return np.squeeze(np.asarray(np.std(adata.X, axis=0)))
 
     xd.var["mean_values_local_yomix"] = var_mean_values(xd)

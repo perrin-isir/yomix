@@ -77,13 +77,12 @@ def color_by_feature_value(
             unique values.
 
     Returns:
-        Tuple containing the Bokeh widgets created by this function:
-
-            - `offset_text_feature_color` (:class:`bokeh.models.TextInput`): Text input
+        Tuple containing the Bokeh widgets created by this function
+            - **offset_text_feature_color** (:class:`bokeh.models.TextInput`): Text input
               for entering feature names to color samples in the scatter plot.
-            - `offset_label` (:class:`bokeh.models.TextInput`): A hidden text input that
+            - **offset_label** (:class:`bokeh.models.TextInput`): A hidden text input that
               stores the group labels for generating violin/heatmap plots.
-    """
+    """  # noqa: E501
 
     source = points_bokeh_plot.select(dict(name="scatterplot"))[0].data_source
 
@@ -95,8 +94,32 @@ def color_by_feature_value(
         feature_dict[featname] = [i, feat_min[i], feat_max[i]]
 
     def color_modif(
-        stringval, htlc, rwi, hlw, label_stringval, resize_w, resize_h, bt_slider_range
-    ):
+        stringval: str,
+        htlc: bokeh.models.TextInput,
+        rwi: bokeh.models.TextInput,
+        hlw: bokeh.models.TextInput,
+        label_stringval: str,
+        resize_w: int,
+        resize_h: int,
+        bt_slider_range,
+    ) -> None:
+        """
+        Modifies color mapping and updates plot features based on the provided string value and selected labels.
+        This function parses the input string to extract positive and negative feature matches, updates the plot with selected features and labels,
+        computes new color values for the data source, and updates the color bar and slider range in the Bokeh plot.
+        Args:
+            stringval (str): The string representing feature modifications (e.g., "  +  feature1  -  feature2").
+            htlc: Hidden widget used internally to store selected label columns.
+            rwi: Input to set scatter plot's width.
+            hlw: Hidden widget storing computed legend width.
+            label_stringval (str): String containing selected labels, separated by "//yomix//".
+            resize_w (int): Width to resize the bottom plot (violin plot / heat map).
+            resize_h (int): Height to resize the bottom plot (violin plot / heat map).
+            bt_slider_range: Bokeh RangeSlider widget for color mapping adjustment.
+        Returns:
+            None
+        """  # noqa: E501
+
         stringval_modif = ("  +  " + stringval).replace("  +    -  ", "  -  ").replace(
             "  +    +  ", "  +  "
         ).replace("  +  ", "§§§§§§§§§§  +  ").replace(
@@ -179,7 +202,23 @@ def color_by_feature_value(
                     palette=viridis_colors, low=0.0, high=1.0
                 )
 
-                def simple_shrink(s_in, size):
+                def simple_shrink(s_in: str, size: int) -> str:
+                    """
+                    Shrink a string to a specified maximum size,
+                    adding ellipsis if needed.
+
+                    Parameters
+                    ----------
+                    s_in : str
+                        Input string to shrink.
+                    size : int
+                        Maximum allowed length for the string.
+
+                    Returns
+                    -------
+                    str
+                        The possibly shrunk string, with ellipsis if it was truncated.
+                    """
                     true_size = max(size, 3)
                     if len(s_in) > true_size:
                         new_s = ""
@@ -344,13 +383,50 @@ def plot_var(
 
     """
 
-    def get_kde(data, grid_points=100):
+    def get_kde(
+        data: np.ndarray, grid_points: int = 100
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Compute the kernel density estimate (KDE) for the given data.
+
+        Parameters:
+            data : np.ndarray
+                Array of data points to estimate the density for.
+            grid_points : int, optional
+                Number of points in the grid for KDE evaluation (default is 100).
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray]
+                x: The KDE values at each grid point.
+                y: The grid points over which the KDE is evaluated.
+        """
         kde = gaussian_kde(data)
         y = np.linspace(np.min(data), np.max(data), grid_points)
         x = kde(y)
         return x, y
 
-    def plot_violin_from_feat(xd, feat, labels, mode="violin"):
+    def plot_violin_from_feat(
+        xd: anndata.AnnData, feat: str, labels: List[str], mode: str = "violin"
+    ) -> dict:
+        """
+        Compute coordinates of points to draw for the plot (violin plot or heat map),
+        feature median expression per subset and corresponding colors
+
+        Parameters:
+            xd : anndata.AnnData
+                Annotated data matrix.
+            feat : str
+                Feature name to plot.
+            labels : List[str]
+                List of group labels to plot.
+            mode : str, optional
+                Plot mode, either "violin" or "heatmap" (default is "violin").
+
+        Returns:
+            Dictionary containing plot data for x, y, median expression,
+            and alpha values.
+        """
+
         data_tmp = {"x": [], "y": [], "median_expr": [], "alpha": []}
         step = 0
         labels_nr = len(labels)
@@ -425,7 +501,19 @@ def plot_var(
         data_tmp["alpha"].append(0.2)
         return data_tmp
 
-    def refresh_violin(vplot, mode="violin"):
+    def refresh_violin(vplot: bokeh.plotting.figure, mode: str = "violin") -> None:
+        """
+        Create or update a violin plot or heatmap for the selected features and labels.
+
+        Parameters:
+            vplot : bokeh.plotting.figure
+                The Bokeh figure to update.
+            mode : str, optional
+                Plot mode, either "violin" or "heatmap" (default is "violin").
+
+        Returns:
+            None
+        """
         data_tmp = {"x": [], "y": [], "median_expr": [], "alpha": []}
 
         step_yaxis = 0
