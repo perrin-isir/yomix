@@ -1,7 +1,7 @@
 How are signatures computed?
 =============================
 
-Signatures are computed using a **two-step filtering process** that identifies the **most discriminative features between two cell subsets** (Either A vs B or A vs Rest). This method combines distributional analysis with classification performance metrics to select features that are both statistically different and practically useful for distinguishing cell populations.
+Signatures are computed using a **two-step filtering process** that identifies the **most discriminative features between two sample subsets** (Either A vs B or A vs Rest). This method combines distributional analysis with classification performance metrics to select features that are both statistically different and practically useful for distinguishing sample populations.
 
 # Step-by-Step Process
 
@@ -12,7 +12,7 @@ Signatures are computed using a **two-step filtering process** that identifies t
 
 ```mermaid
 graph TD
-    A[Input: Two cell subsets] --> B[Step 1: Wasserstein Distance Filtering]
+    A[Input: Two sample subsets] --> B[Step 1: Wasserstein Distance Filtering]
     B --> C[Rank all features by Wasserstein distance]
     C --> D[Keep top 100 features]
     D --> E[Step 2: MCC Refinement]
@@ -42,7 +42,7 @@ def wasserstein_distance(mu1: float, sigma1: float, mu2: float, sigma2: float) -
     wasserstein = np.sqrt(mean_diff**2 + std_diff**2)
     return wasserstein
 ```
-The algorithm first computes group statistics for each feature, calculating mean and standard deviation for Group A and Group B (either a specific subset or the remaining cells). It then calculates the Wasserstein distance between distributions for each feature, ranks all features in descending order by Wasserstein distance, and selects the top 100 features with the highest distributional differences.
+The algorithm first computes group statistics for each feature, calculating mean and standard deviation for Group A and Group B (either a specific subset or the remaining samples). It then calculates the Wasserstein distance between distributions for each feature, ranks all features in descending order by Wasserstein distance, and selects the top 100 features with the highest distributional differences.
 
 ### Why Wasserstein Distance?
 **Wasserstein distance captures both location and scale differences**, being sensitive to changes in both mean and variance. It provides intuitive interpretation where higher values indicate more separated distributions, offers computational efficiency through closed-form solutions for Gaussian distributions, and demonstrates robustness by being less sensitive to outliers compared to KL divergence, chi-squared distance, or total variation distance.
@@ -112,13 +112,13 @@ directions = ["+", "-", "+"]
 ## Algorithm Advantages
 The two-stage filtering prevents multiple testing issues by reducing the search space from all features to just 100, then to 20, implemented as `selected_features = sorted_features[:100]` followed by `new_selected_features = new_selected_features[:20]`. The Wasserstein distance captures both mean and variance differences through `mean_diff = mu1 - mu2` and `std_diff = sigma1 - sigma2`, enabling detection of distributional changes beyond simple fold-change analysis. The algorithm uses vectorized operations throughout the MCC computation with `ranks = rankdata(all_scores, method="min", axis=1)` and processes all features simultaneously rather than using loops. The rank-based approach eliminates preprocessing requirements since `rankdata()` provides inherent scale invariance without needing log-transformation or z-scoring steps. 
 
-Finally, the algorithm produces interpretable gene signatures with directionality indicators (`"+"` or `"-"`) and quantitative MCC scores formatted as `"(MCC:{:.3f})"`, including feature names from `ad.var_names[outputs]` with their discriminative power, enabling us to identify both upregulated and downregulated markers for experimental follow-up.
+Finally, the algorithm produces interpretable feature signatures with directionality indicators (`"+"` or `"-"`) and quantitative MCC scores formatted as `"(MCC:{:.3f})"`, including feature names from `ad.var_names[outputs]` with their discriminative power, enabling us to identify both upregulated and downregulated markers for experimental follow-up.
 
 ## Usage Examples
 
 ### A vs Rest Comparison
 ```python
-# Compare subset A against all remaining cells
+# Compare subset A against all remaining samples
 signature, mcc_dict, directions = compute_signature(
     adata=adata,
     means=global_means,
