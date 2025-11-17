@@ -23,6 +23,7 @@ def setup_legend(
     resize_width_input: bokeh.models.TextInput,
     bt_slider_range: bokeh.models.RangeSlider,
     unique_dict: dict,
+    max_unique_labels: int,
 ) -> Tuple[
     bokeh.models.Select,
     bokeh.models.HelpButton,
@@ -54,6 +55,8 @@ def setup_legend(
             Slider for filtering samples based on a selected feature's value.
         unique_dict: dict
             Dictionary mapping field names to lists of unique values.
+        max_unique_labels: int
+            Maximum number of unique labels in an obs field to be considered as a group for violin plots and heatmaps.
 
     Returns:
         Tuple containing all the created Bokeh components
@@ -152,12 +155,18 @@ def setup_legend(
     )
 
     options = []
+    tooltip = bokeh.models.Tooltip(
+        content=f"Obs fields with more than {max_unique_labels} \
+            different values won't be displayed",
+        position="right",
+    )
     label_signature = bokeh.models.MultiSelect(
         title="Groups",
         options=options,
         width=235,
         max_width=235,
         width_policy="max",
+        description=tooltip,
     )
     label_signature.visible = False
 
