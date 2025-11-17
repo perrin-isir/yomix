@@ -277,7 +277,6 @@ def gen_modify_doc_xd(
 
                 (
                     select_color_by,
-                    help_color_by,
                     hidden_text_label_column,
                     hidden_legend_width,
                     select_field,
@@ -436,7 +435,6 @@ def gen_modify_doc_xd(
                                 bokeh.layouts.column(
                                     bokeh.layouts.row(
                                         select_color_by,
-                                        help_color_by,
                                         sample_search_input,
                                     ),
                                     bokeh.layouts.row(
@@ -481,7 +479,6 @@ def gen_modify_doc_xd(
                                 bokeh.layouts.column(
                                     bokeh.layouts.row(
                                         select_color_by,
-                                        help_color_by,
                                         sample_search_input,
                                     ),
                                     bokeh.layouts.row(

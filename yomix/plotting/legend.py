@@ -26,7 +26,6 @@ def setup_legend(
     max_unique_labels: int,
 ) -> Tuple[
     bokeh.models.Select,
-    bokeh.models.HelpButton,
     bokeh.models.TextInput,
     bokeh.models.TextInput,
     bokeh.models.Select,
@@ -61,7 +60,6 @@ def setup_legend(
     Returns:
         Tuple containing all the created Bokeh components
             - **select_color_by** (:class:`bokeh.models.Select`): Dropdown menu for choosing a coloring field, its values will be added in the legend.
-            - **help_button** (:class:`bokeh.models.HelpButton`): A help tooltip for the select widget.
             - **hidden_text_label_column** (:class:`bokeh.models.TextInput`): A hidden widget that triggers the color update via JavaScript.
             - **hidden_legend_width** (:class:`bokeh.models.TextInput`): A hidden widget that stores the current width of the legend.
             - **select_field** (:class:`bokeh.models.Select`):  Dropdown menu in the legend for selecting a group from a field with many unique values.
@@ -561,17 +559,20 @@ def setup_legend(
         ),
     )
 
-    # menu = [(o_c, o_c) for o_c in obs_string + obs_numerical]
-    menu = obs_string + obs_string_many + obs_numerical
-    select_color_by = bokeh.models.Select(
-        title="Color by (select field):", value="", options=menu, width=235
-    )
     tooltip = bokeh.models.Tooltip(
         content="Categorical fields are treated differently when they have many "
         "different unique items (more than 40).\u00A0\u00A0",
         position="right",
     )
-    help_button = bokeh.models.HelpButton(tooltip=tooltip, margin=(21, 0, 3, 0))
+
+    menu = obs_string + obs_string_many + obs_numerical
+    select_color_by = bokeh.models.Select(
+        title="Color by (select field):",
+        value="",
+        options=menu,
+        width=235,
+        description=tooltip,
+    )
 
     select_color_by.on_change(
         "value",
@@ -594,7 +595,6 @@ def setup_legend(
 
     return (
         select_color_by,
-        help_button,
         hidden_text_label_column,
         hidden_legend_width,
         select_field,
