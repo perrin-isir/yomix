@@ -39,6 +39,7 @@ _io_loop = None
 _thread = None
 _server = None
 _first_start_done = None
+MAX_UNIQUE_LABELS = 100
 
 
 def gen_modify_doc(
@@ -183,11 +184,12 @@ def gen_modify_doc_xd(
 
     for lbl in sorted(obs_string_init):
         labels = np.array(list(dict.fromkeys(xd.obs[str(lbl)])))
-        all_labels_list += [(str(lbl), str(elt)) for elt in sorted(labels)]
-        for elt in labels:
-            var_dict["yomix_median_" + str(lbl) + ">>yomix>>" + str(elt)] = -np.ones(
-                xd.n_vars
-            )
+        if len(labels) < MAX_UNIQUE_LABELS:
+            for elt in sorted(labels):
+                var_dict["yomix_median_" + str(lbl) + ">>yomix>>" + str(elt)] = (
+                    -np.ones(xd.n_vars)
+                )
+                all_labels_list.append((str(lbl), str(elt)))
     xd.var = pd.concat([xd.var, pd.DataFrame(var_dict, index=xd.var.index)], axis=1)
     xd.uns["all_labels"] = all_labels_list
 
@@ -275,7 +277,6 @@ def gen_modify_doc_xd(
 
                 (
                     select_color_by,
-                    help_color_by,
                     hidden_text_label_column,
                     hidden_legend_width,
                     select_field,
@@ -289,6 +290,7 @@ def gen_modify_doc_xd(
                     resize_width_input,
                     bt_slider_range,
                     unique_dict,
+                    MAX_UNIQUE_LABELS,
                 )
 
                 offset_text_feature_color, offset_label = (
@@ -433,7 +435,6 @@ def gen_modify_doc_xd(
                                 bokeh.layouts.column(
                                     bokeh.layouts.row(
                                         select_color_by,
-                                        help_color_by,
                                         sample_search_input,
                                     ),
                                     bokeh.layouts.row(
@@ -478,7 +479,6 @@ def gen_modify_doc_xd(
                                 bokeh.layouts.column(
                                     bokeh.layouts.row(
                                         select_color_by,
-                                        help_color_by,
                                         sample_search_input,
                                     ),
                                     bokeh.layouts.row(
