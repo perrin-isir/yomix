@@ -4,6 +4,10 @@
 
 [![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+LATEST RELEASE: see [https://pypi.org/project/yomix/](https://pypi.org/project/yomix/)
+
+DOCUMENTATION: [https://perrin-isir.github.io/yomix/](https://perrin-isir.github.io/yomix/)
+
 Yomix is an interactive tool to explore low dimensional embeddings of omics data.
 
 As illustrated in the GIF below, users can explore embeddings—typically generated using dimensionality reduction techniques such as UMAP, t-SNE, TriMap, or VAEs. Within these visualizations, users can identify clusters of interest and use a lasso tool to define specific subsets. Yomix can then compute gene signatures for these subsets almost instantaneously. For instance, it can identify gene signatures that best distinguish subset A from the rest of the data, differentiate subset A from subset B, or find genes whose expression levels are most strongly correlated with a user-defined direction within subset A.
