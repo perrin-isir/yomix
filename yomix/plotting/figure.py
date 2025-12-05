@@ -144,24 +144,20 @@ def main_figure(
 
     """  # noqa: E501
 
+    # removing obs columns with nan values
     everything = [
-        x for x in list(adata.obs.select_dtypes(include=["category", "object"]).keys())
-    ]
-    unique_dict = {}
-    for elt in everything:
-        unique_dict[elt] = list(np.unique(adata.obs[elt]))
-
-    obs_string = [
         x
         for x in list(adata.obs.select_dtypes(include=["category", "object"]).keys())
-        if check_obs_field(unique_dict, x)
+        if not adata.obs[x].isnull().values.any()
     ]
-    obs_string_many = [
-        x
-        for x in list(adata.obs.select_dtypes(include=["category", "object"]).keys())
-        if x not in obs_string
+    unique_dict = {elt: list(np.unique(adata.obs[elt])) for elt in everything}
+    obs_string = [x for x in unique_dict.keys() if check_obs_field(unique_dict, x)]
+    obs_string_many = [x for x in unique_dict.keys() if x not in obs_string]
+    obs_numerical = [
+        col
+        for col in list(adata.obs.select_dtypes(np.number).keys())
+        if not adata.obs[col].isnull().values.any()
     ]
-    obs_numerical = list(adata.obs.select_dtypes(np.number).keys())
 
     embedding_size = adata.obsm[embedding_key].shape[1]
 
