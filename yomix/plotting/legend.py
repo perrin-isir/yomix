@@ -88,9 +88,7 @@ def setup_legend(
             code="""
         const udicts = JSON.parse(obs.data['unique_dict'][0]);
         if (obs.data["obss"].includes(this.value)) {
-            console.log("test")
             const data = source.data;
-            console.log(udicts[this.value])
             var unique = udicts[this.value];
             var l_values = new Array(unique.length).fill(0);
             const step = 1./(Math.max(unique.length - 1, 1)) * 0.999999;
@@ -106,7 +104,6 @@ def setup_legend(
             source.change.emit();
         }
         if (obs.data["obsm"].includes(this.value)) {
-            console.log("if 2")
             const data = source.data;
             var unique = udicts[this.value];
             var l_values = new Array(unique.length).fill(0);
@@ -514,7 +511,6 @@ def setup_legend(
             ),
             code="""
         const smd = source_modif.data;
-        console.log(smd)
         const data = source.data;
         const labels = data[htlc_bis.value];
         if (smd["ctrl"][0] == 1) {
