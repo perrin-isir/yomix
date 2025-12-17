@@ -357,7 +357,6 @@ def color_by_feature_value(
         if input not in adata.obs.columns:
             adata.obs[input] = ["not_annotated" for i in range(len(adata.obs_names))]
             select_color_by.options.append(input)
-            print(adata.obs.columns)
             update_variables(input)
             # set annotate button visible
         else:
@@ -371,7 +370,6 @@ def color_by_feature_value(
 
     def label_input_handler(source, input):
         if input != "":
-            print(f"annotating field {annotate_dropdown.value} with label {input}")
             adata.obs[annotate_dropdown.value] = [
                 (
                     input

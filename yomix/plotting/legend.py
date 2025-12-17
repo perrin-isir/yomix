@@ -514,6 +514,7 @@ def setup_legend(
             ),
             code="""
         const smd = source_modif.data;
+        console.log(smd)
         const data = source.data;
         const labels = data[htlc_bis.value];
         if (smd["ctrl"][0] == 1) {
