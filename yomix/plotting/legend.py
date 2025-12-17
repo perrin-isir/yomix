@@ -11,14 +11,15 @@ from pathlib import Path
 from PIL import ImageFont
 import re
 from bokeh.models import InlineStyleSheet
-from typing import Tuple, List
+from typing import Tuple
 
 
 def setup_legend(
     pb_plot: bokeh.plotting.figure,
-    obs_string: List[str],
-    obs_string_many: List[str],
-    obs_numerical: List[str],
+    # obs_string: List[str],
+    # obs_string_many: List[str],
+    # obs_numerical: List[str],
+    obs_source: bokeh.models.ColumnDataSource,
     source_rotmatrix_etc: bokeh.models.ColumnDataSource,
     resize_width_input: bokeh.models.TextInput,
     bt_slider_range: bokeh.models.RangeSlider,
@@ -77,13 +78,35 @@ def setup_legend(
         bokeh.models.CustomJS(
             args=dict(
                 source=source,
-                udicts=unique_dict,
-                obss=obs_string,
-                obsm=obs_string_many,
-                obsn=obs_numerical,
+                # udicts=unique_dict,
+                obs=obs_source,
+                # obss=obs_string,
+                # obsm=obs_string_many,
+                # obsn=obs_numerical,
             ),
+            # TODO: update obss
             code="""
-        if (obss.includes(this.value)) {
+        const udicts = JSON.parse(obs.data['unique_dict'][0]);
+        if (obs.data["obss"].includes(this.value)) {
+            console.log("test")
+            const data = source.data;
+            console.log(udicts[this.value])
+            var unique = udicts[this.value];
+            var l_values = new Array(unique.length).fill(0);
+            const step = 1./(Math.max(unique.length - 1, 1)) * 0.999999;
+            var l_values_dict = {};
+            l_values_dict[unique[0]] = -1.;
+            for (let i = 1; i < l_values.length; i++) {
+                l_values[i] = l_values[i-1] + step;
+                l_values_dict[unique[i]] = l_values[i]-1.;
+            }
+            for (let i = 0; i < data["color"].length; i++) {
+                data["color"][i] = l_values_dict[data[this.value][i]];
+            }
+            source.change.emit();
+        }
+        if (obs.data["obsm"].includes(this.value)) {
+            console.log("if 2")
             const data = source.data;
             var unique = udicts[this.value];
             var l_values = new Array(unique.length).fill(0);
@@ -99,23 +122,7 @@ def setup_legend(
             }
             source.change.emit();
         }
-        if (obsm.includes(this.value)) {
-            const data = source.data;
-            var unique = udicts[this.value];
-            var l_values = new Array(unique.length).fill(0);
-            const step = 1./(Math.max(unique.length - 1, 1)) * 0.999999;
-            var l_values_dict = {};
-            l_values_dict[unique[0]] = -1.;
-            for (let i = 1; i < l_values.length; i++) {
-                l_values[i] = l_values[i-1] + step;
-                l_values_dict[unique[i]] = l_values[i]-1.;
-            }
-            for (let i = 0; i < data["color"].length; i++) {
-                data["color"][i] = l_values_dict[data[this.value][i]];
-            }
-            source.change.emit();
-        }
-        if (obsn.includes(this.value)) {
+        if (obs.data["obsn"].includes(this.value)) {
             const data = source.data;
             var max_val = Math.max(...data[this.value]);
             var min_val = Math.min(...data[this.value]);
@@ -179,8 +186,8 @@ def setup_legend(
         legend_dict: dict,
         rwi: bokeh.models.TextInput,
         obs_s: list[str],
-        obs_s_many: list[str],
-        obs_n: list[str],
+        # obs_s_many: list[str],
+        # obs_n: list[str],
         bt_slider_range: bokeh.models.RangeSlider,
     ) -> None:
         """
@@ -224,8 +231,10 @@ def setup_legend(
         Returns:
             None
         """
+        # TODO need to refresh legend
+        print(legend_dict)
         label_signature.visible = False
-        if obs_col in obs_s:
+        if obs_col in obs_s.data["obss"]:
             s_field.visible = False
             bokeh_plot.right = []
             htlc.value = obs_col
@@ -347,7 +356,7 @@ def setup_legend(
                 rwi.value = str(int(bokeh_plot.width - float(hlw.value) + legend_width))
                 hlw.value = str(int(legend_width))
                 legend_dict[obs_col] = (legend_list, legend_width)
-        elif obs_col in obs_s_many:
+        elif obs_col in obs_s.data["obsm"]:
             bokeh_plot.right = []
             htlc.value = obs_col
             htlcbis.value = obs_col
@@ -357,7 +366,7 @@ def setup_legend(
             s_field.options = [""] + unique_dict[obs_col]
             s_field.visible = True
         bt_slider_range.visible = False
-        if obs_col in obs_n:
+        if obs_col in obs_s.data["obsn"]:
             # s_field.visible = False
             if bokeh_plot.right:
                 decrement = float(bokeh_plot.right[0].name)
@@ -565,7 +574,7 @@ def setup_legend(
         position="right",
     )
 
-    menu = obs_string + obs_string_many + obs_numerical
+    menu = obs_source.data["obss"] + obs_source.data["obsm"] + obs_source.data["obsn"]
     select_color_by = bokeh.models.Select(
         title="Color by (select field):",
         value="",
@@ -586,9 +595,7 @@ def setup_legend(
             new,
             legend_dict,
             resize_width_input,
-            obs_string,
-            obs_string_many,
-            obs_numerical,
+            obs_source,
             bt_slider_range,
         ),
     )

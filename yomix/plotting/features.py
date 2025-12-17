@@ -38,6 +38,7 @@ def color_by_feature_value(
     resize_h_input: bokeh.models.TextInput,
     bt_slider_range: bokeh.models.RangeSlider,
     select_field: bokeh.models.Select,
+    update_variables,
 ) -> Tuple[bokeh.models.TextInput, bokeh.models.TextInput]:
     """
     Set up widgets and callbacks for coloring points by feature value. Update the plot
@@ -337,7 +338,69 @@ def color_by_feature_value(
         ),
     )
 
-    return offset_text_feature_color, offset_label
+    annotation_input = bokeh.models.TextInput(
+        value="",
+        title="Start annotating (enter new annotation name):",
+        name="annotation_input",
+        width=325,
+    )
+
+    label_input = bokeh.models.TextInput(
+        value="",
+        title="Enter new label:",
+        name="label_input",
+        width=325,
+    )
+    bt_create_label = bokeh.models.Button(label="Create new label")
+
+    def annotation_input_handler(input):
+        if input not in adata.obs.columns:
+            adata.obs[input] = ["not_annotated" for i in range(len(adata.obs_names))]
+            select_color_by.options.append(input)
+            print(adata.obs.columns)
+            update_variables(input)
+            # set annotate button visible
+        else:
+            # TODO add warning
+            print("send warning, col name already exists")
+
+    # TODO reset title and description
+    annotate_dropdown = select_color_by.clone()
+    annotate_dropdown.title = "Select field to annotate:"
+    annotate_dropdown.description = ""
+
+    def label_input_handler(source, input):
+        if input != "":
+            print(f"annotating field {annotate_dropdown.value} with label {input}")
+            adata.obs[annotate_dropdown.value] = [
+                (
+                    input
+                    if i in source.selected.indices
+                    else adata.obs[annotate_dropdown.value].iloc[i]
+                )
+                for i in range(len(adata.obs_names))
+            ]
+            update_variables(annotate_dropdown.value)
+        else:
+            print("empty label")
+
+    bt_create_field = bokeh.models.Button(label="Create new field")
+    bt_create_field.on_click(
+        lambda event: annotation_input_handler(annotation_input.value)
+    )
+    bt_create_label.on_click(
+        lambda event: label_input_handler(source, label_input.value)
+    )
+
+    return (
+        offset_text_feature_color,
+        offset_label,
+        annotation_input,
+        bt_create_field,
+        annotate_dropdown,
+        label_input,
+        bt_create_label,
+    )
 
 
 def plot_var(

@@ -15,7 +15,7 @@
 
 # - Managing the data sources and handling updates based on user interactions.
 # """
-
+import json
 import numpy as np
 import bokeh.models
 import re
@@ -1661,13 +1661,20 @@ def main_figure(
         ),
     )
 
+    obs_source = bokeh.models.ColumnDataSource(
+        dict(
+            obss=obs_string,
+            obsm=obs_string_many,
+            obsn=obs_numerical,
+            unique_dict=[json.dumps(unique_dict)],
+        )
+    )
+
     if higher_dim:
         return (
             original_keys,
             unique_dict,
-            obs_string,
-            obs_string_many,
-            obs_numerical,
+            obs_source,
             points_bokeh_plot,
             violin_plot,
             heatmap_plot,
@@ -1693,9 +1700,7 @@ def main_figure(
         return (
             original_keys,
             unique_dict,
-            obs_string,
-            obs_string_many,
-            obs_numerical,
+            obs_source,
             points_bokeh_plot,
             violin_plot,
             heatmap_plot,

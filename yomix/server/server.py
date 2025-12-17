@@ -16,6 +16,7 @@ Considered as the central hub, it is responsible for:
    within interactive environments like Jupyter notebooks.
 """
 
+import json
 import yomix.plotting
 import yomix.tools
 import bokeh.layouts
@@ -232,9 +233,7 @@ def gen_modify_doc_xd(
                 (
                     original_keys,
                     unique_dict,
-                    obs_string,
-                    obs_string_many,
-                    obs_numerical,
+                    obs_source,
                     points_bokeh_plot,
                     violins_bokeh_plot,
                     heat_map,
@@ -283,9 +282,7 @@ def gen_modify_doc_xd(
                     label_signature,
                 ) = yomix.plotting.setup_legend(
                     points_bokeh_plot,
-                    obs_string,
-                    obs_string_many,
-                    obs_numerical,
+                    obs_source,
                     source_rotmatrix_etc,
                     resize_width_input,
                     bt_slider_range,
@@ -293,23 +290,57 @@ def gen_modify_doc_xd(
                     MAX_UNIQUE_LABELS,
                 )
 
-                offset_text_feature_color, offset_label = (
-                    yomix.plotting.color_by_feature_value(
-                        points_bokeh_plot,
-                        violins_bokeh_plot,
-                        heat_map,
-                        xd,
-                        select_color_by,
-                        hidden_text_label_column,
-                        resize_width_input,
-                        hidden_legend_width,
-                        hidden_checkbox_A,
-                        hidden_checkbox_B,
-                        resize_width_input_bis,
-                        resize_height_input_bis,
-                        bt_slider_range,
-                        select_field,
+                scatter = points_bokeh_plot.select_one(dict(name="scatterplot"))
+                source = scatter.data_source
+                download_button = download_selected_button(source, original_keys)
+                load_button = csv_load_button(source)
+
+                def update_variables(obs_col) -> None:
+                    old = obs_source.data
+                    # print(new_value)
+                    everything = [
+                        x
+                        for x in list(
+                            xd.obs.select_dtypes(include=["category", "object"]).keys()
+                        )
+                    ]
+                    unique_dict = {}
+                    for elt in everything:
+                        unique_dict[elt] = list(np.unique(xd.obs[elt]))
+                    obs_source.data = dict(
+                        dict(
+                            obss=old["obss"] + [obs_col],
+                            obsm=old["obsm"],
+                            obsn=old["obsn"],
+                            unique_dict=[json.dumps(unique_dict)],
+                        )
                     )
+                    source.data[obs_col] = np.asarray(xd.obs[obs_col])
+
+                (
+                    offset_text_feature_color,
+                    offset_label,
+                    annotation,
+                    bt_create_field,
+                    field_to_annotate,
+                    label_input,
+                    bt_create_label,
+                ) = yomix.plotting.color_by_feature_value(
+                    points_bokeh_plot,
+                    violins_bokeh_plot,
+                    heat_map,
+                    xd,
+                    select_color_by,
+                    hidden_text_label_column,
+                    resize_width_input,
+                    hidden_legend_width,
+                    hidden_checkbox_A,
+                    hidden_checkbox_B,
+                    resize_width_input_bis,
+                    resize_height_input_bis,
+                    bt_slider_range,
+                    select_field,
+                    update_variables,
                 )
                 offset_label.visible = False
 
@@ -388,12 +419,6 @@ def gen_modify_doc_xd(
                         TabPanel(child=heat_map, title="Heatmap"),
                     ]
                 )
-
-                scatter = points_bokeh_plot.select_one(dict(name="scatterplot"))
-                source = scatter.data_source
-                download_button = download_selected_button(source, original_keys)
-                load_button = csv_load_button(source)
-
                 p = bokeh.layouts.row(
                     bokeh.layouts.column(
                         bt_select_embedding,
@@ -440,6 +465,10 @@ def gen_modify_doc_xd(
                                     bokeh.layouts.row(
                                         offset_text_feature_color, bt_open_link
                                     ),
+                                    bokeh.layouts.row(annotation, bt_create_field),
+                                    bokeh.layouts.row(
+                                        field_to_annotate, label_input, bt_create_label
+                                    ),
                                 ),
                             ),
                             bokeh.layouts.column(
@@ -483,6 +512,10 @@ def gen_modify_doc_xd(
                                     ),
                                     bokeh.layouts.row(
                                         offset_text_feature_color, bt_open_link
+                                    ),
+                                    bokeh.layouts.row(annotation, bt_create_field),
+                                    bokeh.layouts.row(
+                                        field_to_annotate, label_input, bt_create_label
                                     ),
                                 ),
                             ),
