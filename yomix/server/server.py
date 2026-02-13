@@ -20,7 +20,7 @@ import yomix.plotting
 import yomix.tools
 import bokeh.layouts
 from bokeh.models import TabPanel, Tabs
-from yomix.tools.download import download_selected_button, csv_load_button
+from yomix.tools.download import download_selected_button, csv_load_button, add_label_button
 import yomix
 import numpy as np
 import anndata
@@ -393,6 +393,7 @@ def gen_modify_doc_xd(
                 source = scatter.data_source
                 download_button = download_selected_button(source, original_keys)
                 load_button = csv_load_button(source)
+                label_button = add_label_button(source, select_color_by, unique_dict)
 
                 p = bokeh.layouts.row(
                     bokeh.layouts.column(
@@ -407,6 +408,7 @@ def gen_modify_doc_xd(
                             bt_nothing,
                         ),
                         bokeh.layouts.row(download_button, load_button),
+                        label_button,
                         bokeh.layouts.row(bt_sign1, help1),
                         bokeh.layouts.row(bt_sign2, help2),
                         bokeh.layouts.row(bt_sign3, help3),
