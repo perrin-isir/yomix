@@ -87,6 +87,77 @@ def csv_load_button(
     return button
 
 
+def add_label_button(
+    source: bokeh.models.ColumnDataSource,
+    select_color_by: bokeh.models.Select,
+    unique_dict: dict,
+) -> bokeh.models.Button:
+    """
+    Create a button to add a custom label to selected points.
+
+    This allows users to assign a user-defined label to the currently
+    selected points. The labels are stored in the "custom_label" field
+    of the data source and can be used for coloring points via the
+    "Color by" dropdown menu.
+
+    Args:
+        source : bokeh.models.ColumnDataSource
+            Data source containing the data points.
+        select_color_by : bokeh.models.Select
+            The dropdown menu for selecting color-by field. Custom labels
+            will be added to this dropdown.
+        unique_dict : dict
+            Dictionary mapping field names to their unique values.
+
+    Returns:
+        ``Add label`` button (:class:`bokeh.models.Button`) :
+            On click, it prompts for a label name and assigns it to
+            selected points.
+    """
+
+    button = Button(label="Add label", button_type="warning", width=112)
+
+    callback = CustomJS(
+        args=dict(source=source, select_color_by=select_color_by, unique_dict=unique_dict),
+        code="""
+        const inds = source.selected.indices;
+        if (inds.length === 0) {
+            alert('No points selected! Please select points first using the lasso tool.');
+            return;
+        }
+
+        const labelName = prompt('Enter a label name for the selected points:');
+        if (!labelName || labelName.trim() === '') {
+            return;
+        }
+
+        const trimmedLabel = labelName.trim();
+        const data = source.data;
+
+        // Assign the label to selected points
+        for (let i = 0; i < inds.length; i++) {
+            data['custom_label'][inds[i]] = trimmedLabel;
+        }
+
+        // Update the unique_dict for custom_label
+        const customLabels = new Set(data['custom_label']);
+        unique_dict['custom_label'] = Array.from(customLabels).sort();
+
+        // Add "custom_label" to the dropdown if not already there
+        const currentOptions = select_color_by.options;
+        if (!currentOptions.includes('custom_label')) {
+            select_color_by.options = ['custom_label'].concat(currentOptions);
+        }
+
+        source.change.emit();
+        alert('Label "' + trimmedLabel + '" assigned to ' + inds.length + ' points.\\nYou can now select "custom_label" in the "Color by" dropdown to visualize it.');
+    """,
+    )
+
+    button.js_on_click(callback)
+    return button
+
+
 def download_selected_button(
     source: bokeh.models.ColumnDataSource,
     original_keys: list[str],
