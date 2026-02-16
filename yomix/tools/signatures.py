@@ -327,7 +327,6 @@ def signature_buttons(
         mcc_dict_abs = dict(
             map(lambda i, j: (i, j), selected_features, np.abs(mccs).flatten())
         )
-        new_selected_features = new_selected_features[:20]
         up_or_down_d = {
             ft: ("-" if mcc_dict[ft] > 0.0 else "+") for ft in new_selected_features
         }
