@@ -83,6 +83,25 @@ def setup_legend(
                 obsn=obs_numerical,
             ),
             code="""
+        // Handle custom_label field (user-defined labels)
+        if (this.value === 'custom_label') {
+            const data = source.data;
+            // Get unique values from the custom_label field
+            var unique = [...new Set(data['custom_label'])].sort();
+            udicts['custom_label'] = unique;
+            var l_values = new Array(unique.length).fill(0);
+            const step = 1./(Math.max(unique.length - 1, 1)) * 0.999999;
+            var l_values_dict = {};
+            l_values_dict[unique[0]] = -1.;
+            for (let i = 1; i < l_values.length; i++) {
+                l_values[i] = l_values[i-1] + step;
+                l_values_dict[unique[i]] = l_values[i]-1.;
+            }
+            for (let i = 0; i < data["color"].length; i++) {
+                data["color"][i] = l_values_dict[data['custom_label'][i]];
+            }
+            source.change.emit();
+        }
         if (obss.includes(this.value)) {
             const data = source.data;
             var unique = udicts[this.value];
@@ -225,11 +244,15 @@ def setup_legend(
             None
         """
         label_signature.visible = False
-        if obs_col in obs_s:
+        # Handle custom_label (user-defined labels) - treat like obs_s
+        if obs_col == 'custom_label' or obs_col in obs_s:
             s_field.visible = False
             bokeh_plot.right = []
             htlc.value = obs_col
             htlcbis.value = obs_col
+            # For custom_label, always regenerate the legend (labels can change dynamically)
+            if obs_col == 'custom_label' and obs_col in legend_dict:
+                del legend_dict[obs_col]
             if obs_col in legend_dict:
                 legend_list = legend_dict[obs_col][0]
                 for legend in legend_list:
@@ -565,7 +588,8 @@ def setup_legend(
         position="right",
     )
 
-    menu = obs_string + obs_string_many + obs_numerical
+    # Add custom_label to menu for user-defined labels
+    menu = ["custom_label"] + obs_string + obs_string_many + obs_numerical
     select_color_by = bokeh.models.Select(
         title="Color by (select field):",
         value="",
