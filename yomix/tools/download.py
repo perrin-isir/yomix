@@ -91,71 +91,66 @@ def add_label_button(
     source: bokeh.models.ColumnDataSource,
     select_color_by: bokeh.models.Select,
     unique_dict: dict,
-) -> bokeh.models.Button:
+) -> tuple[bokeh.models.TextInput, bokeh.models.Button]:
     """
-    Create a button to add a custom label to selected points.
+    Create a text input and button to assign a custom label to selected points.
 
-    This allows users to assign a user-defined label to the currently
-    selected points. The labels are stored in the "custom_label" field
-    of the data source and can be used for coloring points via the
-    "Color by" dropdown menu.
+    The text input accepts the desired label name; clicking the button
+    applies it to all currently selected points via a server-side callback,
+    so the data update and legend rebuild are always in sync (no race
+    conditions between client-side patches and server-side callbacks).
+
+    The labels are stored in the ``"custom_label"`` field of the data
+    source and can be visualised via the "Color by" dropdown menu.
 
     Args:
         source : bokeh.models.ColumnDataSource
             Data source containing the data points.
         select_color_by : bokeh.models.Select
-            The dropdown menu for selecting color-by field. Custom labels
-            will be added to this dropdown.
+            The "Color by" dropdown menu.
         unique_dict : dict
             Dictionary mapping field names to their unique values.
 
     Returns:
-        ``Add label`` button (:class:`bokeh.models.Button`) :
-            On click, it prompts for a label name and assigns it to
-            selected points.
+        Tuple containing:
+            - **label_input** (:class:`bokeh.models.TextInput`): Text input for the label name.
+            - **button** (:class:`bokeh.models.Button`): "(Re)label selection" button.
     """
 
-    button = Button(label="Add label", button_type="warning", width=112)
-
-    callback = CustomJS(
-        args=dict(source=source, select_color_by=select_color_by, unique_dict=unique_dict),
-        code="""
-        const inds = source.selected.indices;
-        if (inds.length === 0) {
-            alert('No points selected! Please select points first using the lasso tool.');
-            return;
-        }
-
-        const labelName = prompt('Enter a label name for the selected points:');
-        if (!labelName || labelName.trim() === '') {
-            return;
-        }
-
-        const trimmedLabel = labelName.trim();
-        const data = source.data;
-
-        // Assign the label to selected points
-        for (let i = 0; i < inds.length; i++) {
-            data['custom_label'][inds[i]] = trimmedLabel;
-        }
-
-        // Update the unique_dict for custom_label
-        const customLabels = new Set(data['custom_label']);
-        unique_dict['custom_label'] = Array.from(customLabels).sort();
-
-        // Add "custom_label" to the dropdown if not already there
-        const currentOptions = select_color_by.options;
-        if (!currentOptions.includes('custom_label')) {
-            select_color_by.options = ['custom_label'].concat(currentOptions);
-        }
-
-        source.change.emit();
-        alert('Label "' + trimmedLabel + '" assigned to ' + inds.length + ' points.\\nYou can now select "custom_label" in the "Color by" dropdown to visualize it.');
-    """,
+    label_input = bokeh.models.TextInput(
+        placeholder="Enter label name...",
+        width=235,
     )
 
-    button.js_on_click(callback)
-    return button
+    button = Button(label="(Re)label selection", button_type="warning", width=120)
+
+    def apply_label():
+        label_name = label_input.value.strip()
+        if not label_name:
+            return
+        inds = list(source.selected.indices)
+        if not inds:
+            return
+
+        # Patch the data source server-side so the legend rebuild that follows
+        # always reads the already-updated data (no client→server race condition).
+        source.patch({"custom_label": [(i, label_name) for i in inds]})
+
+        # Refresh unique_dict so redefine_custom_legend sees the new label set.
+        unique_dict["custom_label"] = sorted(set(source.data["custom_label"].tolist()))
+
+        # Ensure 'custom_label' is in the dropdown options.
+        if "custom_label" not in list(select_color_by.options):
+            select_color_by.options = ["custom_label"] + list(select_color_by.options)
+
+        # Trigger legend rebuild.  Toggle away first so on_change fires even
+        # when the dropdown was already showing 'custom_label'.
+        if select_color_by.value == "custom_label":
+            select_color_by.value = ""
+        select_color_by.value = "custom_label"
+
+    button.on_click(apply_label)
+    return label_input, button
 
 
 def download_selected_button(
@@ -211,3 +206,147 @@ def download_selected_button(
         )
     )
     return button
+
+
+def save_labels_button(
+    source: bokeh.models.ColumnDataSource,
+) -> bokeh.models.Button:
+    """
+    Create a button to save custom labels to a CSV file.
+
+    Args:
+        source : bokeh.models.ColumnDataSource
+            Data source containing the custom_label field.
+
+    Returns:
+        ``Save labels`` button (:class:`bokeh.models.Button`) :
+            On click, it downloads all points with their custom labels as a CSV file.
+    """
+
+    button = Button(label="Save labels", button_type="primary", width=112)
+    button.js_on_click(
+        CustomJS(
+            args=dict(source=source),
+            code="""
+        const data = source.data;
+        const names = data['name'];
+        const labels = data['custom_label'];
+        
+        // Check if there are any non-default labels
+        const hasLabels = labels.some(l => l !== 'unlabeled');
+        if (!hasLabels) {
+            alert('No custom labels have been assigned yet!');
+            return;
+        }
+        
+        let csv = 'name\\tcustom_label\\n';
+        for (let i = 0; i < names.length; i++) {
+            csv += names[i] + '\\t' + labels[i] + '\\n';
+        }
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'custom_labels.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert('Labels saved to custom_labels.csv');
+    """,
+        )
+    )
+    return button
+
+
+def load_labels_button(
+    source: bokeh.models.ColumnDataSource,
+    select_color_by: bokeh.models.Select,
+    unique_dict: dict,
+) -> tuple[bokeh.models.TextInput, bokeh.models.Button]:
+    """
+    Create a button to load custom labels from a CSV file.
+
+    The button opens a file picker in the browser.  The selected file's
+    raw text is relayed to a hidden :class:`~bokeh.models.TextInput` which
+    triggers a server-side Python callback that patches the data source and
+    rebuilds the legend — avoiding the race condition that arises when both
+    steps are performed purely client-side.
+
+    Args:
+        source : bokeh.models.ColumnDataSource
+            Data source to update with loaded labels.
+        select_color_by : bokeh.models.Select
+            The "Color by" dropdown menu.
+        unique_dict : dict
+            Dictionary mapping field names to their unique values.
+
+    Returns:
+        Tuple containing:
+            - **hidden_csv_input** (:class:`bokeh.models.TextInput`): Invisible relay widget (must be present in the document layout).
+            - **button** (:class:`bokeh.models.Button`): "Load labels" button.
+    """
+
+    # Invisible relay: JS writes raw file content here; Python reads it.
+    hidden_csv_input = bokeh.models.TextInput(value="", visible=False, width=1)
+
+    def process_csv(attr, old, new):
+        if not new:
+            return
+        lines = new.strip().split("\n")
+        name_to_idx = {name: i for i, name in enumerate(source.data["name"])}
+        patches = []
+        for line in lines[1:]:  # skip header
+            parts = line.split("\t")
+            if len(parts) >= 2:
+                name, label = parts[0], parts[1].strip()
+                if name in name_to_idx:
+                    patches.append((name_to_idx[name], label))
+        if patches:
+            source.patch({"custom_label": patches})
+            unique_dict["custom_label"] = sorted(
+                set(source.data["custom_label"].tolist())
+            )
+            if "custom_label" not in list(select_color_by.options):
+                select_color_by.options = ["custom_label"] + list(
+                    select_color_by.options
+                )
+            if select_color_by.value == "custom_label":
+                select_color_by.value = ""
+            select_color_by.value = "custom_label"
+        # Reset relay so the same file can be reloaded if needed.
+        hidden_csv_input.value = ""
+
+    hidden_csv_input.on_change("value", process_csv)
+
+    button = Button(label="Load labels", button_type="primary", width=112)
+
+    callback = CustomJS(
+        args=dict(relay=hidden_csv_input),
+        code="""
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.csv,.tsv,.txt';
+        input.style.display = 'none';
+
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                // Forward raw file content to the Python relay callback.
+                relay.value = event.target.result;
+            };
+            reader.readAsText(file);
+        };
+
+        document.body.appendChild(input);
+        input.click();
+        document.body.removeChild(input);
+        """,
+    )
+
+    button.js_on_click(callback)
+    return hidden_csv_input, button
