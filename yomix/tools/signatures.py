@@ -190,7 +190,7 @@ def signature_buttons(
 
         if obs_indices_B is None:
             ref_array = np.arange(adata.n_obs)
-            rest_indices = np.arange(adata.n_obs)[~np.in1d(ref_array, obs_indices_A)]
+            rest_indices = np.arange(adata.n_obs)[~np.isin(ref_array, obs_indices_A)]
         else:
             rest_indices = obs_indices_B
 
