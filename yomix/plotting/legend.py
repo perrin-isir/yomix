@@ -83,25 +83,7 @@ def setup_legend(
                 obsn=obs_numerical,
             ),
             code="""
-        // Handle custom_label field (user-defined labels)
-        if (this.value === 'custom_label') {
-            const data = source.data;
-            // Get unique values from the custom_label field
-            var unique = [...new Set(data['custom_label'])].sort();
-            udicts['custom_label'] = unique;
-            var l_values = new Array(unique.length).fill(0);
-            const step = 1./(Math.max(unique.length - 1, 1)) * 0.999999;
-            var l_values_dict = {};
-            l_values_dict[unique[0]] = -1.;
-            for (let i = 1; i < l_values.length; i++) {
-                l_values[i] = l_values[i-1] + step;
-                l_values_dict[unique[i]] = l_values[i]-1.;
-            }
-            for (let i = 0; i < data["color"].length; i++) {
-                data["color"][i] = l_values_dict[data['custom_label'][i]];
-            }
-            source.change.emit();
-        }
+        // Handle fields in the static categorical list.
         if (obss.includes(this.value)) {
             const data = source.data;
             var unique = udicts[this.value];
@@ -144,6 +126,28 @@ def setup_legend(
             }
             source.change.emit();
         }
+        // Handle user-created / dynamic fields not in any static list.
+        if (this.value !== ''
+                && !obss.includes(this.value)
+                && !obsm.includes(this.value)
+                && !obsn.includes(this.value)
+                && source.data[this.value] !== undefined) {
+            const data = source.data;
+            var unique = [...new Set(data[this.value])].sort();
+            udicts[this.value] = unique;
+            var l_values = new Array(unique.length).fill(0);
+            const step = 1./(Math.max(unique.length - 1, 1)) * 0.999999;
+            var l_values_dict = {};
+            l_values_dict[unique[0]] = -1.;
+            for (let i = 1; i < l_values.length; i++) {
+                l_values[i] = l_values[i-1] + step;
+                l_values_dict[unique[i]] = l_values[i]-1.;
+            }
+            for (let i = 0; i < data["color"].length; i++) {
+                data["color"][i] = l_values_dict[data[this.value][i]];
+            }
+            source.change.emit();
+        }
     """,
         ),
     )
@@ -180,8 +184,8 @@ def setup_legend(
     label_signature = bokeh.models.MultiSelect(
         title="Groups",
         options=options,
-        width=235,
-        max_width=235,
+        width=275,
+        max_width=275,
         width_policy="max",
         description=tooltip,
     )
@@ -244,15 +248,12 @@ def setup_legend(
             None
         """
         label_signature.visible = False
-        # Handle custom_label (user-defined labels) - treat like obs_s
-        if obs_col == 'custom_label' or obs_col in obs_s:
+        # Handle user-defined labels - treat like obs_s
+        if obs_col in obs_s:
             s_field.visible = False
             bokeh_plot.right = []
             htlc.value = obs_col
             htlcbis.value = obs_col
-            # For custom_label, always regenerate the legend (labels can change dynamically)
-            if obs_col == 'custom_label' and obs_col in legend_dict:
-                del legend_dict[obs_col]
             if obs_col in legend_dict:
                 legend_list = legend_dict[obs_col][0]
                 for legend in legend_list:
@@ -479,6 +480,26 @@ def setup_legend(
             bt_slider_range.step = (max_val - min_val) / 100.0
             bt_slider_range.visible = True
 
+    def trigger_legend_refresh(obs_col: str) -> None:
+        """Force a full legend rebuild for *obs_col*, clearing any cached entry first."""
+        if obs_col in legend_dict:
+            del legend_dict[obs_col]
+        redefine_custom_legend(
+            pb_plot,
+            hidden_text_label_search,
+            hidden_text_label_column,
+            hidden_text_label_column_bis,
+            hidden_legend_width,
+            select_field,
+            obs_col,
+            legend_dict,
+            resize_width_input,
+            obs_string,
+            obs_string_many,
+            obs_numerical,
+            bt_slider_range,
+        )
+
     hidden_text_label_search = bokeh.models.TextInput(
         value="", title="Label search", name="hidden_text_label_search", width=999
     )
@@ -588,8 +609,9 @@ def setup_legend(
         position="right",
     )
 
-    # Add custom_label to menu for user-defined labels
-    menu = ["custom_label"] + obs_string + obs_string_many + obs_numerical
+    # Build the initial menu from existing obs fields only; user-created
+    # fields are added dynamically as the user creates them.
+    menu = obs_string + obs_string_many + obs_numerical
     select_color_by = bokeh.models.Select(
         title="Color by (select field):",
         value="",
@@ -623,4 +645,5 @@ def setup_legend(
         hidden_legend_width,
         select_field,
         label_signature,
+        trigger_legend_refresh,
     )

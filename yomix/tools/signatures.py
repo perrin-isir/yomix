@@ -511,8 +511,8 @@ def signature_buttons(
     multiselect_signature = bokeh.models.MultiSelect(
         title="Signature #0",
         options=options,
-        width=235,
-        max_width=235,
+        width=275,
+        max_width=275,
         size=20,
         width_policy="max",
     )
