@@ -20,6 +20,9 @@ from bokeh.application import Application
 from bokeh.server.server import Server
 from pathlib import Path
 import argparse
+import subprocess
+import sys
+import time
 
 __all__ = ("main",)
 
@@ -57,13 +60,58 @@ def main():
     parser.add_argument(
         "--example", action="store_true", help="use the example dataset"
     )
+    parser.add_argument(
+        "--dev", action="store_true", help="auto-reload server when source files change"
+    )
 
     args = parser.parse_args()
+
+    if args.dev:
+        watch_dir = Path(__file__).resolve().parent
+        forward_args = [a for a in sys.argv[1:] if a != "--dev"]
+
+        def get_mtimes():
+            result = {}
+            for f in watch_dir.rglob("*.py"):
+                try:
+                    result[str(f)] = f.stat().st_mtime
+                except OSError:
+                    pass
+            return result
+
+        def start_server():
+            return subprocess.Popen([sys.executable, "-m", "yomix"] + forward_args)
+
+        mtimes = get_mtimes()
+        proc = start_server()
+        print(f"[dev] Server started. Watching {watch_dir} for changes …", flush=True)
+        try:
+            while True:
+                time.sleep(1)
+                new_mtimes = get_mtimes()
+                changed = [
+                    Path(f).name
+                    for f in new_mtimes
+                    if new_mtimes[f] != mtimes.get(f)
+                ]
+                if changed:
+                    print(
+                        f"[dev] Changed: {', '.join(changed)} — restarting …",
+                        flush=True,
+                    )
+                    mtimes = new_mtimes
+                    proc.terminate()
+                    proc.wait()
+                    proc = start_server()
+        except KeyboardInterrupt:
+            print("[dev] Stopping.", flush=True)
+            proc.terminate()
+        return
 
     argument = args.example
 
     if argument:
-        filearg = Path(__file__).parent / "example" / "pbmc.h5ad"
+        filearg = (Path(__file__).resolve().parent / "example" / "pbmc.h5ad")
     else:
         assert (
             args.file is not None
@@ -85,3 +133,7 @@ def main():
 
         io_loop.add_callback(server.show, "/")
         io_loop.start()
+
+
+if __name__ == "__main__":
+    main()

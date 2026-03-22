@@ -23,7 +23,8 @@ from bokeh.models import TabPanel, Tabs
 from yomix.tools.download import (
     download_selected_button,
     csv_load_button,
-    add_label_button,
+    relabel_selection_button,
+    create_new_field_button,
     save_labels_button,
     load_labels_button,
 )
@@ -225,7 +226,7 @@ def gen_modify_doc_xd(
             bt_select_embedding = bokeh.models.Select(
                 title="Select embedding (.obsm field)",
                 value=embedding_key,
-                width=235,
+                width=275,
                 options=[(k, k) for k in list_ok_embed_keys],
                 name="bt_select_embedding",
             )
@@ -287,6 +288,7 @@ def gen_modify_doc_xd(
                     hidden_legend_width,
                     select_field,
                     label_signature,
+                    trigger_legend_refresh,
                 ) = yomix.plotting.setup_legend(
                     points_bokeh_plot,
                     obs_string,
@@ -399,9 +401,16 @@ def gen_modify_doc_xd(
                 source = scatter.data_source
                 download_button = download_selected_button(source, original_keys)
                 load_button = csv_load_button(source)
-                label_input, label_button = add_label_button(source, select_color_by, unique_dict)
-                save_labels_btn = save_labels_button(source)
-                hidden_labels_input, load_labels_btn = load_labels_button(source, select_color_by, unique_dict)
+                hidden_relabel, relabel_btn = relabel_selection_button(
+                    source, select_color_by, unique_dict, obs_string, trigger_legend_refresh
+                )
+                hidden_create_field, create_field_btn = create_new_field_button(
+                    source, select_color_by, unique_dict, obs_string, trigger_legend_refresh
+                )
+                save_labels_btn = save_labels_button(source, select_color_by)
+                hidden_labels_input, load_labels_btn = load_labels_button(
+                    source, select_color_by, unique_dict, obs_string, trigger_legend_refresh
+                )
 
                 p = bokeh.layouts.row(
                     bokeh.layouts.column(
@@ -416,9 +425,11 @@ def gen_modify_doc_xd(
                             bt_nothing,
                         ),
                         bokeh.layouts.row(download_button, load_button),
-                        label_input,
-                        bokeh.layouts.row(label_button, save_labels_btn),
-                        bokeh.layouts.row(load_labels_btn, hidden_labels_input),
+                        bokeh.layouts.row(relabel_btn, create_field_btn),
+                        bokeh.layouts.row(save_labels_btn, load_labels_btn),
+                        hidden_relabel,
+                        hidden_create_field,
+                        hidden_labels_input,
                         bokeh.layouts.row(bt_sign1, help1),
                         bokeh.layouts.row(bt_sign2, help2),
                         bokeh.layouts.row(bt_sign3, help3),
