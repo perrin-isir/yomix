@@ -268,7 +268,7 @@ def main_figure(
     nipy_spectral_colormap._segmentdata["blue"][-1] = (1.0, 0.5, 0.5)
     nipy_spectral_colormap._init()
     nipy_colors = [
-        matplotlib.colors.rgb2hex(plt.get_cmap("nipy_spectral")(i)) for i in range(256)
+        matplotlib.colors.rgb2hex(plt.get_cmap("nipy_spectral")(i / 255)) for i in range(256)
     ]
     viridis_colors = list(bokeh.palettes.Viridis256)
     custom_color_mapper = bokeh.models.LinearColorMapper(
