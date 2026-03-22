@@ -123,7 +123,7 @@ def relabel_selection_button(
         Tuple containing:
             - **hidden_relay** (:class:`bokeh.models.TextInput`): Invisible
               relay widget (must be in the document layout).
-            - **button** (:class:`bokeh.models.Button`): "(Re)label selection" button.
+            - **button** (:class:`bokeh.models.Button`): "Label selection" button.
     """
 
     hidden_relay = bokeh.models.TextInput(value="", visible=False, width=1)
@@ -182,7 +182,7 @@ def relabel_selection_button(
 
     hidden_relay.on_change("value", apply_relabel)
 
-    button = Button(label="(Re)label selection", button_type="warning", width=135)
+    button = Button(label="Label selection", button_type="warning", width=112)
 
     js_callback = CustomJS(
         args=dict(relay=hidden_relay, color_by=select_color_by),
@@ -312,7 +312,7 @@ def create_new_field_button(
 
     hidden_relay.on_change("value", create_field)
 
-    button = Button(label="Create new field", button_type="primary", width=135)
+    button = Button(label="Create new field", button_type="warning", width=112)
 
     js_callback = CustomJS(
         args=dict(relay=hidden_relay),

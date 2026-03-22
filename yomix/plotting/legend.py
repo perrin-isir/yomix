@@ -345,6 +345,7 @@ def setup_legend(
                         legend.items[i].renderers[0].js_on_change("change:muted", cb_js)
                     legend.label_text_font = "Helvetica"
                     if iteration == 1:
+                        legend.title = obs_col
                         label_font_size = legend.label_text_font_size
                         # It's a string like '13px' so need to int-ify it:
                         label_font_size = int(label_font_size[:-2])
@@ -358,10 +359,15 @@ def setup_legend(
                         font.getlength(x.label["value"]) for x in legend.items
                     ]
                     max_label_width = max(all_label_width)
+                    title_width = (
+                        font.getlength(legend.title)
+                        if legend.title
+                        else 0
+                    )
                     width_increment = (
                         legend.border_line_width
                         + legend.glyph_width
-                        + max_label_width
+                        + max(max_label_width, title_width - legend.glyph_width - 14)
                         + 14
                     )
                     legend_width += width_increment
