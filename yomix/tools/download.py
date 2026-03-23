@@ -199,7 +199,7 @@ def relabel_selection_button(
             + 'box-shadow:0 4px 24px rgba(0,0,0,0.28);';
         box.innerHTML =
             '<p style="margin:0 0 12px;font-size:14px">'
-            + '<b>Name selection:</b>&nbsp;'
+            + '<b>Label name:</b>&nbsp;'
             + '<input id="ym_label_input" type="text" '
             + 'style="width:200px;padding:4px 6px;font-size:14px;'
             + 'border:1px solid #ccc;border-radius:3px;">'
