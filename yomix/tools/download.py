@@ -142,11 +142,6 @@ def relabel_selection_button(
 
         current_labels = list(source.data[field])
 
-        # Replace semantics: reset all points that already carry this label
-        # to "unlabeled", then assign the new selection.
-        for i, lbl in enumerate(current_labels):
-            if lbl == label_name:
-                current_labels[i] = "unlabeled"
         for i in inds:
             current_labels[i] = label_name
 
@@ -217,7 +212,8 @@ def relabel_selection_button(
             + 'padding:7px 20px;cursor:pointer;border-radius:4px;'
             + 'margin-right:10px;font-size:13px;">YES</button>'
             + '<button id="ym_no" style="background:#dc3545;color:#fff;border:none;'
-            + 'padding:7px 20px;cursor:pointer;border-radius:4px;font-size:13px;">NO</button>';
+            + 'padding:7px 20px;cursor:pointer;border-radius:4px;font-size:13px;">'
+            + 'NO</button>';
 
         overlay.appendChild(box);
         document.body.appendChild(overlay);
@@ -337,7 +333,8 @@ def create_new_field_button(
             + 'padding:7px 20px;cursor:pointer;border-radius:4px;'
             + 'margin-right:10px;font-size:13px;">OK</button>'
             + '<button id="ym_cancel" style="background:#dc3545;color:#fff;border:none;'
-            + 'padding:7px 20px;cursor:pointer;border-radius:4px;font-size:13px;">Cancel</button>';
+            + 'padding:7px 20px;cursor:pointer;border-radius:4px;font-size:13px;">'
+            + 'Cancel</button>';
 
         overlay.appendChild(box);
         document.body.appendChild(overlay);
@@ -378,12 +375,12 @@ def download_selected_button(
             Column names to include in the downloaded CSV file.
 
     Returns:
-        ``Save selected`` button (:class:`bokeh.models.Button`) :
+        ``Save selection`` button (:class:`bokeh.models.Button`) :
             On click, it downloads the currently selected points as a CSV file.
 
     """
 
-    button = Button(label="Save selected", button_type="success", width=112)
+    button = Button(label="Save selection", button_type="success", width=112)
     button.js_on_click(
         CustomJS(
             args=dict(source=source, okeys=original_keys),
@@ -436,11 +433,11 @@ def save_labels_button(
             The "Color by" dropdown — its current value names the field to save.
 
     Returns:
-        ``Save labels`` button (:class:`bokeh.models.Button`) :
+        ``Save field`` button (:class:`bokeh.models.Button`) :
             On click, downloads all points with their labels as a TSV/CSV file.
     """
 
-    button = Button(label="Save labels", button_type="success", width=112)
+    button = Button(label="Save field", button_type="success", width=112)
     button.js_on_click(
         CustomJS(
             args=dict(source=source, color_by=select_color_by),
@@ -519,8 +516,9 @@ def load_labels_button(
 
     Returns:
         Tuple containing:
-            - **hidden_csv_input** (:class:`bokeh.models.TextInput`): Invisible relay widget (must be present in the document layout).
-            - **button** (:class:`bokeh.models.Button`): "Load labels" button.
+            - **hidden_csv_input** (:class:`bokeh.models.TextInput`): Invisible relay
+              widget (must be present in the document layout).
+            - **button** (:class:`bokeh.models.Button`): "Load field" button.
     """
 
     # Invisible relay: JS writes raw file content here; Python reads it.
@@ -590,7 +588,7 @@ def load_labels_button(
 
     hidden_csv_input.on_change("value", process_csv)
 
-    button = Button(label="Load labels", button_type="success", width=112)
+    button = Button(label="Load field", button_type="success", width=112)
 
     callback = CustomJS(
         args=dict(relay=hidden_csv_input),

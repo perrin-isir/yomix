@@ -47,7 +47,8 @@ def setup_legend(
         obs_numerical
             List of numerical observation fields.
         source_rotmatrix_etc: bokeh.models.ColumnDataSource
-             Data source for computing points' positions after rotations in the scatterplot.
+             Data source for computing points' positions after rotations in the
+             scatterplot.
         resize_width_input: bokeh.models.TextInput
             Input for setting main plot's width.
         bt_slider_range: bokeh.models.RangeSlider
@@ -55,15 +56,21 @@ def setup_legend(
         unique_dict: dict
             Dictionary mapping field names to lists of unique values.
         max_unique_labels: int
-            Maximum number of unique labels in an obs field to be considered as a group for violin plots and heatmaps.
+            Maximum number of unique labels in an obs field to be considered as a
+            group for violin plots and heatmaps.
 
     Returns:
         Tuple containing all the created Bokeh components
-            - **select_color_by** (:class:`bokeh.models.Select`): Dropdown menu for choosing a coloring field, its values will be added in the legend.
-            - **hidden_text_label_column** (:class:`bokeh.models.TextInput`): A hidden widget that triggers the color update via JavaScript.
-            - **hidden_legend_width** (:class:`bokeh.models.TextInput`): A hidden widget that stores the current width of the legend.
-            - **select_field** (:class:`bokeh.models.Select`):  Dropdown menu in the legend for selecting a group from a field with many unique values.
-            - **label_signature** (:class:`bokeh.models.MultiSelect`): Widget for selecting groups in violin plots / heat map (initialized here).
+            - **select_color_by** (:class:`bokeh.models.Select`): Dropdown menu for
+              choosing a coloring field, its values will be added in the legend.
+            - **hidden_text_label_column** (:class:`bokeh.models.TextInput`): A hidden
+              widget that triggers the color update via JavaScript.
+            - **hidden_legend_width** (:class:`bokeh.models.TextInput`): A hidden widget
+              that stores the current width of the legend.
+            - **select_field** (:class:`bokeh.models.Select`):  Dropdown menu in the
+              legend for selecting a group from a field with many unique values.
+            - **label_signature** (:class:`bokeh.models.MultiSelect`): Widget for
+              selecting groups in violin plots / heat map (initialized here).
     """  # noqa: E501
 
     source = pb_plot.select(dict(name="scatterplot"))[0].data_source
@@ -86,7 +93,8 @@ def setup_legend(
         // Handle fields in the static categorical list.
         if (obss.includes(this.value)) {
             const data = source.data;
-            var unique = udicts[this.value];
+            var unique = [...new Set(data[this.value])].sort();
+            udicts[this.value] = unique;
             var l_values = new Array(unique.length).fill(0);
             const step = 1./(Math.max(unique.length - 1, 1)) * 0.999999;
             var l_values_dict = {};
@@ -102,7 +110,8 @@ def setup_legend(
         }
         if (obsm.includes(this.value)) {
             const data = source.data;
-            var unique = udicts[this.value];
+            var unique = [...new Set(data[this.value])].sort();
+            udicts[this.value] = unique;
             var l_values = new Array(unique.length).fill(0);
             const step = 1./(Math.max(unique.length - 1, 1)) * 0.999999;
             var l_values_dict = {};
@@ -205,6 +214,7 @@ def setup_legend(
         obs_s_many: list[str],
         obs_n: list[str],
         bt_slider_range: bokeh.models.RangeSlider,
+        udict: dict,
     ) -> None:
         """
         Update the legend and color mapping for the scatter plot based on the selected
@@ -243,6 +253,8 @@ def setup_legend(
                 List of numerical observation fields.
             bt_slider_range : bokeh.models.RangeSlider
                 Slider for filtering samples based on a selected feature's value.
+            udict : dict
+                Dictionary mapping field names to lists of unique values.
 
         Returns:
             None
@@ -288,11 +300,13 @@ def setup_legend(
                 max_nr = (bokeh_plot.height - 2 * margin - 2 * padding - height) // (
                     height + spacing
                 )
-                full_length = len(list_vals)
+                full_length = len(list_vals) + 1
                 cuts = list(np.arange(0, full_length, max_nr)) + [full_length]
                 list_intervals = [
-                    np.arange(cuts[i], cuts[i + 1]) for i in range(len(cuts) - 1)
+                    np.arange(cuts[i] - 1, cuts[i + 1] - 1)
+                    for i in range(len(cuts) - 1)
                 ]
+                list_intervals[0] = list_intervals[0][1:]
                 legend_list = [bokeh.models.Legend(items=[], visible=False, name="0")]
                 bokeh_plot.add_layout(legend_list[0], "right")
                 legend_width = 0
@@ -303,7 +317,7 @@ def setup_legend(
                             size=0, x=0, y=0, line_width=0, fill_color=l_colors[i]
                         )
                     )
-                    for i in range(full_length)
+                    for i in range(full_length - 1)
                 ]
 
                 iteration = 0
@@ -359,11 +373,7 @@ def setup_legend(
                         font.getlength(x.label["value"]) for x in legend.items
                     ]
                     max_label_width = max(all_label_width)
-                    title_width = (
-                        font.getlength(legend.title)
-                        if legend.title
-                        else 0
-                    )
+                    title_width = font.getlength(legend.title) if legend.title else 0
                     width_increment = (
                         legend.border_line_width
                         + legend.glyph_width
@@ -384,7 +394,7 @@ def setup_legend(
             rwi.value = str(int(bokeh_plot.width - float(hlw.value)))
             hlw.value = str(0)
             s_field.title = f"Select [ {str(obs_col)} ]:"
-            s_field.options = [""] + unique_dict[obs_col]
+            s_field.options = [""] + udict[obs_col]
             s_field.visible = True
         bt_slider_range.visible = False
         if obs_col in obs_n:
@@ -485,26 +495,6 @@ def setup_legend(
             bt_slider_range.value = (min_val, max_val)
             bt_slider_range.step = (max_val - min_val) / 100.0
             bt_slider_range.visible = True
-
-    def trigger_legend_refresh(obs_col: str) -> None:
-        """Force a full legend rebuild for *obs_col*, clearing any cached entry first."""
-        if obs_col in legend_dict:
-            del legend_dict[obs_col]
-        redefine_custom_legend(
-            pb_plot,
-            hidden_text_label_search,
-            hidden_text_label_column,
-            hidden_text_label_column_bis,
-            hidden_legend_width,
-            select_field,
-            obs_col,
-            legend_dict,
-            resize_width_input,
-            obs_string,
-            obs_string_many,
-            obs_numerical,
-            bt_slider_range,
-        )
 
     hidden_text_label_search = bokeh.models.TextInput(
         value="", title="Label search", name="hidden_text_label_search", width=999
@@ -642,8 +632,32 @@ def setup_legend(
             obs_string_many,
             obs_numerical,
             bt_slider_range,
+            unique_dict,
         ),
     )
+
+    def trigger_legend_refresh(obs_col: str) -> None:
+        """Force legend rebuild for *obs_col*, clearing any cached entry first."""
+        hidden_text_label_column.value = ""
+        hidden_text_label_column_bis.value = ""
+        if obs_col in legend_dict:
+            del legend_dict[obs_col]
+        redefine_custom_legend(
+            pb_plot,
+            hidden_text_label_search,
+            hidden_text_label_column,
+            hidden_text_label_column_bis,
+            hidden_legend_width,
+            select_field,
+            obs_col,
+            legend_dict,
+            resize_width_input,
+            obs_string,
+            obs_string_many,
+            obs_numerical,
+            bt_slider_range,
+            unique_dict,
+        )
 
     return (
         select_color_by,
