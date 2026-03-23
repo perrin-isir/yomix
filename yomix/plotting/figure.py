@@ -151,10 +151,8 @@ def main_figure(
         if not adata.obs[x].isnull().values.any()
     ]
     unique_dict = {elt: list(np.unique(adata.obs[elt])) for elt in everything}
-    # Initialize custom_label with its default value (but not in obs_string)
-    unique_dict["custom_label"] = ["unlabeled"]
-    obs_string = [x for x in unique_dict.keys() if check_obs_field(unique_dict, x) and x != "custom_label"]
-    obs_string_many = [x for x in unique_dict.keys() if x not in obs_string and x != "custom_label"]
+    obs_string = [x for x in unique_dict.keys() if check_obs_field(unique_dict, x)]
+    obs_string_many = [x for x in unique_dict.keys() if x not in obs_string]
     obs_numerical = [
         col
         for col in list(adata.obs.select_dtypes(np.number).keys())
@@ -236,8 +234,6 @@ def main_figure(
     data["highlighted_B"] = np.zeros(len(data["point_size"]), dtype=np.float32)
     data["line_color"] = -np.ones(len(data["point_size"]), dtype=np.float32)
     data["line_width"] = np.zeros(len(data["point_size"]), dtype=np.float32)
-    # Custom labels field for user-defined point labels
-    data["custom_label"] = np.full(len(data["point_size"]), "unlabeled", dtype=object)
 
     source = bokeh.models.ColumnDataSource(data=data)
 
@@ -272,7 +268,7 @@ def main_figure(
     nipy_spectral_colormap._segmentdata["blue"][-1] = (1.0, 0.5, 0.5)
     nipy_spectral_colormap._init()
     nipy_colors = [
-        matplotlib.colors.rgb2hex(plt.get_cmap("nipy_spectral")(i)) for i in range(256)
+        matplotlib.colors.rgb2hex(plt.get_cmap("nipy_spectral")(i / 255)) for i in range(256)
     ]
     viridis_colors = list(bokeh.palettes.Viridis256)
     custom_color_mapper = bokeh.models.LinearColorMapper(

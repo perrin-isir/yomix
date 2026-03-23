@@ -3,4 +3,7 @@ build/
 dist/
 *.egg-info/
 *.pyc
+.vscode/
+key
+key.pub
 
