@@ -129,9 +129,9 @@ def relabel_selection_button(
     hidden_relay = bokeh.models.TextInput(value="", visible=False, width=1)
 
     def apply_relabel(attr, old, new):
-        if not new or "|" not in new:
+        if not new or "|yomix|" not in new:
             return
-        field, label_name = new.split("|", 1)
+        field, label_name = new.split("|yomix|", 1)
         if field not in source.data:
             hidden_relay.value = ""
             return
@@ -224,7 +224,7 @@ def relabel_selection_button(
             const labelName = inp.value.trim();
             if (!labelName) { alert('Please enter a label name.'); return; }
             document.body.removeChild(overlay);
-            relay.value = currentField + '|' + labelName;
+            relay.value = currentField + '|yomix|' + labelName;
         };
         box.querySelector('#ym_no').onclick = () => {
             document.body.removeChild(overlay);
@@ -469,12 +469,12 @@ def save_labels_button(
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = field + '_labels.csv';
+        a.download = 'field_' + field + '.csv';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        alert('Labels saved to ' + field + '_labels.csv');
+        alert('Labels saved to ' + 'field_' + field + '.csv');
     """,
         )
     )

@@ -572,26 +572,29 @@ def setup_legend(
                 if (smd["shift"][0] == 1) {
                     const val = this.value;
                     this.value = val + "[-.-.-.-.-shift-.-.-.-.-]";
-                    const indices = source.selected.indices;
-                    for (let i = 0; i < indices.length; i++) {
-                        if (labels[indices[i]] == val) {
-                            indices.splice(i, 1);
+                    var new_indices = [];
+                    for (let i = 0; i < source.selected.indices.length; i++) {
+                        if (labels[source.selected.indices[i]] != val) {
+                            new_indices.push(source.selected.indices[i]);
+                            //source.selected.indices.splice(i, 1);
                         }
                     }
                     for (let i = 0; i < labels.length; i++) {
                         if (labels[i] == val) {
-                            indices.push(i);
+                            new_indices.push(i);
                         }
                     }
+                    source.selected.indices = new_indices;
                     source.change.emit();
                 } else {
-                    source.selected.indices = [];
+                    var new_indices = [];
                     for (let i = 0; i < labels.length; i++) {
                         if (labels[i] == this.value) {
-                            source.selected.indices.push(i);
+                            new_indices.push(i);
                         }
                     }
-                        source.change.emit();
+                    source.selected.indices = new_indices;
+                    source.change.emit();
                 }
             }
         }
